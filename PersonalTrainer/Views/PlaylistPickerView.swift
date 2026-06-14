@@ -21,6 +21,7 @@ struct PlaylistPickerView: View {
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(Theme.accent)
+                        .foregroundStyle(Theme.blueprintDeep)
                     }
                 } else if music.playlists.isEmpty {
                     ContentUnavailableView(
@@ -49,6 +50,8 @@ struct PlaylistPickerView: View {
                     .refreshable { music.loadPlaylists() }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .blueprintBackground()
             .navigationTitle("Workout Playlist")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

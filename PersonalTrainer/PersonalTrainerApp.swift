@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 @main
 struct PersonalTrainerApp: App {
@@ -7,6 +8,7 @@ struct PersonalTrainerApp: App {
     let container: ModelContainer
 
     init() {
+        Theme.applyBlueprintAppearance()
         do {
             container = try ModelContainer(
                 for: UserProfile.self, Exercise.self, WorkoutSession.self,

@@ -76,7 +76,7 @@ struct CoachView: View {
 
                 inputBar
             }
-            .background(Theme.background)
+            .blueprintBackground()
             .navigationTitle("Coach")
         }
     }
@@ -90,7 +90,7 @@ struct CoachView: View {
                     message.isUser ? Theme.accent : Theme.card,
                     in: RoundedRectangle(cornerRadius: 16, style: .continuous)
                 )
-                .foregroundStyle(message.isUser ? .white : .primary)
+                .foregroundStyle(message.isUser ? Theme.blueprintDeep : .primary)
             if !message.isUser { Spacer(minLength: 40) }
         }
     }

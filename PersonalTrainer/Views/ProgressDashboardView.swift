@@ -22,7 +22,7 @@ struct ProgressDashboardView: View {
                 }
                 .padding()
             }
-            .background(Theme.background)
+            .blueprintBackground()
             .navigationTitle("Progress")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -172,6 +172,8 @@ struct AddPRSheet: View {
                 Stepper("Reps: \(reps)", value: $reps, in: 1...20)
                 DatePicker("Date", selection: $date, displayedComponents: .date)
             }
+            .scrollContentBackground(.hidden)
+            .blueprintBackground()
             .navigationTitle("Add PR")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

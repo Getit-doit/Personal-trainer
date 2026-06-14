@@ -37,6 +37,8 @@ struct ActiveSessionView: View {
                 finishSection
             }
         }
+        .scrollContentBackground(.hidden)
+        .blueprintBackground()
         .navigationTitle(session.notes.isEmpty ? "Workout" : session.notes)
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
@@ -171,6 +173,7 @@ struct ActiveSessionView: View {
                 } label: {
                     Text("Mark warm-up done — unlock logging")
                         .frame(maxWidth: .infinity).bold()
+                        .foregroundStyle(Theme.blueprintDeep)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Theme.accent)
@@ -302,6 +305,7 @@ struct ActiveSessionView: View {
             } label: {
                 Text(session.isFinished ? "Finished ✓" : "Finish Workout")
                     .frame(maxWidth: .infinity).bold()
+                    .foregroundStyle(Theme.blueprintDeep)
             }
             .buttonStyle(.borderedProminent)
             .tint(Theme.accent)
@@ -476,7 +480,7 @@ struct SetRow: View {
         .onChange(of: set.rpe) { onChange() }
         .onChange(of: set.repsInTank) { onChange() }
         .sheet(isPresented: $showPlates) {
-            PlateCalculatorView(weight: $set.weight, onApply: onChange)
+            PlateCalculatorView(weight: $set.weight, exerciseName: set.exercise?.name, onApply: onChange)
         }
     }
 

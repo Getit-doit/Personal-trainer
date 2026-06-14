@@ -1,15 +1,51 @@
 import SwiftUI
 
+/// The kind of bar/implement being loaded. `mirrors` doubles the per-side plate
+/// total (a normal bar); dumbbell mode counts the entered plates once.
+enum BarType: String, CaseIterable, Identifiable {
+    case barbell, womens, ezCurl, trapBar, dumbbell
+
+    var id: String { rawValue }
+
+    var name: String {
+        switch self {
+        case .barbell: return "Barbell"
+        case .womens: return "Women's Bar"
+        case .ezCurl: return "EZ Curl Bar"
+        case .trapBar: return "Trap Bar"
+        case .dumbbell: return "Dumbbell"
+        }
+    }
+
+    var weight: Double {
+        switch self {
+        case .barbell: return 45
+        case .womens: return 35
+        case .ezCurl: return 25
+        case .trapBar: return 45
+        case .dumbbell: return 0
+        }
+    }
+
+    /// Whether plates are mirrored on both ends.
+    var mirrors: Bool { self != .dumbbell }
+}
+
 /// Visual barbell loader. Tap a plate button to add it **per side**; tap a
-/// loaded plate on the bar to remove it. Total = bar + 2 × (one side's plates).
-/// Plates range 5–45 lb in 5 lb steps, with an optional 2.5 / 1.25 lb micro set.
+/// loaded plate on the bar to remove it. Total = bar + (×2 unless dumbbell) ×
+/// plates. Plates: 5–45 lb in 5 lb steps + optional 2.5 / 1.25 lb micro set.
+/// If an `exerciseName` is supplied, the loadout can be saved as that lift's
+/// default and is auto-restored next time.
 struct PlateCalculatorView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var weight: Double
+    var exerciseName: String? = nil
     var onApply: () -> Void
 
-    @AppStorage("barWeight") private var barWeight = 45.0
+    @AppStorage("barTypeRaw") private var barTypeRaw = BarType.barbell.rawValue
     @AppStorage("useMicroPlates") private var useMicroPlates = false
+
+    private var barType: BarType { BarType(rawValue: barTypeRaw) ?? .barbell }
 
     private let standardPlates: [Double] = [45, 40, 35, 30, 25, 20, 15, 10, 5]
     private let microPlates: [Double] = [2.5, 1.25]
@@ -30,7 +66,7 @@ struct PlateCalculatorView: View {
         denominations.reduce(0) { $0 + $1 * Double(perSide[$1] ?? 0) }
     }
 
-    private var total: Double { barWeight + 2 * perSideTotal }
+    private var total: Double { barType.weight + (barType.mirrors ? 2 : 1) * perSideTotal }
 
     var body: some View {
         NavigationStack {
@@ -43,10 +79,11 @@ struct PlateCalculatorView: View {
                 }
                 .padding()
             }
-            .background(Theme.background)
+            .scrollContentBackground(.hidden)
+            .blueprintBackground()
             .navigationTitle("Load the Bar")
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear { decomposeCurrentWeight() }
+            .onAppear { restoreOnAppear() }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -110,13 +147,13 @@ struct PlateCalculatorView: View {
     private var totals: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Per side").font(.caption).foregroundStyle(.secondary)
+                Text(barType.mirrors ? "Per side" : "Per dumbbell").font(.caption).foregroundStyle(.secondary)
                 Text("\(perSideTotal.clean) lb").font(.headline)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
                 Text("Total").font(.caption).foregroundStyle(.secondary)
-                Text("\(total.clean) lb").font(.title2).bold().foregroundStyle(Theme.accentDeep)
+                Text("\(total.clean) lb").font(Theme.hand(26, relativeTo: .title2)).foregroundStyle(Theme.accentDeep)
             }
         }
         .padding(.horizontal, 4)
@@ -150,15 +187,27 @@ struct PlateCalculatorView: View {
 
     private var options: some View {
         VStack(spacing: 12) {
-            Picker("Bar", selection: $barWeight) {
-                Text("No bar (0)").tag(0.0)
-                Text("35 lb").tag(35.0)
-                Text("45 lb").tag(45.0)
+            Picker("Bar", selection: $barTypeRaw) {
+                ForEach(BarType.allCases) { bar in
+                    Text("\(bar.name) (\(bar.weight.clean) lb)").tag(bar.rawValue)
+                }
             }
-            .pickerStyle(.segmented)
+            .pickerStyle(.menu)
+            .tint(Theme.accent)
 
             Toggle("Micro plates (2.5 / 1.25 lb)", isOn: $useMicroPlates)
                 .tint(Theme.accent)
+
+            if let name = exerciseName, !name.isEmpty {
+                Button {
+                    LoadoutStore.save(exercise: name, barType: barTypeRaw, perSide: perSide)
+                } label: {
+                    Label("Save as default for \(name)", systemImage: "bookmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(Theme.accent)
+            }
 
             Button(role: .destructive) {
                 perSide = [:]
@@ -192,10 +241,22 @@ struct PlateCalculatorView: View {
         }
     }
 
+    /// On open: restore the exercise's saved loadout if the set has no weight
+    /// yet; otherwise reflect the current weight on the bar.
+    private func restoreOnAppear() {
+        guard perSide.isEmpty else { return }
+        if weight <= 0, let name = exerciseName, let saved = LoadoutStore.load(exercise: name) {
+            barTypeRaw = saved.barType
+            perSide = saved.plates
+        } else {
+            decomposeCurrentWeight()
+        }
+    }
+
     /// Pre-fill plate counts by greedily decomposing the current weight.
     private func decomposeCurrentWeight() {
-        guard perSide.isEmpty else { return }
-        var remaining = (weight - barWeight) / 2
+        let factor = barType.mirrors ? 2.0 : 1.0
+        var remaining = (weight - barType.weight) / factor
         guard remaining > 0 else { return }
         var counts: [Double: Int] = [:]
         for plate in denominations {
@@ -206,5 +267,31 @@ struct PlateCalculatorView: View {
             }
         }
         if abs(remaining) < 0.01 { perSide = counts }
+    }
+}
+
+/// Persists a per-exercise default bar + plate loadout in UserDefaults.
+enum LoadoutStore {
+    private struct Loadout: Codable { var barType: String; var plates: [String: Int] }
+
+    private static func key(_ exercise: String) -> String { "loadout.\(exercise)" }
+
+    static func save(exercise: String, barType: String, perSide: [Double: Int]) {
+        let plates = Dictionary(uniqueKeysWithValues: perSide.map { (String($0.key), $0.value) })
+        let loadout = Loadout(barType: barType, plates: plates)
+        if let data = try? JSONEncoder().encode(loadout) {
+            UserDefaults.standard.set(data, forKey: key(exercise))
+        }
+    }
+
+    static func load(exercise: String) -> (barType: String, plates: [Double: Int])? {
+        guard
+            let data = UserDefaults.standard.data(forKey: key(exercise)),
+            let loadout = try? JSONDecoder().decode(Loadout.self, from: data)
+        else { return nil }
+        let plates = Dictionary(uniqueKeysWithValues: loadout.plates.compactMap { key, value -> (Double, Int)? in
+            Double(key).map { ($0, value) }
+        })
+        return (loadout.barType, plates)
     }
 }

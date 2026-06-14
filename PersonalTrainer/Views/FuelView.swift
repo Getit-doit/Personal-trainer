@@ -21,7 +21,7 @@ struct FuelView: View {
                 }
                 .padding()
             }
-            .background(Theme.background)
+            .blueprintBackground()
             .navigationTitle("Fuel")
             .onAppear(perform: ensureToday)
         }

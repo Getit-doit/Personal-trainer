@@ -49,6 +49,8 @@ struct ExercisePickerView: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .blueprintBackground()
             .searchable(text: $search, prompt: "Search exercises")
             .navigationTitle("Add Exercise")
             .navigationBarTitleDisplayMode(.inline)

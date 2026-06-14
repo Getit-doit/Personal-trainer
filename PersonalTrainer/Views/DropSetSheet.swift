@@ -57,6 +57,8 @@ struct DropSetSheet: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .blueprintBackground()
             .navigationTitle("Add Drop Set")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

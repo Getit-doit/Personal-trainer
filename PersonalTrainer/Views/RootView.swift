@@ -22,6 +22,7 @@ struct RootView: View {
                 .tabItem { Label("Coach", systemImage: "bubble.left.and.text.bubble.right.fill") }
         }
         .tint(Theme.accent)
+        .preferredColorScheme(.dark)
         .environmentObject(health)
     }
 }

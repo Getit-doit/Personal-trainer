@@ -5,6 +5,9 @@ lean strength + longevity**, trained 3 days/week (scaling toward 5), with a
 desk job, limited sleep, high stress, and an ankle that inflames easily. Built
 with **SwiftUI**, **SwiftData**, and **Swift Charts**.
 
+> **Blueprint theme:** deep-blue "drafting paper" with a faint engineering grid,
+> white outlined cards, and a marker-style display font for a hand-drawn feel.
+
 ## The athlete this is tuned for
 
 - 33M, 5'10", started this block at 217 lb, weekday morning training
@@ -33,6 +36,7 @@ the warm-up gate.
 | 11 | **Apple Health** — reads last-night sleep, today's steps, and latest body weight; saves finished workouts as strength training; pull Health sleep into your recovery log. | Today + on finish |
 | 12 | **Supersets** — link an exercise with the next so they run back-to-back; the rest timer waits until the last exercise in the group. | Train (in a session) |
 | 13 | **Drop sets** — generate a ladder from a start weight, dropping by a set amount at each failure down to an end weight, with no rest between drops. | Train (in a session) |
+| 14 | **Bar types + saved loadouts** — load a Barbell / Women's / EZ / Trap bar or Dumbbell; save a per-exercise default loadout that auto-restores next time. | Plate calculator |
 
 Plus an **AI Coach** tab — constraint-aware (ankle, sleep, single-lever
 nutrition). Works offline; optionally upgrades to the Claude API.

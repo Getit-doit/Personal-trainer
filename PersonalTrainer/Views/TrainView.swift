@@ -28,8 +28,10 @@ struct TrainView: View {
                         }
                         .onDelete(perform: delete)
                     }
+                    .scrollContentBackground(.hidden)
                 }
             }
+            .blueprintBackground()
             .navigationTitle("Train")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

@@ -31,7 +31,7 @@ struct TodayView: View {
                 }
                 .padding()
             }
-            .background(Theme.background)
+            .blueprintBackground()
             .navigationTitle("Today")
             .onAppear(perform: ensureRecoveryLog)
             .navigationDestination(item: $startedSession) { session in
@@ -53,7 +53,7 @@ struct TodayView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(greeting).font(.title2).bold()
+            Text(greeting).font(Theme.hand(28, relativeTo: .title))
             if let profile {
                 Text(profile.goals)
                     .font(.subheadline).foregroundStyle(.secondary)
@@ -138,6 +138,7 @@ struct TodayView: View {
                             Task { await health.requestAuthorization() }
                         } label: {
                             Label("Connect Apple Health", systemImage: "heart.text.square")
+                                .foregroundStyle(Theme.blueprintDeep)
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(Theme.accent)
@@ -216,11 +217,11 @@ struct TodayView: View {
     private var startCard: some View {
         Button { showTemplatePicker = true } label: {
             Label("Start Workout", systemImage: "play.fill")
-                .font(.headline)
+                .font(Theme.hand(20, relativeTo: .headline))
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Theme.accent, in: RoundedRectangle(cornerRadius: 16))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.blueprintDeep)
         }
     }
 }
