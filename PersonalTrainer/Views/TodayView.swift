@@ -15,6 +15,7 @@ struct TodayView: View {
     @State private var startedSession: WorkoutSession?
     @State private var showTemplatePicker = false
     @State private var recoveryLog: RecoveryLog?
+    @State private var showProfile = false
 
     private var profile: UserProfile? { profiles.first }
 
@@ -33,6 +34,16 @@ struct TodayView: View {
             }
             .blueprintBackground()
             .navigationTitle("Today")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showProfile = true } label: {
+                        Image(systemName: "person.crop.circle")
+                    }
+                }
+            }
+            .sheet(isPresented: $showProfile) {
+                if let profile { EditProfileView(profile: profile) }
+            }
             .onAppear(perform: ensureRecoveryLog)
             .navigationDestination(item: $startedSession) { session in
                 ActiveSessionView(session: session)

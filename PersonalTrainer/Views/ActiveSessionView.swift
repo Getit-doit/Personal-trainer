@@ -21,6 +21,7 @@ struct ActiveSessionView: View {
 
     // Drop sets
     @State private var dropSetTarget: LoggedExercise?
+    @State private var isSaving = false
 
     var body: some View {
         List {
@@ -39,6 +40,7 @@ struct ActiveSessionView: View {
         }
         .scrollContentBackground(.hidden)
         .blueprintBackground()
+        .barLoadingOverlay(isSaving, label: "Saving to Health…")
         .navigationTitle(session.notes.isEmpty ? "Workout" : session.notes)
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
@@ -401,7 +403,13 @@ struct ActiveSessionView: View {
         // Mirror the session to Apple Health as a strength workout.
         let end = Date()
         let start = min(session.date, end)
-        Task { await health.saveWorkout(start: start, end: end) }
+        if health.authorized {
+            isSaving = true
+            Task {
+                await health.saveWorkout(start: start, end: end)
+                isSaving = false
+            }
+        }
     }
 }
 
