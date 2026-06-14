@@ -319,6 +319,7 @@ struct SetRow: View {
     @Bindable var set: SetLog
     var onChange: () -> Void
     var onComplete: () -> Void = {}
+    @State private var showPlates = false
 
     var body: some View {
         VStack(spacing: 8) {
@@ -334,6 +335,12 @@ struct SetRow: View {
                 .buttonStyle(.plain)
 
                 field(value: $set.weight, unit: "lb", width: 56, decimal: true)
+                Button { showPlates = true } label: {
+                    Image(systemName: "circle.grid.2x2")
+                        .foregroundStyle(Theme.accent)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Plate calculator")
                 Text("×").foregroundStyle(.secondary)
                 intField(value: $set.reps, unit: "reps", width: 40)
                 Spacer()
@@ -357,6 +364,9 @@ struct SetRow: View {
         .onChange(of: set.reps) { onChange() }
         .onChange(of: set.rpe) { onChange() }
         .onChange(of: set.repsInTank) { onChange() }
+        .sheet(isPresented: $showPlates) {
+            PlateCalculatorView(weight: $set.weight, onApply: onChange)
+        }
     }
 
     private func field(value: Binding<Double>, unit: String, width: CGFloat, decimal: Bool) -> some View {

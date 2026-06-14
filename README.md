@@ -20,7 +20,7 @@ the warm-up gate.
 
 | # | Feature | Where |
 | - | ------- | ----- |
-| 1 | **Workout logging** — weight, sets, reps, **RPE**, and **reps-in-tank** per set; compound-first 3-day full-body templates (A/B/C). | Train |
+| 1 | **Workout logging** — weight (type a number **or** use the per-side **plate calculator**, 5–45 lb plates in 5 lb steps), sets, reps, **RPE**, and **reps-in-tank** per set; compound-first 3-day full-body templates (A/B/C). | Train |
 | 2 | **Progressive overload tracking** — per-lift estimated-1RM history chart; priority lifts (RDL, goblet squat) flag as *ready to progress* with a suggested weight. | Today + Progress |
 | 3 | **Personal bests** — auto-detected on finish (Epley est. 1RM) plus manual historical entry. | Progress |
 | 4 | **Nutrition (one lever at a time)** — daily wins, weak links, and a single focus "lever" instead of full macro counting. | Fuel |
@@ -111,6 +111,7 @@ PersonalTrainer/
     ├── TrainView.swift             # Session history + start
     ├── ActiveSessionView.swift     # Warm-up gate, RPE logging, music, cardio
     ├── RestTimerBar.swift          # Bottom rest-timer controls
+    ├── PlateCalculatorView.swift   # Per-side plate → total weight
     ├── PlaylistPickerView.swift    # Apple Music playlist picker
     ├── ExercisePickerView.swift
     ├── ProgressDashboardView.swift # PRs + per-lift progression chart
