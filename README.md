@@ -29,6 +29,8 @@ the warm-up gate.
 | 7 | **Warm-up checklist** — required ankle warm-up gate that locks set logging until it's done. | Train (in a session) |
 | 8 | **Rest timer** — auto-starts when you complete a set (3 min after compounds, 90 s after accessories) with pause / ±15 s / preset controls and a finish chime. | Train (in a session) |
 | 9 | **Apple Music** — pick a workout playlist from your library and start / pause / skip it without leaving the session. | Train (in a session) |
+| 10 | **Rest-timer Live Activity** — the rest countdown appears on the Lock Screen and in the Dynamic Island, counting down on its own. | System (widget extension) |
+| 11 | **Apple Health** — reads last-night sleep, today's steps, and latest body weight; saves finished workouts as strength training; pull Health sleep into your recovery log. | Today + on finish |
 
 Plus an **AI Coach** tab — constraint-aware (ankle, sleep, single-lever
 nutrition). Works offline; optionally upgrades to the Claude API.
@@ -99,17 +101,48 @@ PersonalTrainer/
 │   ├── SeedData.swift              # First-launch profile + catalog
 │   ├── SessionFactory.swift        # Build sessions from templates
 │   ├── ProgressionEngine.swift     # Progression flags + PR detection
+│   ├── RestTimer.swift             # Countdown + drives the Live Activity
+│   ├── MusicService.swift          # Apple Music playback (MediaPlayer)
+│   ├── HealthService.swift         # HealthKit reads/writes
 │   └── CoachService.swift          # Offline coach + optional Claude API
 └── Views/
     ├── RootView.swift              # Tab navigation
-    ├── TodayView.swift             # Recovery, progression flags, start
+    ├── TodayView.swift             # Recovery, Health, progression, start
     ├── TrainView.swift             # Session history + start
-    ├── ActiveSessionView.swift     # Warm-up gate, RPE logging, cardio
+    ├── ActiveSessionView.swift     # Warm-up gate, RPE logging, music, cardio
+    ├── RestTimerBar.swift          # Bottom rest-timer controls
+    ├── PlaylistPickerView.swift    # Apple Music playlist picker
     ├── ExercisePickerView.swift
     ├── ProgressDashboardView.swift # PRs + per-lift progression chart
     ├── FuelView.swift              # One-lever nutrition
     └── CoachView.swift
+
+Shared/RestActivityAttributes.swift  # Live Activity data (app + widget)
+RestTimerWidget/                     # Widget extension target
+├── RestTimerWidgetBundle.swift
+└── RestTimerLiveActivity.swift
+Config/                              # Info.plists + entitlements
 ```
+
+## Targets & capabilities
+
+The project has **two targets**:
+
+- **PersonalTrainer** — the app. Uses a manual `Info.plist`
+  (`Config/PersonalTrainer-Info.plist`) so it can declare
+  `NSSupportsLiveActivities` and the HealthKit usage strings, and a HealthKit
+  entitlement (`Config/PersonalTrainer.entitlements`).
+- **RestTimerWidget** — a WidgetKit app extension that hosts the rest-timer
+  Live Activity. It shares `Shared/RestActivityAttributes.swift` with the app.
+
+On first build you may need to:
+1. Select your **Team** for *both* targets under Signing & Capabilities
+   (HealthKit + Live Activities require a real team for device builds).
+2. Confirm the **HealthKit** capability is present on the app target (it's wired
+   via the entitlements file).
+
+> Live Activities and Health reads are best tested on a real device. The
+> Simulator supports Live Activities (iOS 16.2+) but has no Health/Music data.
 
 ## Apple Music note
 
@@ -121,7 +154,7 @@ signed into Apple Music.
 
 ## Roadmap ideas
 
-- **HealthKit** sync for sleep, body weight, and steps (fits the longevity goal)
 - Editable user profile + custom templates
 - 1RM trend annotations and deload prompts when recovery dips
-- Live Activity / Dynamic Island for the rest timer
+- Background body-weight + HRV trends from Health for a longevity dashboard
+- Interactive Live Activity buttons (pause/skip from the Lock Screen)

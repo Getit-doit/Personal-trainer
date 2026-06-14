@@ -2,6 +2,8 @@ import SwiftUI
 
 /// Top-level tab navigation.
 struct RootView: View {
+    @StateObject private var health = HealthService()
+
     var body: some View {
         TabView {
             TodayView()
@@ -20,5 +22,6 @@ struct RootView: View {
                 .tabItem { Label("Coach", systemImage: "bubble.left.and.text.bubble.right.fill") }
         }
         .tint(Theme.accent)
+        .environmentObject(health)
     }
 }

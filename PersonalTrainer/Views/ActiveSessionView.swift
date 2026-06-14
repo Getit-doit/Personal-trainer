@@ -5,6 +5,7 @@ import SwiftData
 /// RPE & reps-in-tank → low-impact cardio finisher → steam room / notes / finish.
 struct ActiveSessionView: View {
     @Environment(\.modelContext) private var context
+    @EnvironmentObject private var health: HealthService
     @Bindable var session: WorkoutSession
     @Query private var existingPRs: [PersonalBest]
 
@@ -184,7 +185,7 @@ struct ActiveSessionView: View {
                 SetRow(
                     set: set,
                     onChange: { try? context.save() },
-                    onComplete: { rest.start(seconds: defaultRest(for: exercise.type)) }
+                    onComplete: { rest.start(seconds: defaultRest(for: exercise.type), exerciseName: exercise.name) }
                 )
             }
             .onDelete { offsets in
@@ -288,6 +289,11 @@ struct ActiveSessionView: View {
         let prs = PRService.detectPRs(in: session, existing: existingPRs) { context.insert($0) }
         try? context.save()
         if !prs.isEmpty { newPRBanner = prs }
+
+        // Mirror the session to Apple Health as a strength workout.
+        let end = Date()
+        let start = min(session.date, end)
+        Task { await health.saveWorkout(start: start, end: end) }
     }
 }
 

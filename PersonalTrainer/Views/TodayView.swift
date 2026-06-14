@@ -5,6 +5,7 @@ import SwiftData
 /// lifts, current nutrition lever, and a quick way to start training.
 struct TodayView: View {
     @Environment(\.modelContext) private var context
+    @EnvironmentObject private var health: HealthService
     @Query private var profiles: [UserProfile]
     @Query private var exercises: [Exercise]
     @Query(sort: \WorkoutSession.date, order: .reverse) private var sessions: [WorkoutSession]
@@ -23,6 +24,7 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     header
                     recoveryCard
+                    healthCard
                     progressionCard
                     nutritionCard
                     startCard
@@ -103,6 +105,60 @@ struct TodayView: View {
             return "Under-recovered — keep top sets at RPE 7 and trim a set if needed."
         }
         return "Recovery looks solid — good day to push priority lifts."
+    }
+
+    // MARK: Apple Health
+
+    @ViewBuilder
+    private var healthCard: some View {
+        if health.isAvailable {
+            Card {
+                VStack(alignment: .leading, spacing: 12) {
+                    Label("Apple Health", systemImage: "heart.fill").font(.headline)
+                    if health.authorized {
+                        HStack(spacing: 12) {
+                            healthMetric("Sleep", health.lastNightSleepHours.map { "\($0.clean)h" }, "bed.double.fill", .blue)
+                            healthMetric("Steps", health.todaySteps.map { stepString($0) }, "figure.walk", .orange)
+                            healthMetric("Weight", health.latestBodyWeight.map { "\($0.clean) lb" }, "scalemass.fill", Theme.accent)
+                        }
+                        if let sleep = health.lastNightSleepHours, let log = recoveryLog {
+                            Button {
+                                log.sleepHours = (sleep * 2).rounded() / 2
+                                try? context.save()
+                            } label: {
+                                Label("Use \(sleep.clean)h from Health", systemImage: "arrow.down.circle")
+                                    .font(.caption)
+                            }
+                            .tint(Theme.accent)
+                        }
+                    } else {
+                        Text("Connect to read sleep, steps, and body weight, and save workouts.")
+                            .font(.caption).foregroundStyle(.secondary)
+                        Button {
+                            Task { await health.requestAuthorization() }
+                        } label: {
+                            Label("Connect Apple Health", systemImage: "heart.text.square")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(Theme.accent)
+                    }
+                }
+            }
+            .task { if health.authorized { await health.refresh() } }
+        }
+    }
+
+    private func healthMetric(_ title: String, _ value: String?, _ icon: String, _ color: Color) -> some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon).foregroundStyle(color)
+            Text(value ?? "—").font(.subheadline).bold()
+            Text(title).font(.caption2).foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func stepString(_ steps: Double) -> String {
+        steps >= 1000 ? String(format: "%.1fk", steps / 1000) : "\(Int(steps))"
     }
 
     // MARK: Progression

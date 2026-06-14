@@ -1,8 +1,10 @@
 import SwiftUI
 import AudioToolbox
+import ActivityKit
 
 /// A simple countdown rest timer with pause/resume, ±time, and a finish chime.
-/// Auto-started when a set is completed; controllable from the rest bar.
+/// Auto-started when a set is completed; also drives a Live Activity on the lock
+/// screen and Dynamic Island via ActivityKit.
 @MainActor
 final class RestTimer: ObservableObject {
     @Published private(set) var remaining = 0
@@ -10,16 +12,20 @@ final class RestTimer: ObservableObject {
     @Published private(set) var isRunning = false
 
     private var timer: Timer?
+    private var exerciseName = ""
+    private var activity: Activity<RestActivityAttributes>?
 
     /// True whenever there's time on the clock or it's counting.
     var isActive: Bool { remaining > 0 || isRunning }
 
-    func start(seconds: Int) {
+    func start(seconds: Int, exerciseName: String = "") {
         guard seconds > 0 else { return }
+        self.exerciseName = exerciseName
         total = seconds
         remaining = seconds
         isRunning = true
         schedule()
+        startActivity()
     }
 
     /// Adjust the running clock (e.g. +15 / -15). Restarts ticking if needed.
@@ -30,6 +36,7 @@ final class RestTimer: ObservableObject {
             isRunning = true
             schedule()
         }
+        updateActivity()
     }
 
     func togglePause() {
@@ -40,6 +47,7 @@ final class RestTimer: ObservableObject {
             isRunning = true
             schedule()
         }
+        updateActivity()
     }
 
     func stop() {
@@ -48,6 +56,7 @@ final class RestTimer: ObservableObject {
         isRunning = false
         remaining = 0
         total = 0
+        endActivity()
     }
 
     private func schedule() {
@@ -69,6 +78,7 @@ final class RestTimer: ObservableObject {
         isRunning = false
         AudioServicesPlaySystemSound(1057)                          // light alert tone
         UINotificationFeedbackGenerator().notificationOccurred(.success)
+        endActivity()
     }
 
     var label: String {
@@ -77,5 +87,45 @@ final class RestTimer: ObservableObject {
 
     var progress: Double {
         total > 0 ? Double(total - remaining) / Double(total) : 0
+    }
+
+    // MARK: - Live Activity
+
+    private var contentState: RestActivityAttributes.ContentState {
+        RestActivityAttributes.ContentState(
+            endDate: Date().addingTimeInterval(Double(remaining)),
+            isRunning: isRunning,
+            exerciseName: exerciseName
+        )
+    }
+
+    private func startActivity() {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled, activity == nil else { return }
+        do {
+            activity = try Activity.request(
+                attributes: RestActivityAttributes(title: "Rest"),
+                content: ActivityContent(state: contentState, staleDate: nil),
+                pushType: nil
+            )
+        } catch {
+            activity = nil
+        }
+    }
+
+    private func updateActivity() {
+        guard let activity else { return }
+        let state = contentState
+        Task { await activity.update(ActivityContent(state: state, staleDate: nil)) }
+    }
+
+    private func endActivity() {
+        guard let activity else { return }
+        let finalState = RestActivityAttributes.ContentState(
+            endDate: Date(), isRunning: false, exerciseName: exerciseName
+        )
+        Task {
+            await activity.end(ActivityContent(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
+        }
+        self.activity = nil
     }
 }
