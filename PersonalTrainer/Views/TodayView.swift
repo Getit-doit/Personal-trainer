@@ -89,7 +89,7 @@ struct TodayView: View {
     private var recoveryCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Recovery", systemImage: "bed.double.fill").font(.headline)
+                Label("Recovery", systemImage: "bed.double.fill").font(Theme.hand(19, relativeTo: .headline))
                 if let log = recoveryLog {
                     RecoveryEditor(log: log) { try? context.save() }
                     Text(advice(for: log))
@@ -114,7 +114,7 @@ struct TodayView: View {
         if health.isAvailable {
             Card {
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("Apple Health", systemImage: "heart.fill").font(.headline)
+                    Label("Apple Health", systemImage: "heart.fill").font(Theme.hand(19, relativeTo: .headline))
                     if health.authorized {
                         HStack(spacing: 12) {
                             healthMetric("Sleep", health.lastNightSleepHours.map { "\($0.clean)h" }, "bed.double.fill", .blue)
@@ -152,7 +152,7 @@ struct TodayView: View {
     private func healthMetric(_ title: String, _ value: String?, _ icon: String, _ color: Color) -> some View {
         VStack(spacing: 4) {
             Image(systemName: icon).foregroundStyle(color)
-            Text(value ?? "—").font(.subheadline).bold()
+            Text(value ?? "—").font(Theme.hand(18, relativeTo: .subheadline))
             Text(title).font(.caption2).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -172,7 +172,7 @@ struct TodayView: View {
     private var progressionCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Progression Targets", systemImage: "arrow.up.right.circle.fill").font(.headline)
+                Label("Progression Targets", systemImage: "arrow.up.right.circle.fill").font(Theme.hand(19, relativeTo: .headline))
                 if suggestions.isEmpty {
                     Text("Log your priority lifts (RDL, goblet squat) to get progression flags.")
                         .font(.caption).foregroundStyle(.secondary)
@@ -204,7 +204,7 @@ struct TodayView: View {
         let lever = nutrition.first?.currentLever ?? ""
         Card {
             VStack(alignment: .leading, spacing: 6) {
-                Label("Today's Lever", systemImage: "target").font(.headline)
+                Label("Today's Lever", systemImage: "target").font(Theme.hand(19, relativeTo: .headline))
                 Text(lever.isEmpty ? "No lever set — pick one habit in the Fuel tab." : lever)
                     .font(.subheadline)
                     .foregroundStyle(lever.isEmpty ? .secondary : .primary)

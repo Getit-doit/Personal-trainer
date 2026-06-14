@@ -62,7 +62,7 @@ struct ProgressDashboardView: View {
     private var progressionCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Progression", systemImage: "chart.line.uptrend.xyaxis").font(.headline)
+                Label("Progression", systemImage: "chart.line.uptrend.xyaxis").font(Theme.hand(19, relativeTo: .headline))
                 if liftNames.isEmpty {
                     Text("Finish a workout to chart your estimated 1RM over time.")
                         .font(.caption).foregroundStyle(.secondary)
@@ -119,7 +119,7 @@ struct ProgressDashboardView: View {
     private var prCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Personal Bests", systemImage: "trophy.fill").font(.headline)
+                Label("Personal Bests", systemImage: "trophy.fill").font(Theme.hand(19, relativeTo: .headline))
                 if bestPerExercise.isEmpty {
                     Text("PRs are detected automatically when you finish a workout. Tap + to add a historical PR.")
                         .font(.caption).foregroundStyle(.secondary)
@@ -133,7 +133,7 @@ struct ProgressDashboardView: View {
                             }
                             Spacer()
                             VStack(alignment: .trailing, spacing: 2) {
-                                Text("\(pr.value.clean) lb").bold()
+                                Text("\(pr.value.clean) lb").font(Theme.hand(18, relativeTo: .body))
                                 Text("est. 1RM · \(pr.source.rawValue)")
                                     .font(.caption2).foregroundStyle(.secondary)
                             }

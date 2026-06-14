@@ -44,7 +44,7 @@ struct FuelView: View {
     private func leverCard(_ log: NutritionLog) -> some View {
         Card {
             VStack(alignment: .leading, spacing: 8) {
-                Label("Current Lever", systemImage: "target").font(.headline)
+                Label("Current Lever", systemImage: "target").font(Theme.hand(19, relativeTo: .headline))
                 Text("Focus on one habit at a time.")
                     .font(.caption).foregroundStyle(.secondary)
                 TextField(
@@ -91,7 +91,7 @@ struct FuelView: View {
         if !past.isEmpty {
             Card {
                 VStack(alignment: .leading, spacing: 10) {
-                    Label("History", systemImage: "clock.arrow.circlepath").font(.headline)
+                    Label("History", systemImage: "clock.arrow.circlepath").font(Theme.hand(19, relativeTo: .headline))
                     ForEach(past.prefix(7)) { log in
                         VStack(alignment: .leading, spacing: 2) {
                             Text(log.date.formatted(date: .abbreviated, time: .omitted))
@@ -121,7 +121,7 @@ struct ListEditorCard: View {
     var body: some View {
         Card {
             VStack(alignment: .leading, spacing: 10) {
-                Label(title, systemImage: systemImage).font(.headline).foregroundStyle(tint)
+                Label(title, systemImage: systemImage).font(Theme.hand(19, relativeTo: .headline)).foregroundStyle(tint)
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     HStack {
                         Text("• \(item)")

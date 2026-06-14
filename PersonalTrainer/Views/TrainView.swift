@@ -58,7 +58,7 @@ struct TrainView: View {
     private func row(for session: WorkoutSession) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 3) {
-                Text(title(for: session)).font(.headline)
+                Text(title(for: session)).font(Theme.hand(18, relativeTo: .headline))
                 Text(session.date.formatted(date: .abbreviated, time: .shortened))
                     .font(.caption).foregroundStyle(.secondary)
             }

@@ -6,7 +6,8 @@ desk job, limited sleep, high stress, and an ankle that inflames easily. Built
 with **SwiftUI**, **SwiftData**, and **Swift Charts**.
 
 > **Blueprint theme:** deep-blue "drafting paper" with a faint engineering grid,
-> white outlined cards, and a marker-style display font for a hand-drawn feel.
+> white outlined cards, a marker-style display font for a hand-drawn feel, and a
+> matching blueprint app icon + launch screen.
 
 ## The athlete this is tuned for
 
