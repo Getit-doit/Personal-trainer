@@ -38,6 +38,8 @@ the warm-up gate.
 | 12 | **Supersets** — link an exercise with the next so they run back-to-back; the rest timer waits until the last exercise in the group. | Train (in a session) |
 | 13 | **Drop sets** — generate a ladder from a start weight, dropping by a set amount at each failure down to an end weight, with no rest between drops. | Train (in a session) |
 | 14 | **Bar types + saved loadouts** — load a Barbell / Women's / EZ / Trap bar or Dumbbell; save a per-exercise default loadout that auto-restores next time. | Plate calculator |
+| 15 | **Onboarding** — first-launch intro to the blueprint method that captures your starting stats (name, height, weight, schedule, goal). | First launch |
+| 16 | **Branded loading animation** — plates load onto a barbell (matching the logo) whenever the app is working or the AI coach is thinking. | App-wide |
 
 Plus an **AI Coach** tab — constraint-aware (ankle, sleep, single-lever
 nutrition). Works offline; optionally upgrades to the Claude API.
@@ -113,7 +115,9 @@ PersonalTrainer/
 │   ├── HealthService.swift         # HealthKit reads/writes
 │   └── CoachService.swift          # Offline coach + optional Claude API
 └── Views/
-    ├── RootView.swift              # Tab navigation
+    ├── RootView.swift              # Tab navigation + onboarding gate
+    ├── OnboardingView.swift        # First-launch intro + starting stats
+    ├── BarLoadingView.swift        # Branded "loading plates" animation
     ├── TodayView.swift             # Recovery, Health, progression, start
     ├── TrainView.swift             # Session history + start
     ├── ActiveSessionView.swift     # Warm-up gate, RPE logging, music, cardio

@@ -3,6 +3,8 @@ import SwiftUI
 /// Top-level tab navigation.
 struct RootView: View {
     @StateObject private var health = HealthService()
+    @AppStorage("didOnboard") private var didOnboard = false
+    @State private var showOnboarding = false
 
     var body: some View {
         TabView {
@@ -24,5 +26,12 @@ struct RootView: View {
         .tint(Theme.accent)
         .preferredColorScheme(.dark)
         .environmentObject(health)
+        .onAppear { showOnboarding = !didOnboard }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView {
+                didOnboard = true
+                showOnboarding = false
+            }
+        }
     }
 }

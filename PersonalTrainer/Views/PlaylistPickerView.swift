@@ -5,6 +5,7 @@ import SwiftUI
 struct PlaylistPickerView: View {
     @ObservedObject var music: MusicService
     @Environment(\.dismiss) private var dismiss
+    @State private var isWorking = false
     var onSelect: (MusicService.PlaylistInfo) -> Void
 
     var body: some View {
@@ -17,7 +18,7 @@ struct PlaylistPickerView: View {
                         Text("Allow access to your music library to choose a workout playlist.")
                     } actions: {
                         Button("Allow Access") {
-                            Task { await music.requestAuthorization() }
+                            Task { isWorking = true; await music.requestAuthorization(); isWorking = false }
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(Theme.accent)
@@ -52,6 +53,7 @@ struct PlaylistPickerView: View {
             }
             .scrollContentBackground(.hidden)
             .blueprintBackground()
+            .barLoadingOverlay(isWorking, label: "Loading your library…")
             .navigationTitle("Workout Playlist")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

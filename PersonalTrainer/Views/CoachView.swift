@@ -37,9 +37,7 @@ struct CoachView: View {
                             }
                             if isThinking {
                                 HStack {
-                                    ProgressView()
-                                    Text("Coach is typing…")
-                                        .font(.caption).foregroundStyle(.secondary)
+                                    BarLoadingView(label: "Coach is loading up…")
                                     Spacer()
                                 }
                                 .padding(.horizontal)
