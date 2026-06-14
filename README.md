@@ -20,7 +20,7 @@ the warm-up gate.
 
 | # | Feature | Where |
 | - | ------- | ----- |
-| 1 | **Workout logging** — weight (type a number **or** use the per-side **plate calculator**, 5–45 lb plates in 5 lb steps), sets, reps, **RPE**, and **reps-in-tank** per set; compound-first 3-day full-body templates (A/B/C). | Train |
+| 1 | **Workout logging** — weight (type a number **or** load a **visual barbell**: tap plates to add per side, tap a loaded plate to remove; 5–45 lb plates in 5 lb steps + optional 2.5/1.25 lb micro plates), sets, reps, **RPE**, and **reps-in-tank** per set; compound-first 3-day full-body templates (A/B/C). | Train |
 | 2 | **Progressive overload tracking** — per-lift estimated-1RM history chart; priority lifts (RDL, goblet squat) flag as *ready to progress* with a suggested weight. | Today + Progress |
 | 3 | **Personal bests** — auto-detected on finish (Epley est. 1RM) plus manual historical entry. | Progress |
 | 4 | **Nutrition (one lever at a time)** — daily wins, weak links, and a single focus "lever" instead of full macro counting. | Fuel |
@@ -31,6 +31,8 @@ the warm-up gate.
 | 9 | **Apple Music** — pick a workout playlist from your library and start / pause / skip it without leaving the session. | Train (in a session) |
 | 10 | **Rest-timer Live Activity** — the rest countdown appears on the Lock Screen and in the Dynamic Island, counting down on its own. | System (widget extension) |
 | 11 | **Apple Health** — reads last-night sleep, today's steps, and latest body weight; saves finished workouts as strength training; pull Health sleep into your recovery log. | Today + on finish |
+| 12 | **Supersets** — link an exercise with the next so they run back-to-back; the rest timer waits until the last exercise in the group. | Train (in a session) |
+| 13 | **Drop sets** — generate a ladder from a start weight, dropping by a set amount at each failure down to an end weight, with no rest between drops. | Train (in a session) |
 
 Plus an **AI Coach** tab — constraint-aware (ankle, sleep, single-lever
 nutrition). Works offline; optionally upgrades to the Claude API.
@@ -111,7 +113,8 @@ PersonalTrainer/
     ├── TrainView.swift             # Session history + start
     ├── ActiveSessionView.swift     # Warm-up gate, RPE logging, music, cardio
     ├── RestTimerBar.swift          # Bottom rest-timer controls
-    ├── PlateCalculatorView.swift   # Per-side plate → total weight
+    ├── PlateCalculatorView.swift   # Visual barbell loader (tap plates)
+    ├── DropSetSheet.swift          # Drop-set ladder builder
     ├── PlaylistPickerView.swift    # Apple Music playlist picker
     ├── ExercisePickerView.swift
     ├── ProgressDashboardView.swift # PRs + per-lift progression chart

@@ -130,6 +130,9 @@ final class LoggedExercise {
     var typeRaw: String
     var muscleGroup: String
     var order: Int
+    /// Exercises sharing a superset id are performed back-to-back with no rest
+    /// between them; rest is taken only after the last exercise in the group.
+    var supersetID: String?
     var session: WorkoutSession?
     var exercise: Exercise?
 
@@ -143,6 +146,7 @@ final class LoggedExercise {
         self.typeRaw = type.rawValue
         self.muscleGroup = muscleGroup
         self.order = order
+        self.supersetID = nil
         self.sets = []
     }
 
@@ -160,6 +164,8 @@ final class SetLog {
     var rpe: Double
     var repsInTank: Int
     var isCompleted: Bool
+    /// Part of a drop-set sequence — no rest is taken before the next drop.
+    var isDropSet: Bool
     var order: Int
     var exercise: LoggedExercise?
 
@@ -169,6 +175,7 @@ final class SetLog {
         rpe: Double = 7,
         repsInTank: Int = 2,
         isCompleted: Bool = false,
+        isDropSet: Bool = false,
         order: Int = 0
     ) {
         self.weight = weight
@@ -176,6 +183,7 @@ final class SetLog {
         self.rpe = rpe
         self.repsInTank = repsInTank
         self.isCompleted = isCompleted
+        self.isDropSet = isDropSet
         self.order = order
     }
 

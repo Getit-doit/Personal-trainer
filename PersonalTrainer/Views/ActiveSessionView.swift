@@ -19,6 +19,9 @@ struct ActiveSessionView: View {
     @AppStorage("workoutPlaylistID") private var playlistID = ""
     @AppStorage("workoutPlaylistName") private var playlistName = ""
 
+    // Drop sets
+    @State private var dropSetTarget: LoggedExercise?
+
     var body: some View {
         List {
             musicSection
@@ -51,6 +54,11 @@ struct ActiveSessionView: View {
                 playlistID = selected.id
                 playlistName = selected.name
                 music.play(playlistID: selected.id)
+            }
+        }
+        .sheet(item: $dropSetTarget) { exercise in
+            DropSetSheet(startWeight: exercise.sortedSets.last?.weight ?? 45) { start, drop, end in
+                addDropSet(to: exercise, start: start, drop: drop, end: end)
             }
         }
         .alert(
@@ -185,7 +193,7 @@ struct ActiveSessionView: View {
                 SetRow(
                     set: set,
                     onChange: { try? context.save() },
-                    onComplete: { rest.start(seconds: defaultRest(for: exercise.type), exerciseName: exercise.name) }
+                    onComplete: { handleSetCompleted(set, in: exercise) }
                 )
             }
             .onDelete { offsets in
@@ -193,17 +201,48 @@ struct ActiveSessionView: View {
                 for index in offsets { context.delete(sorted[index]) }
                 try? context.save()
             }
-            Button { addSet(to: exercise) } label: {
-                Label("Add Set", systemImage: "plus").font(.caption)
+            HStack {
+                Button { addSet(to: exercise) } label: {
+                    Label("Add Set", systemImage: "plus").font(.caption)
+                }
+                Spacer()
+                Button { dropSetTarget = exercise } label: {
+                    Label("Drop Set", systemImage: "arrow.down.right.circle").font(.caption)
+                }
             }
             .tint(Theme.accent)
         } header: {
-            HStack {
+            HStack(spacing: 6) {
                 Circle().fill(Theme.color(for: exercise.muscleGroup)).frame(width: 8, height: 8)
                 Text(exercise.name)
+                if exercise.supersetID != nil {
+                    Text("SUPERSET")
+                        .font(.system(size: 9)).bold()
+                        .padding(.horizontal, 5).padding(.vertical, 1)
+                        .background(Theme.accent.opacity(0.2), in: Capsule())
+                        .foregroundStyle(Theme.accentDeep)
+                }
                 Spacer()
-                Text(exercise.type.rawValue).font(.caption2).foregroundStyle(.secondary)
+                supersetMenu(exercise)
             }
+        }
+    }
+
+    /// Per-exercise actions: link/unlink supersets.
+    private func supersetMenu(_ exercise: LoggedExercise) -> some View {
+        Menu {
+            if exercise.supersetID == nil {
+                Button {
+                    linkSupersetWithNext(exercise)
+                } label: { Label("Superset with next", systemImage: "link") }
+                    .disabled(isLastExercise(exercise))
+            } else {
+                Button {
+                    unlinkSuperset(exercise)
+                } label: { Label("Remove from superset", systemImage: "link.badge.minus") }
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle").foregroundStyle(.secondary)
         }
     }
 
@@ -268,6 +307,71 @@ struct ActiveSessionView: View {
             .tint(Theme.accent)
             .disabled(session.isFinished)
         }
+    }
+
+    // MARK: Superset + drop-set behavior
+
+    /// Decides whether finishing a set should trigger rest. No rest is taken
+    /// between consecutive drop-set stages, or mid-superset (rest comes after
+    /// the last exercise in the group).
+    private func handleSetCompleted(_ set: SetLog, in exercise: LoggedExercise) {
+        let sets = exercise.sortedSets
+        if set.isDropSet,
+           let index = sets.firstIndex(where: { $0.persistentModelID == set.persistentModelID }),
+           index + 1 < sets.count,
+           sets[index + 1].isDropSet {
+            return                                  // keep dropping, no rest
+        }
+        if let group = exercise.supersetID, !isLastInSuperset(exercise, group: group) {
+            return                                  // next superset exercise, no rest
+        }
+        rest.start(seconds: defaultRest(for: exercise.type), exerciseName: exercise.name)
+    }
+
+    private func isLastInSuperset(_ exercise: LoggedExercise, group: String) -> Bool {
+        let maxOrder = session.exercises.filter { $0.supersetID == group }.map(\.order).max() ?? exercise.order
+        return exercise.order >= maxOrder
+    }
+
+    private func isLastExercise(_ exercise: LoggedExercise) -> Bool {
+        (session.sortedExercises.last?.persistentModelID == exercise.persistentModelID)
+    }
+
+    private func linkSupersetWithNext(_ exercise: LoggedExercise) {
+        let ordered = session.sortedExercises
+        guard let index = ordered.firstIndex(where: { $0.persistentModelID == exercise.persistentModelID }),
+              index + 1 < ordered.count else { return }
+        let next = ordered[index + 1]
+        let group = next.supersetID ?? UUID().uuidString
+        exercise.supersetID = group
+        next.supersetID = group
+        try? context.save()
+    }
+
+    private func unlinkSuperset(_ exercise: LoggedExercise) {
+        let group = exercise.supersetID
+        exercise.supersetID = nil
+        // If only one exercise is left in the group, dissolve it.
+        if let group, session.exercises.filter({ $0.supersetID == group }).count <= 1 {
+            session.exercises.filter { $0.supersetID == group }.forEach { $0.supersetID = nil }
+        }
+        try? context.save()
+    }
+
+    /// Generate a drop-set ladder from `start` down to `end` by `drop`, all
+    /// marked as drop sets (no rest between them) and logged to failure.
+    private func addDropSet(to exercise: LoggedExercise, start: Double, drop: Double, end: Double) {
+        guard drop > 0, start >= end else { return }
+        var weight = start
+        var order = exercise.sets.count
+        while weight >= end - 0.001 {
+            let set = SetLog(weight: weight, reps: 0, rpe: 10, repsInTank: 0, isDropSet: true, order: order)
+            set.exercise = exercise
+            context.insert(set)
+            order += 1
+            weight -= drop
+        }
+        try? context.save()
     }
 
     private func addSet(to exercise: LoggedExercise) {
@@ -343,6 +447,13 @@ struct SetRow: View {
                 .accessibilityLabel("Plate calculator")
                 Text("×").foregroundStyle(.secondary)
                 intField(value: $set.reps, unit: "reps", width: 40)
+                if set.isDropSet {
+                    Text("DROP")
+                        .font(.system(size: 9)).bold()
+                        .padding(.horizontal, 5).padding(.vertical, 1)
+                        .background(.orange.opacity(0.2), in: Capsule())
+                        .foregroundStyle(.orange)
+                }
                 Spacer()
             }
             HStack(spacing: 16) {
