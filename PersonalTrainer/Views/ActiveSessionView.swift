@@ -218,7 +218,9 @@ struct ActiveSessionView: View {
             .tint(Theme.accent)
         } header: {
             HStack(spacing: 6) {
-                Circle().fill(Theme.color(for: exercise.muscleGroup)).frame(width: 8, height: 8)
+                exercise.equipment.image
+                    .resizable().scaledToFit().frame(width: 18, height: 18)
+                    .foregroundStyle(Theme.accent)
                 Text(exercise.name)
                 if exercise.supersetID != nil {
                     Text("SUPERSET")

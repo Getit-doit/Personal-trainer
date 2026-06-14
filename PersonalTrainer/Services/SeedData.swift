@@ -39,6 +39,7 @@ enum SeedData {
                     name: seed.name,
                     type: seed.type,
                     muscleGroup: seed.muscleGroup,
+                    equipment: seed.equipment,
                     isPriorityProgression: seed.priority,
                     targetSets: seed.sets,
                     targetReps: seed.reps,

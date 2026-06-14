@@ -26,6 +26,7 @@ enum SessionFactory {
                 name: item.name,
                 type: catalogExercise?.type ?? .compound,
                 muscleGroup: catalogExercise?.muscleGroup ?? "",
+                equipment: catalogExercise?.equipment ?? .barbell,
                 order: index
             )
             logged.session = session
@@ -48,6 +49,7 @@ enum SessionFactory {
             name: exercise.name,
             type: exercise.type,
             muscleGroup: exercise.muscleGroup,
+            equipment: exercise.equipment,
             order: session.exercises.count
         )
         logged.session = session

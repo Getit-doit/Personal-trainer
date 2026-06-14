@@ -45,6 +45,7 @@ final class Exercise {
     var name: String
     var typeRaw: String
     var muscleGroup: String
+    var equipmentRaw: String = Equipment.barbell.rawValue
     var isPriorityProgression: Bool
     var targetSets: Int
     var targetReps: Int
@@ -56,10 +57,16 @@ final class Exercise {
         set { typeRaw = newValue.rawValue }
     }
 
+    var equipment: Equipment {
+        get { Equipment(rawValue: equipmentRaw) ?? .barbell }
+        set { equipmentRaw = newValue.rawValue }
+    }
+
     init(
         name: String,
         type: ExerciseType,
         muscleGroup: String,
+        equipment: Equipment = .barbell,
         isPriorityProgression: Bool = false,
         targetSets: Int = 3,
         targetReps: Int = 8,
@@ -68,6 +75,7 @@ final class Exercise {
         self.name = name
         self.typeRaw = type.rawValue
         self.muscleGroup = muscleGroup
+        self.equipmentRaw = equipment.rawValue
         self.isPriorityProgression = isPriorityProgression
         self.targetSets = targetSets
         self.targetReps = targetReps
@@ -129,6 +137,7 @@ final class LoggedExercise {
     var name: String
     var typeRaw: String
     var muscleGroup: String
+    var equipmentRaw: String = Equipment.barbell.rawValue
     var order: Int
     /// Exercises sharing a superset id are performed back-to-back with no rest
     /// between them; rest is taken only after the last exercise in the group.
@@ -140,11 +149,13 @@ final class LoggedExercise {
     var sets: [SetLog]
 
     var type: ExerciseType { ExerciseType(rawValue: typeRaw) ?? .accessory }
+    var equipment: Equipment { Equipment(rawValue: equipmentRaw) ?? .barbell }
 
-    init(name: String, type: ExerciseType, muscleGroup: String, order: Int = 0) {
+    init(name: String, type: ExerciseType, muscleGroup: String, equipment: Equipment = .barbell, order: Int = 0) {
         self.name = name
         self.typeRaw = type.rawValue
         self.muscleGroup = muscleGroup
+        self.equipmentRaw = equipment.rawValue
         self.order = order
         self.supersetID = nil
         self.sets = []
@@ -165,7 +176,7 @@ final class SetLog {
     var repsInTank: Int
     var isCompleted: Bool
     /// Part of a drop-set sequence — no rest is taken before the next drop.
-    var isDropSet: Bool
+    var isDropSet: Bool = false
     var order: Int
     var exercise: LoggedExercise?
 

@@ -5,9 +5,10 @@ struct ExerciseSeed {
     let name: String
     let type: ExerciseType
     let muscleGroup: String
+    let equipment: Equipment
     var priority: Bool = false
     var sets: Int = 3
-    var reps: Int = 8
+    var reps: Int = 10
     var increment: Double = 5
 }
 
@@ -26,40 +27,81 @@ struct WorkoutTemplate: Identifiable {
     let exercises: [TemplateExercise]
 }
 
-/// Static training content: the exercise catalog, the 3-day full-body split,
-/// and the mandatory ankle warm-up checklist.
+/// Static training content: the exercise database (by equipment), the 3-day
+/// full-body split, and the mandatory ankle warm-up checklist.
 enum TrainingContent {
 
-    static let muscleGroups = ["Legs", "Back", "Chest", "Shoulders", "Arms", "Core", "Hinge"]
+    static let muscleGroups = ["Legs", "Hinge", "Chest", "Back", "Shoulders", "Arms", "Core"]
 
-    /// Compound-first catalog. Priority-progression lifts are flagged.
+    /// The exercise database — compound-first, tagged by equipment & muscle.
     static let exercises: [ExerciseSeed] = [
-        // Compounds
-        .init(name: "Back Squat", type: .compound, muscleGroup: "Legs", sets: 3, reps: 5, increment: 10),
-        .init(name: "Front Squat", type: .compound, muscleGroup: "Legs", sets: 3, reps: 5, increment: 5),
-        .init(name: "Goblet Squat", type: .compound, muscleGroup: "Legs", priority: true, sets: 3, reps: 10, increment: 5),
-        .init(name: "Romanian Deadlift", type: .compound, muscleGroup: "Hinge", priority: true, sets: 3, reps: 8, increment: 10),
-        .init(name: "Deadlift", type: .compound, muscleGroup: "Hinge", sets: 3, reps: 5, increment: 10),
-        .init(name: "Trap Bar Deadlift", type: .compound, muscleGroup: "Hinge", sets: 3, reps: 5, increment: 10),
-        .init(name: "Hip Thrust", type: .compound, muscleGroup: "Hinge", sets: 3, reps: 10, increment: 10),
-        .init(name: "Bench Press", type: .compound, muscleGroup: "Chest", sets: 3, reps: 5, increment: 5),
-        .init(name: "Overhead Press", type: .compound, muscleGroup: "Shoulders", sets: 3, reps: 6, increment: 5),
-        .init(name: "Bent-Over Row", type: .compound, muscleGroup: "Back", sets: 3, reps: 8, increment: 5),
-        .init(name: "Pull-Up", type: .compound, muscleGroup: "Back", sets: 3, reps: 8, increment: 5),
-        .init(name: "Walking Lunge", type: .compound, muscleGroup: "Legs", sets: 3, reps: 12, increment: 5),
-        // Accessories
-        .init(name: "Incline Dumbbell Press", type: .accessory, muscleGroup: "Chest", sets: 3, reps: 10),
-        .init(name: "Lat Pulldown", type: .accessory, muscleGroup: "Back", sets: 3, reps: 10),
-        .init(name: "Dumbbell Row", type: .accessory, muscleGroup: "Back", sets: 3, reps: 10),
-        .init(name: "Lateral Raise", type: .accessory, muscleGroup: "Shoulders", sets: 3, reps: 15),
-        .init(name: "Face Pull", type: .accessory, muscleGroup: "Shoulders", sets: 3, reps: 15),
-        .init(name: "Barbell Curl", type: .accessory, muscleGroup: "Arms", sets: 3, reps: 12),
-        .init(name: "Hammer Curl", type: .accessory, muscleGroup: "Arms", sets: 3, reps: 12),
-        .init(name: "Triceps Pushdown", type: .accessory, muscleGroup: "Arms", sets: 3, reps: 12),
-        .init(name: "Leg Curl", type: .accessory, muscleGroup: "Legs", sets: 3, reps: 12),
-        .init(name: "Calf Raise", type: .accessory, muscleGroup: "Legs", sets: 3, reps: 15),
-        .init(name: "Plank", type: .accessory, muscleGroup: "Core", sets: 3, reps: 1),
-        .init(name: "Hanging Leg Raise", type: .accessory, muscleGroup: "Core", sets: 3, reps: 12)
+        // MARK: Barbell
+        .init(name: "Deadlift", type: .compound, muscleGroup: "Hinge", equipment: .barbell, sets: 3, reps: 5, increment: 10),
+        .init(name: "Romanian Deadlift", type: .compound, muscleGroup: "Hinge", equipment: .barbell, priority: true, sets: 3, reps: 8, increment: 10),
+        .init(name: "Trap Bar Deadlift", type: .compound, muscleGroup: "Hinge", equipment: .barbell, sets: 3, reps: 5, increment: 10),
+        .init(name: "Bent-Over Row", type: .compound, muscleGroup: "Back", equipment: .barbell, sets: 3, reps: 8),
+        .init(name: "Barbell Hip Thrust", type: .compound, muscleGroup: "Hinge", equipment: .barbell, sets: 3, reps: 10, increment: 10),
+        .init(name: "Barbell Curl", type: .accessory, muscleGroup: "Arms", equipment: .barbell, sets: 3, reps: 12),
+        .init(name: "Barbell Shrug", type: .accessory, muscleGroup: "Back", equipment: .barbell, sets: 3, reps: 12),
+
+        // MARK: Squat Rack
+        .init(name: "Back Squat", type: .compound, muscleGroup: "Legs", equipment: .squatRack, sets: 3, reps: 5, increment: 10),
+        .init(name: "Front Squat", type: .compound, muscleGroup: "Legs", equipment: .squatRack, sets: 3, reps: 5),
+        .init(name: "Overhead Press", type: .compound, muscleGroup: "Shoulders", equipment: .squatRack, sets: 3, reps: 6),
+        .init(name: "Pin Press", type: .compound, muscleGroup: "Chest", equipment: .squatRack, sets: 3, reps: 5),
+        .init(name: "Rack Pull", type: .compound, muscleGroup: "Hinge", equipment: .squatRack, sets: 3, reps: 6, increment: 10),
+
+        // MARK: Bench
+        .init(name: "Bench Press", type: .compound, muscleGroup: "Chest", equipment: .bench, sets: 3, reps: 5),
+        .init(name: "Incline Bench Press", type: .compound, muscleGroup: "Chest", equipment: .bench, sets: 3, reps: 8),
+        .init(name: "Close-Grip Bench Press", type: .compound, muscleGroup: "Arms", equipment: .bench, sets: 3, reps: 8),
+        .init(name: "Dumbbell Bench Press", type: .accessory, muscleGroup: "Chest", equipment: .bench, sets: 3, reps: 10),
+
+        // MARK: Dumbbell
+        .init(name: "Goblet Squat", type: .compound, muscleGroup: "Legs", equipment: .dumbbell, priority: true, sets: 3, reps: 10),
+        .init(name: "Incline Dumbbell Press", type: .accessory, muscleGroup: "Chest", equipment: .dumbbell, sets: 3, reps: 10),
+        .init(name: "Dumbbell Row", type: .accessory, muscleGroup: "Back", equipment: .dumbbell, sets: 3, reps: 10),
+        .init(name: "Dumbbell Shoulder Press", type: .accessory, muscleGroup: "Shoulders", equipment: .dumbbell, sets: 3, reps: 10),
+        .init(name: "Lateral Raise", type: .accessory, muscleGroup: "Shoulders", equipment: .dumbbell, sets: 3, reps: 15),
+        .init(name: "Hammer Curl", type: .accessory, muscleGroup: "Arms", equipment: .dumbbell, sets: 3, reps: 12),
+        .init(name: "Walking Lunge", type: .compound, muscleGroup: "Legs", equipment: .dumbbell, sets: 3, reps: 12),
+        .init(name: "Bulgarian Split Squat", type: .compound, muscleGroup: "Legs", equipment: .dumbbell, sets: 3, reps: 10),
+
+        // MARK: Kettlebell
+        .init(name: "Kettlebell Swing", type: .compound, muscleGroup: "Hinge", equipment: .kettlebell, sets: 4, reps: 15),
+        .init(name: "Goblet Squat (KB)", type: .compound, muscleGroup: "Legs", equipment: .kettlebell, sets: 3, reps: 10),
+        .init(name: "Kettlebell Carry", type: .accessory, muscleGroup: "Core", equipment: .kettlebell, sets: 3, reps: 1),
+        .init(name: "Turkish Get-Up", type: .compound, muscleGroup: "Core", equipment: .kettlebell, sets: 3, reps: 3),
+
+        // MARK: Cable
+        .init(name: "Lat Pulldown", type: .accessory, muscleGroup: "Back", equipment: .cable, sets: 3, reps: 10),
+        .init(name: "Seated Cable Row", type: .accessory, muscleGroup: "Back", equipment: .cable, sets: 3, reps: 10),
+        .init(name: "Triceps Pushdown", type: .accessory, muscleGroup: "Arms", equipment: .cable, sets: 3, reps: 12),
+        .init(name: "Cable Fly", type: .accessory, muscleGroup: "Chest", equipment: .cable, sets: 3, reps: 12),
+        .init(name: "Face Pull", type: .accessory, muscleGroup: "Shoulders", equipment: .cable, sets: 3, reps: 15),
+        .init(name: "Cable Crunch", type: .accessory, muscleGroup: "Core", equipment: .cable, sets: 3, reps: 15),
+
+        // MARK: Machine
+        .init(name: "Leg Press", type: .compound, muscleGroup: "Legs", equipment: .machine, sets: 3, reps: 12, increment: 10),
+        .init(name: "Leg Curl", type: .accessory, muscleGroup: "Legs", equipment: .machine, sets: 3, reps: 12),
+        .init(name: "Leg Extension", type: .accessory, muscleGroup: "Legs", equipment: .machine, sets: 3, reps: 15),
+        .init(name: "Calf Raise", type: .accessory, muscleGroup: "Legs", equipment: .machine, sets: 4, reps: 15),
+        .init(name: "Chest Press Machine", type: .accessory, muscleGroup: "Chest", equipment: .machine, sets: 3, reps: 12),
+        .init(name: "Pec Deck", type: .accessory, muscleGroup: "Chest", equipment: .machine, sets: 3, reps: 15),
+
+        // MARK: Bodyweight
+        .init(name: "Pull-Up", type: .compound, muscleGroup: "Back", equipment: .bodyweight, sets: 3, reps: 8),
+        .init(name: "Chin-Up", type: .compound, muscleGroup: "Back", equipment: .bodyweight, sets: 3, reps: 8),
+        .init(name: "Push-Up", type: .accessory, muscleGroup: "Chest", equipment: .bodyweight, sets: 3, reps: 15),
+        .init(name: "Dip", type: .compound, muscleGroup: "Chest", equipment: .bodyweight, sets: 3, reps: 10),
+        .init(name: "Plank", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 1),
+        .init(name: "Hanging Leg Raise", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 12),
+
+        // MARK: Cardio
+        .init(name: "Incline Walk", type: .accessory, muscleGroup: "Cardio", equipment: .treadmill, sets: 1, reps: 1),
+        .init(name: "Treadmill Run", type: .accessory, muscleGroup: "Cardio", equipment: .treadmill, sets: 1, reps: 1),
+        .init(name: "Rowing Machine", type: .accessory, muscleGroup: "Cardio", equipment: .treadmill, sets: 1, reps: 1),
+        .init(name: "Stair Climber", type: .accessory, muscleGroup: "Cardio", equipment: .treadmill, sets: 1, reps: 1)
     ]
 
     /// 3-day full-body split, compound-first, with priority lifts woven in.

@@ -40,6 +40,8 @@ the warm-up gate.
 | 14 | **Bar types + saved loadouts** — load a Barbell / Women's / EZ / Trap bar or Dumbbell; save a per-exercise default loadout that auto-restores next time. | Plate calculator |
 | 15 | **Onboarding** — first-launch intro to the blueprint method that captures your starting stats (name, height, weight, schedule, goal). | First launch |
 | 16 | **Branded loading animation** — plates load onto a barbell (matching the logo) whenever the app is working or the AI coach is thinking. | App-wide |
+| 17 | **Exercise database by equipment** — ~45 exercises tagged with blueprint equipment logos (barbell, squat rack, dumbbell, kettlebell, bench, cable, machine, bodyweight, cardio); picker groups + filters by equipment. | Train |
+| 18 | **Edit profile** — change stats, schedule, goal, and constraints after onboarding. | Today |
 
 Plus an **AI Coach** tab — constraint-aware (ankle, sleep, single-lever
 nutrition). Works offline; optionally upgrades to the Claude API.
