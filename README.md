@@ -27,6 +27,8 @@ the warm-up gate.
 | 5 | **Recovery inputs** — daily sleep hours + stress level, surfaced with an autoregulation cue. | Today |
 | 6 | **Cardio finisher** — low-impact by default (incline walk: duration / speed / incline) with ankle-load tracking. | Train (in a session) |
 | 7 | **Warm-up checklist** — required ankle warm-up gate that locks set logging until it's done. | Train (in a session) |
+| 8 | **Rest timer** — auto-starts when you complete a set (3 min after compounds, 90 s after accessories) with pause / ±15 s / preset controls and a finish chime. | Train (in a session) |
+| 9 | **Apple Music** — pick a workout playlist from your library and start / pause / skip it without leaving the session. | Train (in a session) |
 
 Plus an **AI Coach** tab — constraint-aware (ankle, sleep, single-lever
 nutrition). Works offline; optionally upgrades to the Claude API.
@@ -109,9 +111,17 @@ PersonalTrainer/
     └── CoachView.swift
 ```
 
+## Apple Music note
+
+The Music controls use the **MediaPlayer** framework and the system music
+player, so they work with playlists already in your library (the
+`NSAppleMusicUsageDescription` permission is set in the target build settings).
+The **iOS Simulator has no music library**, so test playback on a real device
+signed into Apple Music.
+
 ## Roadmap ideas
 
 - **HealthKit** sync for sleep, body weight, and steps (fits the longevity goal)
-- Rest timer between sets
 - Editable user profile + custom templates
 - 1RM trend annotations and deload prompts when recovery dips
+- Live Activity / Dynamic Island for the rest timer

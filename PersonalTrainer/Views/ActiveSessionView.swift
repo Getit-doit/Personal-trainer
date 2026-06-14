@@ -11,8 +11,16 @@ struct ActiveSessionView: View {
     @State private var showingPicker = false
     @State private var newPRBanner: [String] = []
 
+    // Rest timer + Apple Music
+    @StateObject private var rest = RestTimer()
+    @StateObject private var music = MusicService()
+    @State private var showingPlaylistPicker = false
+    @AppStorage("workoutPlaylistID") private var playlistID = ""
+    @AppStorage("workoutPlaylistName") private var playlistName = ""
+
     var body: some View {
         List {
+            musicSection
             warmupSection
 
             if session.ankleWarmupDone {
@@ -20,15 +28,28 @@ struct ActiveSessionView: View {
                     exerciseSection(exercise)
                 }
                 addExerciseSection
+                restPresetSection
                 cardioSection
                 finishSection
             }
         }
         .navigationTitle(session.notes.isEmpty ? "Workout" : session.notes)
         .navigationBarTitleDisplayMode(.inline)
+        .safeAreaInset(edge: .bottom) {
+            if rest.isActive {
+                RestTimerBar(rest: rest)
+            }
+        }
         .sheet(isPresented: $showingPicker) {
             ExercisePickerView { exercise in
                 SessionFactory.add(exercise, to: session, context: context)
+            }
+        }
+        .sheet(isPresented: $showingPlaylistPicker) {
+            PlaylistPickerView(music: music) { selected in
+                playlistID = selected.id
+                playlistName = selected.name
+                music.play(playlistID: selected.id)
             }
         }
         .alert(
@@ -42,6 +63,86 @@ struct ActiveSessionView: View {
         } message: {
             Text(newPRBanner.joined(separator: ", "))
         }
+    }
+
+    // MARK: Music
+
+    private var musicSection: some View {
+        Section {
+            if playlistID.isEmpty {
+                Button {
+                    showingPlaylistPicker = true
+                } label: {
+                    Label("Choose Workout Playlist", systemImage: "music.note.list")
+                }
+                .tint(Theme.accent)
+            } else {
+                HStack(spacing: 16) {
+                    Button {
+                        music.play(playlistID: playlistID)
+                    } label: {
+                        Image(systemName: "play.circle.fill").font(.title2)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(playlistName).font(.subheadline).bold()
+                        Text(music.nowPlaying.isEmpty ? "Tap play to start" : music.nowPlaying)
+                            .font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                    }
+                    Spacer()
+                    Button { music.togglePlayPause() } label: {
+                        Image(systemName: music.isPlaying ? "pause.fill" : "play.fill")
+                    }
+                    Button { music.skip() } label: {
+                        Image(systemName: "forward.fill")
+                    }
+                }
+                .buttonStyle(.plain)
+                .tint(Theme.accentDeep)
+            }
+        } header: {
+            HStack {
+                Label("Music", systemImage: "music.note")
+                Spacer()
+                if !playlistID.isEmpty {
+                    Button("Change") { showingPlaylistPicker = true }
+                        .font(.caption)
+                }
+            }
+        }
+    }
+
+    // MARK: Rest presets
+
+    private var restPresetSection: some View {
+        Section {
+            HStack {
+                ForEach([60, 90, 120, 180], id: \.self) { seconds in
+                    Button {
+                        rest.start(seconds: seconds)
+                    } label: {
+                        Text(restLabel(seconds))
+                            .font(.caption).bold()
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Theme.accent.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
+                            .foregroundStyle(Theme.accentDeep)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        } header: {
+            Label("Rest Timer", systemImage: "timer")
+        } footer: {
+            Text("Auto-starts when you complete a set: 3 min after compounds, 90 s after accessories.")
+        }
+    }
+
+    private func restLabel(_ seconds: Int) -> String {
+        seconds < 60 ? "\(seconds)s" : (seconds % 60 == 0 ? "\(seconds / 60)m" : "\(seconds / 60)m\(seconds % 60)")
+    }
+
+    private func defaultRest(for type: ExerciseType) -> Int {
+        type == .compound ? 180 : 90
     }
 
     // MARK: Warm-up gate
@@ -80,7 +181,11 @@ struct ActiveSessionView: View {
     private func exerciseSection(_ exercise: LoggedExercise) -> some View {
         Section {
             ForEach(exercise.sortedSets) { set in
-                SetRow(set: set) { try? context.save() }
+                SetRow(
+                    set: set,
+                    onChange: { try? context.save() },
+                    onComplete: { rest.start(seconds: defaultRest(for: exercise.type)) }
+                )
             }
             .onDelete { offsets in
                 let sorted = exercise.sortedSets
@@ -207,12 +312,15 @@ struct WarmupRow: View {
 struct SetRow: View {
     @Bindable var set: SetLog
     var onChange: () -> Void
+    var onComplete: () -> Void = {}
 
     var body: some View {
         VStack(spacing: 8) {
             HStack(spacing: 12) {
                 Button {
-                    set.isCompleted.toggle(); onChange()
+                    set.isCompleted.toggle()
+                    onChange()
+                    if set.isCompleted { onComplete() }
                 } label: {
                     Image(systemName: set.isCompleted ? "checkmark.circle.fill" : "circle")
                         .foregroundStyle(set.isCompleted ? Theme.accent : .secondary)
