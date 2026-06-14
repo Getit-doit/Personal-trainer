@@ -48,16 +48,11 @@ struct TodayView: View {
             .navigationDestination(item: $startedSession) { session in
                 ActiveSessionView(session: session)
             }
-            .confirmationDialog("Start a workout", isPresented: $showTemplatePicker, titleVisibility: .visible) {
-                ForEach(TrainingContent.templates) { template in
-                    Button("\(template.title) · \(template.subtitle)") {
-                        startedSession = SessionFactory.fromTemplate(template, context: context)
-                    }
-                }
-                Button("Empty session") {
-                    startedSession = SessionFactory.blank(context: context)
-                }
-                Button("Cancel", role: .cancel) {}
+            .sheet(isPresented: $showTemplatePicker) {
+                RoutineLibraryView(
+                    onStart: { startedSession = SessionFactory.fromTemplate($0, context: context) },
+                    onEmpty: { startedSession = SessionFactory.blank(context: context) }
+                )
             }
         }
     }

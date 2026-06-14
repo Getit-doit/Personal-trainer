@@ -19,9 +19,11 @@ struct TemplateExercise {
     let reps: Int
 }
 
-/// A compound-first, full-body day template.
+/// A compound-first day template that belongs to a named program.
 struct WorkoutTemplate: Identifiable {
     let id = UUID()
+    let program: String
+    let level: String
     let title: String
     let subtitle: String
     let exercises: [TemplateExercise]
@@ -106,40 +108,138 @@ enum TrainingContent {
 
     /// 3-day full-body split, compound-first, with priority lifts woven in.
     static let templates: [WorkoutTemplate] = [
-        WorkoutTemplate(
-            title: "Full Body A",
-            subtitle: "Squat focus",
+        // MARK: Full Body (Beginner)
+        WorkoutTemplate(program: "Full Body", level: "Beginner",
+            title: "Full Body A", subtitle: "Squat focus",
             exercises: [
                 .init(name: "Back Squat", sets: 3, reps: 5),
                 .init(name: "Bench Press", sets: 3, reps: 5),
                 .init(name: "Bent-Over Row", sets: 3, reps: 8),
                 .init(name: "Romanian Deadlift", sets: 3, reps: 8),
                 .init(name: "Plank", sets: 3, reps: 1)
-            ]
-        ),
-        WorkoutTemplate(
-            title: "Full Body B",
-            subtitle: "Hinge focus",
+            ]),
+        WorkoutTemplate(program: "Full Body", level: "Beginner",
+            title: "Full Body B", subtitle: "Hinge focus",
             exercises: [
                 .init(name: "Romanian Deadlift", sets: 3, reps: 8),
                 .init(name: "Overhead Press", sets: 3, reps: 6),
                 .init(name: "Pull-Up", sets: 3, reps: 8),
                 .init(name: "Goblet Squat", sets: 3, reps: 10),
                 .init(name: "Hanging Leg Raise", sets: 3, reps: 12)
-            ]
-        ),
-        WorkoutTemplate(
-            title: "Full Body C",
-            subtitle: "Pull focus",
+            ]),
+        WorkoutTemplate(program: "Full Body", level: "Beginner",
+            title: "Full Body C", subtitle: "Pull focus",
             exercises: [
                 .init(name: "Deadlift", sets: 3, reps: 5),
                 .init(name: "Incline Dumbbell Press", sets: 3, reps: 10),
                 .init(name: "Lat Pulldown", sets: 3, reps: 10),
                 .init(name: "Walking Lunge", sets: 3, reps: 12),
                 .init(name: "Face Pull", sets: 3, reps: 15)
-            ]
-        )
+            ]),
+
+        // MARK: Push / Pull / Legs (Intermediate)
+        WorkoutTemplate(program: "Push / Pull / Legs", level: "Intermediate",
+            title: "Push", subtitle: "Chest · Shoulders · Triceps",
+            exercises: [
+                .init(name: "Bench Press", sets: 4, reps: 6),
+                .init(name: "Overhead Press", sets: 3, reps: 8),
+                .init(name: "Incline Dumbbell Press", sets: 3, reps: 10),
+                .init(name: "Lateral Raise", sets: 3, reps: 15),
+                .init(name: "Triceps Pushdown", sets: 3, reps: 12)
+            ]),
+        WorkoutTemplate(program: "Push / Pull / Legs", level: "Intermediate",
+            title: "Pull", subtitle: "Back · Biceps",
+            exercises: [
+                .init(name: "Deadlift", sets: 3, reps: 5),
+                .init(name: "Pull-Up", sets: 3, reps: 8),
+                .init(name: "Bent-Over Row", sets: 3, reps: 10),
+                .init(name: "Hammer Curl", sets: 3, reps: 12),
+                .init(name: "Face Pull", sets: 3, reps: 15)
+            ]),
+        WorkoutTemplate(program: "Push / Pull / Legs", level: "Intermediate",
+            title: "Legs", subtitle: "Quads · Hamstrings · Calves",
+            exercises: [
+                .init(name: "Back Squat", sets: 4, reps: 6),
+                .init(name: "Romanian Deadlift", sets: 3, reps: 8),
+                .init(name: "Leg Press", sets: 3, reps: 12),
+                .init(name: "Walking Lunge", sets: 3, reps: 12),
+                .init(name: "Calf Raise", sets: 4, reps: 15)
+            ]),
+
+        // MARK: Upper / Lower (Intermediate)
+        WorkoutTemplate(program: "Upper / Lower", level: "Intermediate",
+            title: "Upper", subtitle: "Push + pull",
+            exercises: [
+                .init(name: "Bench Press", sets: 4, reps: 6),
+                .init(name: "Bent-Over Row", sets: 4, reps: 8),
+                .init(name: "Overhead Press", sets: 3, reps: 8),
+                .init(name: "Lat Pulldown", sets: 3, reps: 10),
+                .init(name: "Barbell Curl", sets: 3, reps: 12)
+            ]),
+        WorkoutTemplate(program: "Upper / Lower", level: "Intermediate",
+            title: "Lower", subtitle: "Legs + core",
+            exercises: [
+                .init(name: "Back Squat", sets: 4, reps: 6),
+                .init(name: "Romanian Deadlift", sets: 3, reps: 8),
+                .init(name: "Leg Curl", sets: 3, reps: 12),
+                .init(name: "Walking Lunge", sets: 3, reps: 12),
+                .init(name: "Hanging Leg Raise", sets: 3, reps: 12)
+            ]),
+
+        // MARK: 5×5 Strength (Beginner)
+        WorkoutTemplate(program: "5×5 Strength", level: "Beginner",
+            title: "Workout A", subtitle: "Squat · Bench · Row",
+            exercises: [
+                .init(name: "Back Squat", sets: 5, reps: 5),
+                .init(name: "Bench Press", sets: 5, reps: 5),
+                .init(name: "Bent-Over Row", sets: 5, reps: 5)
+            ]),
+        WorkoutTemplate(program: "5×5 Strength", level: "Beginner",
+            title: "Workout B", subtitle: "Squat · Press · Deadlift",
+            exercises: [
+                .init(name: "Back Squat", sets: 5, reps: 5),
+                .init(name: "Overhead Press", sets: 5, reps: 5),
+                .init(name: "Deadlift", sets: 3, reps: 5)
+            ]),
+
+        // MARK: Conditioning (Beginner)
+        WorkoutTemplate(program: "Conditioning", level: "Beginner",
+            title: "Quick HIIT", subtitle: "20 min · low-impact",
+            exercises: [
+                .init(name: "Kettlebell Swing", sets: 4, reps: 15),
+                .init(name: "Push-Up", sets: 4, reps: 15),
+                .init(name: "Goblet Squat", sets: 4, reps: 15),
+                .init(name: "Plank", sets: 4, reps: 1)
+            ]),
+        WorkoutTemplate(program: "Conditioning", level: "Beginner",
+            title: "Cardio Finisher", subtitle: "Low-impact incline walk",
+            exercises: [
+                .init(name: "Incline Walk", sets: 1, reps: 1)
+            ])
     ]
+
+    /// Program names in display order.
+    static var programs: [String] {
+        var seen: [String] = []
+        for t in templates where !seen.contains(t.program) { seen.append(t.program) }
+        return seen
+    }
+
+    static func templates(in program: String) -> [WorkoutTemplate] {
+        templates.filter { $0.program == program }
+    }
+
+    /// Distinct equipment used by a template, for badge display.
+    private static let equipmentByName: [String: Equipment] =
+        Dictionary(exercises.map { ($0.name, $0.equipment) }, uniquingKeysWith: { a, _ in a })
+
+    static func equipment(in template: WorkoutTemplate) -> [Equipment] {
+        var seen: [Equipment] = []
+        for ex in template.exercises {
+            if let eq = equipmentByName[ex.name], !seen.contains(eq) { seen.append(eq) }
+        }
+        return seen.sorted { $0.sortOrder < $1.sortOrder }
+    }
 
     /// Mandatory ankle prep — every item must be checked before lifting.
     static let ankleWarmup: [String] = [

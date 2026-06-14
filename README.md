@@ -42,6 +42,7 @@ the warm-up gate.
 | 16 | **Branded loading animation** — plates load onto a barbell (matching the logo) whenever the app is working or the AI coach is thinking. | App-wide |
 | 17 | **Exercise database by equipment** — ~45 exercises tagged with blueprint equipment logos (barbell, squat rack, dumbbell, kettlebell, bench, cable, machine, bodyweight, cardio); picker groups + filters by equipment. | Train |
 | 18 | **Edit profile** — change stats, schedule, goal, and constraints after onboarding. | Today |
+| 19 | **Routine library** — browse programs (Full Body, Push/Pull/Legs, Upper/Lower, 5×5, Conditioning) with day templates, level, and equipment badges; start any with one tap. | Today / Train |
 
 Plus an **AI Coach** tab — constraint-aware (ankle, sleep, single-lever
 nutrition). Works offline; optionally upgrades to the Claude API.
