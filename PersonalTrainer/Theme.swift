@@ -11,11 +11,11 @@ enum Theme {
         "Chest": .pink,
         "Back": .blue,
         "Legs": .orange,
+        "Hinge": .indigo,
         "Shoulders": .purple,
         "Arms": .teal,
         "Core": .yellow,
-        "Cardio": .red,
-        "Full Body": .green
+        "Cardio": .red
     ]
 
     static func color(for muscle: String) -> Color {

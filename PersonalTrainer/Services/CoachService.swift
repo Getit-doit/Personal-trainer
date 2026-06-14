@@ -32,42 +32,60 @@ enum CoachService {
             return """
             For muscle gain, train each muscle group 2x/week, push close to failure, and \
             progressively add weight or reps. Eat in a slight surplus (~250 kcal over \
-            maintenance) with 0.8–1 g protein per lb. Try the Push / Pull / Legs plans in \
-            the Plans tab.
+            maintenance) with 0.8–1 g protein per lb. Run the compound-first Full Body \
+            A/B/C split from the Train tab.
+            """
+        }
+        if text.contains("ankle") {
+            return """
+            Always run the full ankle warm-up before lifting — circles, knee-to-wall \
+            dorsiflexion, banded eversion/inversion, slow calf raises, then 5 min easy \
+            incline walk. Keep cardio low-impact (incline walking) and add incline, \
+            stairs, or sprints in small steps weeks apart. If the ankle is warm or \
+            swollen, skip impact that day and stick to seated/low-load work.
+            """
+        }
+        if text.contains("sleep") || text.contains("stress") {
+            return """
+            On 6–7 hrs and high stress, autoregulate: if you're under-slept, keep top \
+            sets at RPE 7 (2+ reps in tank) and cut a set rather than skipping the \
+            session. A 5–10 min steam-room or easy incline walk down-regulates stress. \
+            Protect a consistent wake time — that moves sleep quality more than anything.
             """
         }
         if text.contains("sore") || text.contains("recovery") || text.contains("rest") {
             return """
-            Soreness is normal, especially after new exercises. Prioritize 7–9 hours of \
-            sleep, stay hydrated, and do light movement on rest days. If a joint (not a \
-            muscle) hurts sharply, back off and reassess.
+            Soreness is normal, especially after new exercises. Prioritize sleep (your \
+            6–7 hrs is the limiter), stay hydrated, and do light incline walking on rest \
+            days. If a joint — especially the ankle — hurts sharply, back off and \
+            reassess. Scale toward 5 days only once recovery holds up.
             """
         }
         if text.contains("beginner") || text.contains("start") || text.contains("new") {
             return """
-            Welcome! Start with the "Full Body Starter" plan 3 days a week. Focus on form \
-            over weight, log every set in the Workouts tab, and add a little weight each \
-            week. Consistency beats intensity early on.
+            Start with Full Body A 3 days a week from the Train tab. Do the ankle warm-up \
+            first, lead with the compounds, and log every set with RPE and reps-in-tank. \
+            Add a little weight when a lift clears all target reps with 2+ in the tank.
             """
         }
-        if text.contains("protein") || text.contains("diet") || text.contains("eat") {
+        if text.contains("protein") || text.contains("diet") || text.contains("eat") || text.contains("lever") {
             return """
-            A simple nutrition baseline: protein with every meal, plenty of vegetables, \
-            whole-grain carbs around training, and healthy fats. Target ~0.8 g protein per \
-            lb of bodyweight to support training.
+            Skip full macro counting for now — pick one lever in the Fuel tab and nail it \
+            daily (e.g. 30g protein at breakfast or a hydration swap). Once it's automatic, \
+            move to the next weak link. One habit at a time beats tracking everything.
             """
         }
-        if text.contains("plan") || text.contains("routine") || text.contains("workout") {
+        if text.contains("plan") || text.contains("routine") || text.contains("workout") || text.contains("progress") {
             return """
-            Check the Plans tab — I've built Push, Pull, Leg, Full-Body, and HIIT routines. \
-            Tap "Start" on any plan and it becomes a logged session you can track. Want a \
-            recommendation based on your goal?
+            The Train tab has a compound-first Full Body A/B/C split — tap + to start one. \
+            Lifts flag as "ready to progress" on the Today tab once you clear all target \
+            reps with reps in the tank. Want a recommendation based on today's recovery?
             """
         }
         return """
-        I'm your training coach 💪 Ask me about losing fat, building muscle, recovery, \
-        nutrition, or which plan to follow. You can also start a workout from the Plans \
-        tab and log it in Workouts.
+        I'm your strength & longevity coach 💪 Ask me about progression, the ankle/cardio \
+        plan, sleep & stress, or your one nutrition lever. Start a session from the Train \
+        tab — and don't skip the ankle warm-up.
         """
     }
 
@@ -87,9 +105,16 @@ enum CoachService {
             "model": "claude-sonnet-4-6",
             "max_tokens": 500,
             "system": """
-            You are an expert, encouraging personal trainer inside a fitness app. Give \
-            concise, practical, safe advice on training, programming, and nutrition. Keep \
-            replies under 120 words unless asked for detail.
+            You are an expert, encouraging functional-strength and longevity coach inside \
+            a fitness app. The athlete is a 33-year-old male, 5'10", started this block at \
+            217 lb, training weekday mornings before a desk job. Goals: functional lean \
+            strength and longevity. Constraints: sleeps only 6–7 hrs, high stress, and an \
+            ankle that inflames easily (always respect the mandatory ankle warm-up and \
+            introduce incline/impact/sprints/stairs gradually). Training is 3 days/week, \
+            scaling toward 5 as recovery allows, compound-first full-body. Favor \
+            progressive overload, autoregulation by RPE/reps-in-tank, and one nutrition \
+            "lever" at a time over full macro counting. Keep replies under 120 words \
+            unless asked for detail.
             """,
             "messages": messages
         ]

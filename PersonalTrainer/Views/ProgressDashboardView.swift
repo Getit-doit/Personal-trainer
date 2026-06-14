@@ -2,20 +2,23 @@ import SwiftUI
 import SwiftData
 import Charts
 
-/// Charts for body weight over time and weekly training volume.
+/// Progress tab: personal bests (auto-detected + manual) and a per-lift
+/// progression chart of estimated 1RM over time.
 struct ProgressDashboardView: View {
     @Environment(\.modelContext) private var context
-    @Query(sort: \BodyMetric.date) private var metrics: [BodyMetric]
+    @Query(sort: \PersonalBest.value, order: .reverse) private var prs: [PersonalBest]
     @Query(sort: \WorkoutSession.date) private var sessions: [WorkoutSession]
-    @State private var showingAddWeight = false
+    @Query(sort: \Exercise.name) private var exercises: [Exercise]
+
+    @State private var selectedLift = "Back Squat"
+    @State private var showAddPR = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    bodyWeightCard
-                    volumeCard
-                    muscleSplitCard
+                    progressionCard
+                    prCard
                 }
                 .padding()
             }
@@ -23,163 +26,178 @@ struct ProgressDashboardView: View {
             .navigationTitle("Progress")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { showingAddWeight = true } label: {
-                        Image(systemName: "plus")
-                    }
+                    Button { showAddPR = true } label: { Image(systemName: "plus") }
                 }
             }
-            .sheet(isPresented: $showingAddWeight) {
-                LogWeightSheet()
+            .sheet(isPresented: $showAddPR) {
+                AddPRSheet(exercises: exercises)
             }
         }
     }
 
-    private var bodyWeightCard: some View {
+    // MARK: Progression chart
+
+    private var liftNames: [String] {
+        let logged = Set(sessions.filter(\.isFinished).flatMap(\.exercises).map(\.name))
+        return logged.sorted()
+    }
+
+    /// Top-set estimated 1RM per session for the selected lift.
+    private var liftHistory: [(date: Date, oneRM: Double)] {
+        sessions
+            .filter(\.isFinished)
+            .compactMap { session -> (Date, Double)? in
+                let best = session.exercises
+                    .filter { $0.name == selectedLift }
+                    .flatMap(\.sets)
+                    .filter(\.isCompleted)
+                    .map(\.estimatedOneRepMax)
+                    .max()
+                guard let best, best > 0 else { return nil }
+                return (session.date, best)
+            }
+            .sorted { $0.0 < $1.0 }
+    }
+
+    private var progressionCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Body Weight", systemImage: "figure.stand")
-                    .font(.headline)
-                if metrics.isEmpty {
-                    Text("No data yet — tap + to log your weight.")
+                Label("Progression", systemImage: "chart.line.uptrend.xyaxis").font(.headline)
+                if liftNames.isEmpty {
+                    Text("Finish a workout to chart your estimated 1RM over time.")
                         .font(.caption).foregroundStyle(.secondary)
                 } else {
-                    Chart(metrics) { metric in
-                        LineMark(
-                            x: .value("Date", metric.date),
-                            y: .value("Weight", metric.weight)
-                        )
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(Theme.accent)
+                    Picker("Lift", selection: $selectedLift) {
+                        ForEach(liftNames, id: \.self) { Text($0).tag($0) }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(Theme.accentDeep)
 
-                        AreaMark(
-                            x: .value("Date", metric.date),
-                            y: .value("Weight", metric.weight)
-                        )
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [Theme.accent.opacity(0.3), .clear],
-                                startPoint: .top, endPoint: .bottom
+                    let history = liftHistory
+                    if history.count < 2 {
+                        Text("Log this lift across at least two sessions to see a trend.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        Chart(history, id: \.date) { point in
+                            LineMark(
+                                x: .value("Date", point.date),
+                                y: .value("Est. 1RM", point.oneRM)
                             )
-                        )
+                            .interpolationMethod(.catmullRom)
+                            .foregroundStyle(Theme.accent)
+                            PointMark(
+                                x: .value("Date", point.date),
+                                y: .value("Est. 1RM", point.oneRM)
+                            )
+                            .foregroundStyle(Theme.accent)
+                        }
+                        .chartYScale(domain: .automatic(includesZero: false))
+                        .frame(height: 200)
                     }
-                    .chartYScale(domain: .automatic(includesZero: false))
-                    .frame(height: 200)
                 }
+            }
+        }
+        .onAppear {
+            if let first = liftNames.first, !liftNames.contains(selectedLift) {
+                selectedLift = first
             }
         }
     }
 
-    private var volumeCard: some View {
-        Card {
-            VStack(alignment: .leading, spacing: 12) {
-                Label("Weekly Volume", systemImage: "scalemass.fill")
-                    .font(.headline)
-                let data = weeklyVolume
-                if data.isEmpty {
-                    Text("Finish a workout to see your training volume.")
-                        .font(.caption).foregroundStyle(.secondary)
-                } else {
-                    Chart(data, id: \.weekStart) { item in
-                        BarMark(
-                            x: .value("Week", item.weekStart, unit: .weekOfYear),
-                            y: .value("Volume", item.volume)
-                        )
-                        .foregroundStyle(Theme.accentDeep)
-                        .cornerRadius(4)
-                    }
-                    .frame(height: 180)
-                }
-            }
+    // MARK: Personal bests
+
+    private var bestPerExercise: [PersonalBest] {
+        var seen = Set<String>()
+        var result: [PersonalBest] = []
+        for pr in prs where !seen.contains(pr.exerciseName) {
+            seen.insert(pr.exerciseName)
+            result.append(pr)
         }
+        return result
     }
 
-    private var muscleSplitCard: some View {
+    private var prCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Sets by Muscle Group", systemImage: "chart.pie.fill")
-                    .font(.headline)
-                let split = muscleSplit
-                if split.isEmpty {
-                    Text("Log some sets to see your training balance.")
+                Label("Personal Bests", systemImage: "trophy.fill").font(.headline)
+                if bestPerExercise.isEmpty {
+                    Text("PRs are detected automatically when you finish a workout. Tap + to add a historical PR.")
                         .font(.caption).foregroundStyle(.secondary)
                 } else {
-                    ForEach(split, id: \.muscle) { item in
+                    ForEach(bestPerExercise) { pr in
                         HStack {
-                            Circle()
-                                .fill(Theme.color(for: item.muscle))
-                                .frame(width: 8, height: 8)
-                            Text(item.muscle).font(.subheadline)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(pr.exerciseName).font(.subheadline).bold()
+                                Text("\(pr.weight.clean) lb × \(pr.reps) · \(pr.date.formatted(date: .abbreviated, time: .omitted))")
+                                    .font(.caption2).foregroundStyle(.secondary)
+                            }
                             Spacer()
-                            Text("\(item.count) sets")
-                                .font(.caption).foregroundStyle(.secondary)
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text("\(pr.value.clean) lb").bold()
+                                Text("est. 1RM · \(pr.source.rawValue)")
+                                    .font(.caption2).foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }
             }
         }
     }
-
-    // MARK: - Derived data
-
-    private var weeklyVolume: [(weekStart: Date, volume: Double)] {
-        let finished = sessions.filter(\.isFinished)
-        let calendar = Calendar.current
-        let grouped = Dictionary(grouping: finished) { session -> Date in
-            calendar.dateInterval(of: .weekOfYear, for: session.date)?.start ?? session.date
-        }
-        return grouped.map { (week, items) in
-            (week, items.reduce(0) { $0 + $1.totalVolume })
-        }
-        .sorted { $0.0 < $1.0 }
-    }
-
-    private var muscleSplit: [(muscle: String, count: Int)] {
-        let exercises = sessions.filter(\.isFinished).flatMap(\.exercises)
-        let grouped = Dictionary(grouping: exercises, by: \.muscleGroup)
-        return grouped.map { (muscle, items) in
-            (muscle, items.reduce(0) { $0 + $1.sets.filter(\.isCompleted).count })
-        }
-        .filter { $0.1 > 0 }
-        .sorted { $0.1 > $1.1 }
-    }
 }
 
-/// Sheet for logging a new body-weight entry.
-struct LogWeightSheet: View {
+/// Manual historical PR entry.
+struct AddPRSheet: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
-    @State private var weight = 180.0
+    let exercises: [Exercise]
+
+    @State private var name = ""
+    @State private var weight = 135.0
+    @State private var reps = 1
     @State private var date = Date.now
 
     var body: some View {
         NavigationStack {
             Form {
-                DatePicker("Date", selection: $date, displayedComponents: .date)
+                Picker("Exercise", selection: $name) {
+                    Text("Select…").tag("")
+                    ForEach(exercises) { Text($0.name).tag($0.name) }
+                }
                 HStack {
-                    Text("Weight")
-                    Spacer()
+                    Text("Weight"); Spacer()
                     TextField("Weight", value: $weight, format: .number)
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                        .frame(width: 80)
+                        .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 80)
                     Text("lb").foregroundStyle(.secondary)
                 }
+                Stepper("Reps: \(reps)", value: $reps, in: 1...20)
+                DatePicker("Date", selection: $date, displayedComponents: .date)
             }
-            .navigationTitle("Log Weight")
+            .navigationTitle("Add PR")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        context.insert(BodyMetric(date: date, weight: weight))
-                        try? context.save()
-                        dismiss()
-                    }
+                    Button("Save") { save() }.disabled(name.isEmpty)
                 }
             }
         }
+    }
+
+    private func save() {
+        let oneRM = (weight * (1 + Double(reps) / 30) * 10).rounded() / 10
+        let match = exercises.first { $0.name == name }
+        context.insert(
+            PersonalBest(
+                exerciseName: name,
+                value: oneRM,
+                weight: weight,
+                reps: reps,
+                date: date,
+                source: .manual,
+                exercise: match
+            )
+        )
+        try? context.save()
+        dismiss()
     }
 }

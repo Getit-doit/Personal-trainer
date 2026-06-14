@@ -1,26 +1,27 @@
 import SwiftUI
 import SwiftData
 
-/// Lists all workout sessions and lets the user create/open one.
-struct WorkoutsView: View {
+/// Workout history + entry point for starting a new session.
+struct TrainView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \WorkoutSession.date, order: .reverse) private var sessions: [WorkoutSession]
-    @State private var newSession: WorkoutSession?
+    @State private var startedSession: WorkoutSession?
+    @State private var showTemplatePicker = false
 
     var body: some View {
         NavigationStack {
             Group {
                 if sessions.isEmpty {
                     ContentUnavailableView(
-                        "No Workouts",
+                        "No Workouts Yet",
                         systemImage: "dumbbell",
-                        description: Text("Tap + to start logging your first workout.")
+                        description: Text("Tap + to start a full-body session.")
                     )
                 } else {
                     List {
                         ForEach(sessions) { session in
                             NavigationLink {
-                                ActiveWorkoutView(session: session)
+                                ActiveSessionView(session: session)
                             } label: {
                                 row(for: session)
                             }
@@ -29,16 +30,25 @@ struct WorkoutsView: View {
                     }
                 }
             }
-            .navigationTitle("Workouts")
+            .navigationTitle("Train")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { startBlankWorkout() } label: {
-                        Image(systemName: "plus")
-                    }
+                    Button { showTemplatePicker = true } label: { Image(systemName: "plus") }
                 }
             }
-            .navigationDestination(item: $newSession) { session in
-                ActiveWorkoutView(session: session)
+            .navigationDestination(item: $startedSession) { session in
+                ActiveSessionView(session: session)
+            }
+            .confirmationDialog("Start a workout", isPresented: $showTemplatePicker, titleVisibility: .visible) {
+                ForEach(TrainingContent.templates) { template in
+                    Button("\(template.title) · \(template.subtitle)") {
+                        startedSession = SessionFactory.fromTemplate(template, context: context)
+                    }
+                }
+                Button("Empty session") {
+                    startedSession = SessionFactory.blank(context: context)
+                }
+                Button("Cancel", role: .cancel) {}
             }
         }
     }
@@ -46,7 +56,7 @@ struct WorkoutsView: View {
     private func row(for session: WorkoutSession) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 3) {
-                Text(session.name).font(.headline)
+                Text(title(for: session)).font(.headline)
                 Text(session.date.formatted(date: .abbreviated, time: .shortened))
                     .font(.caption).foregroundStyle(.secondary)
             }
@@ -59,23 +69,18 @@ struct WorkoutsView: View {
                         .background(Theme.accent.opacity(0.2), in: Capsule())
                         .foregroundStyle(Theme.accentDeep)
                 }
-                Text("\(session.exercises.count) exercises")
+                Text("\(session.exercises.count) lifts · \(session.completedSetCount) sets")
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
     }
 
-    private func startBlankWorkout() {
-        let session = WorkoutSession(name: "Workout \(sessions.count + 1)")
-        context.insert(session)
-        try? context.save()
-        newSession = session
+    private func title(for session: WorkoutSession) -> String {
+        session.notes.isEmpty ? "Workout" : session.notes
     }
 
     private func delete(at offsets: IndexSet) {
-        for index in offsets {
-            context.delete(sessions[index])
-        }
+        for index in offsets { context.delete(sessions[index]) }
         try? context.save()
     }
 }

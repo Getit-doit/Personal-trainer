@@ -9,7 +9,9 @@ struct PersonalTrainerApp: App {
     init() {
         do {
             container = try ModelContainer(
-                for: WorkoutSession.self, LoggedExercise.self, SetEntry.self, BodyMetric.self
+                for: UserProfile.self, Exercise.self, WorkoutSession.self,
+                LoggedExercise.self, SetLog.self, CardioEntry.self,
+                PersonalBest.self, NutritionLog.self, RecoveryLog.self
             )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")

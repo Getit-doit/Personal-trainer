@@ -1,135 +1,110 @@
 import Foundation
 
-/// A catalog entry used to pick exercises when building a workout.
-struct ExerciseInfo: Identifiable, Hashable {
+/// Seed definition for a catalog exercise.
+struct ExerciseSeed {
     let name: String
+    let type: ExerciseType
     let muscleGroup: String
-    var id: String { name }
+    var priority: Bool = false
+    var sets: Int = 3
+    var reps: Int = 8
+    var increment: Double = 5
 }
 
-/// A reusable, pre-built routine the user can start with one tap.
-struct WorkoutPlan: Identifiable, Hashable {
-    let id = UUID()
-    let title: String
-    let subtitle: String
-    let level: String          // Beginner / Intermediate / Advanced
-    let focus: String          // primary muscle focus
-    let exercises: [PlanExercise]
-}
-
-struct PlanExercise: Hashable {
+/// One exercise slot inside a starter template.
+struct TemplateExercise {
     let name: String
-    let muscleGroup: String
     let sets: Int
     let reps: Int
 }
 
-/// Static content: the exercise catalog and the built-in plans.
-enum ExerciseLibrary {
-    static let all: [ExerciseInfo] = [
-        // Chest
-        .init(name: "Bench Press", muscleGroup: "Chest"),
-        .init(name: "Incline Dumbbell Press", muscleGroup: "Chest"),
-        .init(name: "Push-Up", muscleGroup: "Chest"),
-        .init(name: "Cable Fly", muscleGroup: "Chest"),
-        // Back
-        .init(name: "Deadlift", muscleGroup: "Back"),
-        .init(name: "Pull-Up", muscleGroup: "Back"),
-        .init(name: "Bent-Over Row", muscleGroup: "Back"),
-        .init(name: "Lat Pulldown", muscleGroup: "Back"),
-        // Legs
-        .init(name: "Back Squat", muscleGroup: "Legs"),
-        .init(name: "Romanian Deadlift", muscleGroup: "Legs"),
-        .init(name: "Leg Press", muscleGroup: "Legs"),
-        .init(name: "Walking Lunge", muscleGroup: "Legs"),
-        .init(name: "Calf Raise", muscleGroup: "Legs"),
-        // Shoulders
-        .init(name: "Overhead Press", muscleGroup: "Shoulders"),
-        .init(name: "Lateral Raise", muscleGroup: "Shoulders"),
-        .init(name: "Face Pull", muscleGroup: "Shoulders"),
-        // Arms
-        .init(name: "Barbell Curl", muscleGroup: "Arms"),
-        .init(name: "Hammer Curl", muscleGroup: "Arms"),
-        .init(name: "Triceps Pushdown", muscleGroup: "Arms"),
-        .init(name: "Skull Crusher", muscleGroup: "Arms"),
-        // Core
-        .init(name: "Plank", muscleGroup: "Core"),
-        .init(name: "Hanging Leg Raise", muscleGroup: "Core"),
-        .init(name: "Cable Crunch", muscleGroup: "Core"),
-        // Cardio
-        .init(name: "Treadmill Run", muscleGroup: "Cardio"),
-        .init(name: "Rowing Machine", muscleGroup: "Cardio"),
-        .init(name: "Jump Rope", muscleGroup: "Cardio")
+/// A compound-first, full-body day template.
+struct WorkoutTemplate: Identifiable {
+    let id = UUID()
+    let title: String
+    let subtitle: String
+    let exercises: [TemplateExercise]
+}
+
+/// Static training content: the exercise catalog, the 3-day full-body split,
+/// and the mandatory ankle warm-up checklist.
+enum TrainingContent {
+
+    static let muscleGroups = ["Legs", "Back", "Chest", "Shoulders", "Arms", "Core", "Hinge"]
+
+    /// Compound-first catalog. Priority-progression lifts are flagged.
+    static let exercises: [ExerciseSeed] = [
+        // Compounds
+        .init(name: "Back Squat", type: .compound, muscleGroup: "Legs", sets: 3, reps: 5, increment: 10),
+        .init(name: "Front Squat", type: .compound, muscleGroup: "Legs", sets: 3, reps: 5, increment: 5),
+        .init(name: "Goblet Squat", type: .compound, muscleGroup: "Legs", priority: true, sets: 3, reps: 10, increment: 5),
+        .init(name: "Romanian Deadlift", type: .compound, muscleGroup: "Hinge", priority: true, sets: 3, reps: 8, increment: 10),
+        .init(name: "Deadlift", type: .compound, muscleGroup: "Hinge", sets: 3, reps: 5, increment: 10),
+        .init(name: "Trap Bar Deadlift", type: .compound, muscleGroup: "Hinge", sets: 3, reps: 5, increment: 10),
+        .init(name: "Hip Thrust", type: .compound, muscleGroup: "Hinge", sets: 3, reps: 10, increment: 10),
+        .init(name: "Bench Press", type: .compound, muscleGroup: "Chest", sets: 3, reps: 5, increment: 5),
+        .init(name: "Overhead Press", type: .compound, muscleGroup: "Shoulders", sets: 3, reps: 6, increment: 5),
+        .init(name: "Bent-Over Row", type: .compound, muscleGroup: "Back", sets: 3, reps: 8, increment: 5),
+        .init(name: "Pull-Up", type: .compound, muscleGroup: "Back", sets: 3, reps: 8, increment: 5),
+        .init(name: "Walking Lunge", type: .compound, muscleGroup: "Legs", sets: 3, reps: 12, increment: 5),
+        // Accessories
+        .init(name: "Incline Dumbbell Press", type: .accessory, muscleGroup: "Chest", sets: 3, reps: 10),
+        .init(name: "Lat Pulldown", type: .accessory, muscleGroup: "Back", sets: 3, reps: 10),
+        .init(name: "Dumbbell Row", type: .accessory, muscleGroup: "Back", sets: 3, reps: 10),
+        .init(name: "Lateral Raise", type: .accessory, muscleGroup: "Shoulders", sets: 3, reps: 15),
+        .init(name: "Face Pull", type: .accessory, muscleGroup: "Shoulders", sets: 3, reps: 15),
+        .init(name: "Barbell Curl", type: .accessory, muscleGroup: "Arms", sets: 3, reps: 12),
+        .init(name: "Hammer Curl", type: .accessory, muscleGroup: "Arms", sets: 3, reps: 12),
+        .init(name: "Triceps Pushdown", type: .accessory, muscleGroup: "Arms", sets: 3, reps: 12),
+        .init(name: "Leg Curl", type: .accessory, muscleGroup: "Legs", sets: 3, reps: 12),
+        .init(name: "Calf Raise", type: .accessory, muscleGroup: "Legs", sets: 3, reps: 15),
+        .init(name: "Plank", type: .accessory, muscleGroup: "Core", sets: 3, reps: 1),
+        .init(name: "Hanging Leg Raise", type: .accessory, muscleGroup: "Core", sets: 3, reps: 12)
     ]
 
-    static let muscleGroups: [String] = [
-        "Chest", "Back", "Legs", "Shoulders", "Arms", "Core", "Cardio"
-    ]
-
-    static let plans: [WorkoutPlan] = [
-        WorkoutPlan(
-            title: "Full Body Starter",
-            subtitle: "3 days/week · ~45 min",
-            level: "Beginner",
-            focus: "Full Body",
+    /// 3-day full-body split, compound-first, with priority lifts woven in.
+    static let templates: [WorkoutTemplate] = [
+        WorkoutTemplate(
+            title: "Full Body A",
+            subtitle: "Squat focus",
             exercises: [
-                .init(name: "Back Squat", muscleGroup: "Legs", sets: 3, reps: 8),
-                .init(name: "Bench Press", muscleGroup: "Chest", sets: 3, reps: 8),
-                .init(name: "Bent-Over Row", muscleGroup: "Back", sets: 3, reps: 10),
-                .init(name: "Overhead Press", muscleGroup: "Shoulders", sets: 3, reps: 10),
-                .init(name: "Plank", muscleGroup: "Core", sets: 3, reps: 1)
+                .init(name: "Back Squat", sets: 3, reps: 5),
+                .init(name: "Bench Press", sets: 3, reps: 5),
+                .init(name: "Bent-Over Row", sets: 3, reps: 8),
+                .init(name: "Romanian Deadlift", sets: 3, reps: 8),
+                .init(name: "Plank", sets: 3, reps: 1)
             ]
         ),
-        WorkoutPlan(
-            title: "Push Day",
-            subtitle: "Chest · Shoulders · Triceps",
-            level: "Intermediate",
-            focus: "Chest",
+        WorkoutTemplate(
+            title: "Full Body B",
+            subtitle: "Hinge focus",
             exercises: [
-                .init(name: "Bench Press", muscleGroup: "Chest", sets: 4, reps: 6),
-                .init(name: "Incline Dumbbell Press", muscleGroup: "Chest", sets: 3, reps: 10),
-                .init(name: "Overhead Press", muscleGroup: "Shoulders", sets: 3, reps: 8),
-                .init(name: "Lateral Raise", muscleGroup: "Shoulders", sets: 3, reps: 15),
-                .init(name: "Triceps Pushdown", muscleGroup: "Arms", sets: 3, reps: 12)
+                .init(name: "Romanian Deadlift", sets: 3, reps: 8),
+                .init(name: "Overhead Press", sets: 3, reps: 6),
+                .init(name: "Pull-Up", sets: 3, reps: 8),
+                .init(name: "Goblet Squat", sets: 3, reps: 10),
+                .init(name: "Hanging Leg Raise", sets: 3, reps: 12)
             ]
         ),
-        WorkoutPlan(
-            title: "Pull Day",
-            subtitle: "Back · Biceps",
-            level: "Intermediate",
-            focus: "Back",
+        WorkoutTemplate(
+            title: "Full Body C",
+            subtitle: "Pull focus",
             exercises: [
-                .init(name: "Deadlift", muscleGroup: "Back", sets: 4, reps: 5),
-                .init(name: "Pull-Up", muscleGroup: "Back", sets: 3, reps: 8),
-                .init(name: "Bent-Over Row", muscleGroup: "Back", sets: 3, reps: 10),
-                .init(name: "Barbell Curl", muscleGroup: "Arms", sets: 3, reps: 12),
-                .init(name: "Hammer Curl", muscleGroup: "Arms", sets: 3, reps: 12)
-            ]
-        ),
-        WorkoutPlan(
-            title: "Leg Day",
-            subtitle: "Quads · Hamstrings · Calves",
-            level: "Advanced",
-            focus: "Legs",
-            exercises: [
-                .init(name: "Back Squat", muscleGroup: "Legs", sets: 5, reps: 5),
-                .init(name: "Romanian Deadlift", muscleGroup: "Legs", sets: 3, reps: 8),
-                .init(name: "Leg Press", muscleGroup: "Legs", sets: 3, reps: 12),
-                .init(name: "Walking Lunge", muscleGroup: "Legs", sets: 3, reps: 20),
-                .init(name: "Calf Raise", muscleGroup: "Legs", sets: 4, reps: 15)
-            ]
-        ),
-        WorkoutPlan(
-            title: "Quick HIIT",
-            subtitle: "20 min · fat burn",
-            level: "Beginner",
-            focus: "Cardio",
-            exercises: [
-                .init(name: "Jump Rope", muscleGroup: "Cardio", sets: 4, reps: 1),
-                .init(name: "Push-Up", muscleGroup: "Chest", sets: 4, reps: 15),
-                .init(name: "Walking Lunge", muscleGroup: "Legs", sets: 4, reps: 20),
-                .init(name: "Plank", muscleGroup: "Core", sets: 4, reps: 1)
+                .init(name: "Deadlift", sets: 3, reps: 5),
+                .init(name: "Incline Dumbbell Press", sets: 3, reps: 10),
+                .init(name: "Lat Pulldown", sets: 3, reps: 10),
+                .init(name: "Walking Lunge", sets: 3, reps: 12),
+                .init(name: "Face Pull", sets: 3, reps: 15)
             ]
         )
+    ]
+
+    /// Mandatory ankle prep — every item must be checked before lifting.
+    static let ankleWarmup: [String] = [
+        "Ankle circles — 10 each direction",
+        "Dorsiflexion knee-to-wall rocks — 2×10",
+        "Banded eversion / inversion — 2×10",
+        "Slow calf raises — 2×15",
+        "5 min easy incline walk"
     ]
 }
