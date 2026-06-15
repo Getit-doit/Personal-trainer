@@ -44,6 +44,7 @@ struct ExercisePickerView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
+                .listRowBackground(Color.clear)
             }
             .blueprintBackground()
             .searchable(text: $search, prompt: "Search \(exercises.count) exercises")

@@ -84,6 +84,7 @@ struct CustomTemplateEditorView: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .listRowBackground(Color.clear)
             .blueprintBackground()
             .navigationTitle(existing == nil ? "New Routine" : "Edit Routine")
             .navigationBarTitleDisplayMode(.inline)

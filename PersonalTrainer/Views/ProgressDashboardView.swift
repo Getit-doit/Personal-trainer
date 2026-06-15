@@ -173,6 +173,7 @@ struct AddPRSheet: View {
                 DatePicker("Date", selection: $date, displayedComponents: .date)
             }
             .scrollContentBackground(.hidden)
+            .listRowBackground(Color.clear)
             .blueprintBackground()
             .navigationTitle("Add PR")
             .navigationBarTitleDisplayMode(.inline)

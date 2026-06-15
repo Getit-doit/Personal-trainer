@@ -39,6 +39,7 @@ struct ActiveSessionView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        .listRowBackground(Color.clear)
         .blueprintBackground()
         .barLoadingOverlay(isSaving, label: "Saving to Health…")
         .navigationTitle(session.notes.isEmpty ? "Workout" : session.notes)
@@ -454,11 +455,12 @@ struct SetRow: View {
 
                 field(value: $set.weight, unit: "lb", width: 56, decimal: true)
                 Button { showPlates = true } label: {
-                    Image(systemName: "circle.grid.2x2")
+                    Image("eq_barbell").renderingMode(.template)
+                        .resizable().scaledToFit().frame(width: 26, height: 20)
                         .foregroundStyle(Theme.accent)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Plate calculator")
+                .accessibilityLabel("Load plates")
                 Text("×").foregroundStyle(.secondary)
                 intField(value: $set.reps, unit: "reps", width: 40)
                 if set.isDropSet {

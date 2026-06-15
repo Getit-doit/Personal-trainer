@@ -29,6 +29,7 @@ struct TrainView: View {
                         .onDelete(perform: delete)
                     }
                     .scrollContentBackground(.hidden)
+                    .listRowBackground(Color.clear)
                 }
             }
             .blueprintBackground()

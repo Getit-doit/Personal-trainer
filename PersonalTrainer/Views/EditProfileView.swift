@@ -60,6 +60,7 @@ struct EditProfileView: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .listRowBackground(Color.clear)
             .blueprintBackground()
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)

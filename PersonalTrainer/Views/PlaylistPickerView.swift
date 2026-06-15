@@ -52,6 +52,7 @@ struct PlaylistPickerView: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .listRowBackground(Color.clear)
             .blueprintBackground()
             .barLoadingOverlay(isWorking, label: "Loading your library…")
             .navigationTitle("Workout Playlist")
