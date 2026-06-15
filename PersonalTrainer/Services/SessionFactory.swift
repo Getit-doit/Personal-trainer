@@ -12,6 +12,44 @@ enum SessionFactory {
         return session
     }
 
+    /// Start any routine day (built-in or custom).
+    static func start(_ day: RoutineDay, context: ModelContext) -> WorkoutSession {
+        switch day {
+        case .builtin(let template): return fromTemplate(template, context: context)
+        case .custom(let template): return fromCustom(template, context: context)
+        }
+    }
+
+    static func fromCustom(_ template: CustomTemplate, context: ModelContext) -> WorkoutSession {
+        let catalog = (try? context.fetch(FetchDescriptor<Exercise>())) ?? []
+        let byName = Dictionary(catalog.map { ($0.name, $0) }, uniquingKeysWith: { a, _ in a })
+
+        let session = WorkoutSession()
+        session.notes = template.title
+        context.insert(session)
+
+        for (index, item) in template.sortedItems.enumerated() {
+            let catalogExercise = byName[item.name]
+            let logged = LoggedExercise(
+                name: item.name,
+                type: catalogExercise?.type ?? .accessory,
+                muscleGroup: item.muscleGroup,
+                equipment: item.equipment,
+                order: index
+            )
+            logged.session = session
+            logged.exercise = catalogExercise
+            context.insert(logged)
+            for setIndex in 0..<max(item.sets, 1) {
+                let set = SetLog(weight: 0, reps: item.reps, order: setIndex)
+                set.exercise = logged
+                context.insert(set)
+            }
+        }
+        try? context.save()
+        return session
+    }
+
     static func fromTemplate(_ template: WorkoutTemplate, context: ModelContext) -> WorkoutSession {
         let catalog = (try? context.fetch(FetchDescriptor<Exercise>())) ?? []
         let byName = Dictionary(uniqueKeysWithValues: catalog.map { ($0.name, $0) })

@@ -43,7 +43,7 @@ struct TrainView: View {
             }
             .sheet(isPresented: $showTemplatePicker) {
                 RoutineLibraryView(
-                    onStart: { startedSession = SessionFactory.fromTemplate($0, context: context) },
+                    onStart: { startedSession = SessionFactory.start($0, context: context) },
                     onEmpty: { startedSession = SessionFactory.blank(context: context) }
                 )
             }

@@ -321,3 +321,50 @@ final class RecoveryLog {
         self.stressLevel = stressLevel
     }
 }
+
+// MARK: - Custom routines
+
+/// A user-created day template that belongs to a (possibly new) program.
+@Model
+final class CustomTemplate {
+    var program: String
+    var title: String
+    var level: String
+    var order: Int
+
+    @Relationship(deleteRule: .cascade, inverse: \CustomTemplateItem.template)
+    var items: [CustomTemplateItem]
+
+    init(program: String, title: String, level: String = "Custom", order: Int = 0) {
+        self.program = program
+        self.title = title
+        self.level = level
+        self.order = order
+        self.items = []
+    }
+
+    var sortedItems: [CustomTemplateItem] { items.sorted { $0.order < $1.order } }
+}
+
+/// One exercise slot inside a custom day template.
+@Model
+final class CustomTemplateItem {
+    var name: String
+    var muscleGroup: String
+    var equipmentRaw: String = Equipment.barbell.rawValue
+    var sets: Int
+    var reps: Int
+    var order: Int
+    var template: CustomTemplate?
+
+    var equipment: Equipment { Equipment(rawValue: equipmentRaw) ?? .barbell }
+
+    init(name: String, muscleGroup: String, equipment: Equipment, sets: Int, reps: Int, order: Int) {
+        self.name = name
+        self.muscleGroup = muscleGroup
+        self.equipmentRaw = equipment.rawValue
+        self.sets = sets
+        self.reps = reps
+        self.order = order
+    }
+}

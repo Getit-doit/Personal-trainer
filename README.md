@@ -43,6 +43,8 @@ the warm-up gate.
 | 17 | **Exercise database by equipment** — ~45 exercises tagged with blueprint equipment logos (barbell, squat rack, dumbbell, kettlebell, bench, cable, machine, bodyweight, cardio); picker groups + filters by equipment. | Train |
 | 18 | **Edit profile** — change stats, schedule, goal, and constraints after onboarding. | Today |
 | 19 | **Routine library** — browse programs (Full Body, Push/Pull/Legs, Upper/Lower, 5×5, Conditioning) with day templates, level, and equipment badges; start any with one tap. | Today / Train |
+| 20 | **Custom routines** — create/edit/delete your own programs and day templates (pick exercises, sets, reps, reorder); they appear alongside the built-ins. | Routine library |
+| 21 | **Recommended today** — auto-suggests the next day in your chosen program based on history; switch the active program from the card. | Today |
 
 Plus an **AI Coach** tab — constraint-aware (ankle, sleep, single-lever
 nutrition). Works offline; optionally upgrades to the Claude API.

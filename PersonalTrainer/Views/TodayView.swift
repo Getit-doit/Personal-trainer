@@ -11,11 +11,13 @@ struct TodayView: View {
     @Query(sort: \WorkoutSession.date, order: .reverse) private var sessions: [WorkoutSession]
     @Query(sort: \RecoveryLog.date, order: .reverse) private var recovery: [RecoveryLog]
     @Query(sort: \NutritionLog.date, order: .reverse) private var nutrition: [NutritionLog]
+    @Query(sort: \CustomTemplate.order) private var customTemplates: [CustomTemplate]
 
     @State private var startedSession: WorkoutSession?
     @State private var showTemplatePicker = false
     @State private var recoveryLog: RecoveryLog?
     @State private var showProfile = false
+    @AppStorage("activeProgram") private var activeProgram = "Full Body"
 
     private var profile: UserProfile? { profiles.first }
 
@@ -24,6 +26,7 @@ struct TodayView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     header
+                    recommendedCard
                     recoveryCard
                     healthCard
                     progressionCard
@@ -50,7 +53,7 @@ struct TodayView: View {
             }
             .sheet(isPresented: $showTemplatePicker) {
                 RoutineLibraryView(
-                    onStart: { startedSession = SessionFactory.fromTemplate($0, context: context) },
+                    onStart: { startedSession = SessionFactory.start($0, context: context) },
                     onEmpty: { startedSession = SessionFactory.blank(context: context) }
                 )
             }
@@ -73,6 +76,69 @@ struct TodayView: View {
         case 5..<12: return "Good morning 👋"
         case 12..<17: return "Good afternoon 👋"
         default: return "Good evening 👋"
+        }
+    }
+
+    // MARK: Recommended today
+
+    private var programNames: [String] {
+        ProgramScheduler.allProgramNames(custom: customTemplates)
+    }
+
+    private var resolvedProgram: String {
+        programNames.contains(activeProgram) ? activeProgram : (programNames.first ?? "Full Body")
+    }
+
+    @ViewBuilder
+    private var recommendedCard: some View {
+        if let next = ProgramScheduler.nextDay(program: resolvedProgram, custom: customTemplates, sessions: sessions) {
+            Card {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Label("Up next", systemImage: "calendar.badge.clock")
+                            .font(Theme.hand(19, relativeTo: .headline))
+                        Spacer()
+                        Menu {
+                            ForEach(programNames, id: \.self) { name in
+                                Button {
+                                    activeProgram = name
+                                } label: {
+                                    if name == resolvedProgram { Label(name, systemImage: "checkmark") } else { Text(name) }
+                                }
+                            }
+                        } label: {
+                            HStack(spacing: 3) {
+                                Text(resolvedProgram).font(.caption).bold()
+                                Image(systemName: "chevron.down").font(.caption2)
+                            }
+                            .foregroundStyle(Theme.accent)
+                        }
+                    }
+
+                    HStack(spacing: 10) {
+                        ForEach(next.equipment, id: \.self) { eq in
+                            eq.image.resizable().scaledToFit().frame(width: 20, height: 20)
+                                .foregroundStyle(Theme.accent)
+                        }
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(next.title).font(.subheadline).bold()
+                            Text(next.subtitle).font(.caption2).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+
+                    Button {
+                        startedSession = SessionFactory.start(next, context: context)
+                    } label: {
+                        Text("Start \(next.title)")
+                            .font(Theme.hand(17, relativeTo: .headline))
+                            .frame(maxWidth: .infinity).padding(.vertical, 8)
+                            .background(Theme.accent, in: RoundedRectangle(cornerRadius: 12))
+                            .foregroundStyle(Theme.blueprintDeep)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
     }
 
