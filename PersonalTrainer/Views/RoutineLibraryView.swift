@@ -14,6 +14,24 @@ struct RoutineLibraryView: View {
 
     @State private var editorTemplate: CustomTemplate?
     @State private var showingNewEditor = false
+    @State private var timeFilter: TimeFilter = .any
+
+    /// Duration buckets for the "time available" filter.
+    enum TimeFilter: String, CaseIterable, Identifiable {
+        case any = "Any time"
+        case short = "~30 min"
+        case medium = "~45 min"
+        case long = "60+ min"
+        var id: String { rawValue }
+        func matches(_ minutes: Int) -> Bool {
+            switch self {
+            case .any: return true
+            case .short: return minutes <= 35
+            case .medium: return (36...52).contains(minutes)
+            case .long: return minutes >= 53
+            }
+        }
+    }
 
     private var customPrograms: [String] {
         var seen: [String] = []
@@ -25,6 +43,7 @@ struct RoutineLibraryView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
+                    timeFilterRow
                     emptyCard
 
                     // Custom routines
@@ -60,6 +79,43 @@ struct RoutineLibraryView: View {
         }
     }
 
+    private var timeFilterRow: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(TimeFilter.allCases) { option in
+                    let selected = timeFilter == option
+                    Button { timeFilter = option } label: {
+                        Text(option.rawValue)
+                            .font(.caption).bold()
+                            .padding(.horizontal, 12).padding(.vertical, 7)
+                            .background(selected ? Theme.accent : Theme.card, in: Capsule())
+                            .foregroundStyle(selected ? Theme.blueprintDeep : .white)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func programSection(_ program: String, days allDays: [RoutineDay], custom isCustom: Bool) -> some View {
+        let days = allDays.filter { timeFilter.matches($0.estimatedMinutes) }
+        if !days.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text(program).font(Theme.hand(22, relativeTo: .title3))
+                    if isCustom {
+                        Image(systemName: "person.crop.circle").font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.leading, 4)
+                ForEach(days) { day in
+                    dayCard(day, isCustom: isCustom)
+                }
+            }
+        }
+    }
+
     private var emptyCard: some View {
         Button {
             onEmpty(); dismiss()
@@ -74,21 +130,6 @@ struct RoutineLibraryView: View {
             }
         }
         .buttonStyle(.plain)
-    }
-
-    private func programSection(_ program: String, days: [RoutineDay], custom isCustom: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(program).font(Theme.hand(22, relativeTo: .title3))
-                if isCustom {
-                    Image(systemName: "person.crop.circle").font(.caption).foregroundStyle(.secondary)
-                }
-            }
-            .padding(.leading, 4)
-            ForEach(days) { day in
-                dayCard(day, isCustom: isCustom)
-            }
-        }
     }
 
     private func dayCard(_ day: RoutineDay, isCustom: Bool) -> some View {
@@ -122,7 +163,8 @@ struct RoutineLibraryView: View {
                             .foregroundStyle(Theme.accent)
                     }
                     Spacer()
-                    Text("\(day.exerciseCount) exercises").font(.caption2).foregroundStyle(.secondary)
+                    Text("\(day.exerciseCount) exercises · ≈\(day.estimatedMinutes) min")
+                        .font(.caption2).foregroundStyle(.secondary)
                 }
 
                 Button {

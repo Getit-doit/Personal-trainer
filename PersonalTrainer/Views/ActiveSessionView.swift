@@ -23,6 +23,11 @@ struct ActiveSessionView: View {
     @State private var dropSetTarget: LoggedExercise?
     @State private var isSaving = false
 
+    // Rest timer settings (editable in Profile)
+    @AppStorage("restCompound") private var restCompound = 180
+    @AppStorage("restAccessory") private var restAccessory = 90
+    @AppStorage("autoStartRest") private var autoStartRest = true
+
     var body: some View {
         List {
             musicSection
@@ -130,7 +135,7 @@ struct ActiveSessionView: View {
     private var restPresetSection: some View {
         Section {
             HStack {
-                ForEach([60, 90, 120, 180], id: \.self) { seconds in
+                ForEach(restPresets, id: \.self) { seconds in
                     Button {
                         rest.start(seconds: seconds)
                     } label: {
@@ -147,7 +152,9 @@ struct ActiveSessionView: View {
         } header: {
             Label("Rest Timer", systemImage: "timer")
         } footer: {
-            Text("Auto-starts when you complete a set: 3 min after compounds, 90 s after accessories.")
+            Text(autoStartRest
+                 ? "Auto-starts when you complete a set: \(restLabel(restCompound)) after compounds, \(restLabel(restAccessory)) after accessories. Change these in Profile."
+                 : "Auto-start is off — tap a preset to start a rest. Change this in Profile.")
         }
     }
 
@@ -156,7 +163,12 @@ struct ActiveSessionView: View {
     }
 
     private func defaultRest(for type: ExerciseType) -> Int {
-        type == .compound ? 180 : 90
+        type == .compound ? restCompound : restAccessory
+    }
+
+    /// Preset chips reflect the user's configured rest times.
+    private var restPresets: [Int] {
+        Array(Set([60, 90, 120, restAccessory, restCompound])).sorted()
     }
 
     // MARK: Warm-up gate
@@ -324,6 +336,7 @@ struct ActiveSessionView: View {
     /// between consecutive drop-set stages, or mid-superset (rest comes after
     /// the last exercise in the group).
     private func handleSetCompleted(_ set: SetLog, in exercise: LoggedExercise) {
+        guard autoStartRest else { return }
         let sets = exercise.sortedSets
         if set.isDropSet,
            let index = sets.firstIndex(where: { $0.persistentModelID == set.persistentModelID }),

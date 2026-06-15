@@ -45,6 +45,8 @@ the warm-up gate.
 | 19 | **Routine library** — browse programs (Full Body, Push/Pull/Legs, Upper/Lower, 5×5, Conditioning) with day templates, level, and equipment badges; start any with one tap. | Today / Train |
 | 20 | **Custom routines** — create/edit/delete your own programs and day templates (pick exercises, sets, reps, reorder); they appear alongside the built-ins. | Routine library |
 | 21 | **Recommended today** — auto-suggests the next day in your chosen program based on history; switch the active program from the card. | Today |
+| 22 | **Customizable rest timer** — set your own compound/accessory auto-rest and toggle auto-start; preset chips follow your settings. | Profile / session |
+| 23 | **Workouts by time** — every routine shows an estimated duration; filter by ~30 / ~45 / 60+ min, plus a built-in Express (30 min) program. | Routine library |
 
 Plus an **AI Coach** tab — constraint-aware (ankle, sleep, single-lever
 nutrition). Works offline; optionally upgrades to the Claude API.

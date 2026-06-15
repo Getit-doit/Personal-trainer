@@ -11,6 +11,10 @@ struct EditProfileView: View {
     @State private var feet = 5
     @State private var inches = 10
 
+    @AppStorage("restCompound") private var restCompound = 180
+    @AppStorage("restAccessory") private var restAccessory = 90
+    @AppStorage("autoStartRest") private var autoStartRest = true
+
     var body: some View {
         NavigationStack {
             Form {
@@ -43,6 +47,19 @@ struct EditProfileView: View {
                 Section("Goal") {
                     TextField("Primary goal", text: $profile.goals, axis: .vertical)
                         .lineLimit(1...3)
+                }
+
+                Section {
+                    Toggle("Auto-start after a set", isOn: $autoStartRest)
+                        .tint(Theme.accent)
+                    Stepper("Compound rest: \(restLabel(restCompound))",
+                            value: $restCompound, in: 30...420, step: 15)
+                    Stepper("Accessory rest: \(restLabel(restAccessory))",
+                            value: $restAccessory, in: 30...420, step: 15)
+                } header: {
+                    Text("Rest Timer")
+                } footer: {
+                    Text("These set the auto-start rest and the preset chips during a workout.")
                 }
 
                 Section {
@@ -79,5 +96,10 @@ struct EditProfileView: View {
                 }
             }
         }
+    }
+
+    private func restLabel(_ seconds: Int) -> String {
+        seconds < 60 ? "\(seconds)s"
+            : (seconds % 60 == 0 ? "\(seconds / 60) min" : "\(seconds / 60):\(String(format: "%02d", seconds % 60))")
     }
 }

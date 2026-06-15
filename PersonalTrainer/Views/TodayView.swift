@@ -122,7 +122,8 @@ struct TodayView: View {
                         }
                         VStack(alignment: .leading, spacing: 1) {
                             Text(next.title).font(.subheadline).bold()
-                            Text(next.subtitle).font(.caption2).foregroundStyle(.secondary)
+                            Text("\(next.subtitle) · ≈\(next.estimatedMinutes) min")
+                                .font(.caption2).foregroundStyle(.secondary)
                         }
                         Spacer()
                     }

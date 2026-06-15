@@ -26,6 +26,7 @@ struct WorkoutTemplate: Identifiable {
     let level: String
     let title: String
     let subtitle: String
+    var minutes: Int = 45
     let exercises: [TemplateExercise]
 }
 
@@ -110,7 +111,7 @@ enum TrainingContent {
     static let templates: [WorkoutTemplate] = [
         // MARK: Full Body (Beginner)
         WorkoutTemplate(program: "Full Body", level: "Beginner",
-            title: "Full Body A", subtitle: "Squat focus",
+            title: "Full Body A", subtitle: "Squat focus", minutes: 50,
             exercises: [
                 .init(name: "Back Squat", sets: 3, reps: 5),
                 .init(name: "Bench Press", sets: 3, reps: 5),
@@ -119,7 +120,7 @@ enum TrainingContent {
                 .init(name: "Plank", sets: 3, reps: 1)
             ]),
         WorkoutTemplate(program: "Full Body", level: "Beginner",
-            title: "Full Body B", subtitle: "Hinge focus",
+            title: "Full Body B", subtitle: "Hinge focus", minutes: 50,
             exercises: [
                 .init(name: "Romanian Deadlift", sets: 3, reps: 8),
                 .init(name: "Overhead Press", sets: 3, reps: 6),
@@ -128,7 +129,7 @@ enum TrainingContent {
                 .init(name: "Hanging Leg Raise", sets: 3, reps: 12)
             ]),
         WorkoutTemplate(program: "Full Body", level: "Beginner",
-            title: "Full Body C", subtitle: "Pull focus",
+            title: "Full Body C", subtitle: "Pull focus", minutes: 50,
             exercises: [
                 .init(name: "Deadlift", sets: 3, reps: 5),
                 .init(name: "Incline Dumbbell Press", sets: 3, reps: 10),
@@ -139,7 +140,7 @@ enum TrainingContent {
 
         // MARK: Push / Pull / Legs (Intermediate)
         WorkoutTemplate(program: "Push / Pull / Legs", level: "Intermediate",
-            title: "Push", subtitle: "Chest · Shoulders · Triceps",
+            title: "Push", subtitle: "Chest · Shoulders · Triceps", minutes: 60,
             exercises: [
                 .init(name: "Bench Press", sets: 4, reps: 6),
                 .init(name: "Overhead Press", sets: 3, reps: 8),
@@ -148,7 +149,7 @@ enum TrainingContent {
                 .init(name: "Triceps Pushdown", sets: 3, reps: 12)
             ]),
         WorkoutTemplate(program: "Push / Pull / Legs", level: "Intermediate",
-            title: "Pull", subtitle: "Back · Biceps",
+            title: "Pull", subtitle: "Back · Biceps", minutes: 60,
             exercises: [
                 .init(name: "Deadlift", sets: 3, reps: 5),
                 .init(name: "Pull-Up", sets: 3, reps: 8),
@@ -157,7 +158,7 @@ enum TrainingContent {
                 .init(name: "Face Pull", sets: 3, reps: 15)
             ]),
         WorkoutTemplate(program: "Push / Pull / Legs", level: "Intermediate",
-            title: "Legs", subtitle: "Quads · Hamstrings · Calves",
+            title: "Legs", subtitle: "Quads · Hamstrings · Calves", minutes: 60,
             exercises: [
                 .init(name: "Back Squat", sets: 4, reps: 6),
                 .init(name: "Romanian Deadlift", sets: 3, reps: 8),
@@ -168,7 +169,7 @@ enum TrainingContent {
 
         // MARK: Upper / Lower (Intermediate)
         WorkoutTemplate(program: "Upper / Lower", level: "Intermediate",
-            title: "Upper", subtitle: "Push + pull",
+            title: "Upper", subtitle: "Push + pull", minutes: 60,
             exercises: [
                 .init(name: "Bench Press", sets: 4, reps: 6),
                 .init(name: "Bent-Over Row", sets: 4, reps: 8),
@@ -177,7 +178,7 @@ enum TrainingContent {
                 .init(name: "Barbell Curl", sets: 3, reps: 12)
             ]),
         WorkoutTemplate(program: "Upper / Lower", level: "Intermediate",
-            title: "Lower", subtitle: "Legs + core",
+            title: "Lower", subtitle: "Legs + core", minutes: 60,
             exercises: [
                 .init(name: "Back Squat", sets: 4, reps: 6),
                 .init(name: "Romanian Deadlift", sets: 3, reps: 8),
@@ -188,14 +189,14 @@ enum TrainingContent {
 
         // MARK: 5×5 Strength (Beginner)
         WorkoutTemplate(program: "5×5 Strength", level: "Beginner",
-            title: "Workout A", subtitle: "Squat · Bench · Row",
+            title: "Workout A", subtitle: "Squat · Bench · Row", minutes: 40,
             exercises: [
                 .init(name: "Back Squat", sets: 5, reps: 5),
                 .init(name: "Bench Press", sets: 5, reps: 5),
                 .init(name: "Bent-Over Row", sets: 5, reps: 5)
             ]),
         WorkoutTemplate(program: "5×5 Strength", level: "Beginner",
-            title: "Workout B", subtitle: "Squat · Press · Deadlift",
+            title: "Workout B", subtitle: "Squat · Press · Deadlift", minutes: 40,
             exercises: [
                 .init(name: "Back Squat", sets: 5, reps: 5),
                 .init(name: "Overhead Press", sets: 5, reps: 5),
@@ -204,7 +205,7 @@ enum TrainingContent {
 
         // MARK: Conditioning (Beginner)
         WorkoutTemplate(program: "Conditioning", level: "Beginner",
-            title: "Quick HIIT", subtitle: "20 min · low-impact",
+            title: "Quick HIIT", subtitle: "Low-impact circuit", minutes: 20,
             exercises: [
                 .init(name: "Kettlebell Swing", sets: 4, reps: 15),
                 .init(name: "Push-Up", sets: 4, reps: 15),
@@ -212,9 +213,33 @@ enum TrainingContent {
                 .init(name: "Plank", sets: 4, reps: 1)
             ]),
         WorkoutTemplate(program: "Conditioning", level: "Beginner",
-            title: "Cardio Finisher", subtitle: "Low-impact incline walk",
+            title: "Cardio Finisher", subtitle: "Low-impact incline walk", minutes: 15,
             exercises: [
                 .init(name: "Incline Walk", sets: 1, reps: 1)
+            ]),
+
+        // MARK: Express (30 min) — short, compound-focused
+        WorkoutTemplate(program: "Express (30 min)", level: "Beginner",
+            title: "Express Full Body", subtitle: "3 lifts + core", minutes: 30,
+            exercises: [
+                .init(name: "Goblet Squat", sets: 3, reps: 10),
+                .init(name: "Dumbbell Bench Press", sets: 3, reps: 10),
+                .init(name: "Dumbbell Row", sets: 3, reps: 10),
+                .init(name: "Plank", sets: 3, reps: 1)
+            ]),
+        WorkoutTemplate(program: "Express (30 min)", level: "Beginner",
+            title: "Express Lower", subtitle: "Quick legs", minutes: 30,
+            exercises: [
+                .init(name: "Back Squat", sets: 3, reps: 5),
+                .init(name: "Romanian Deadlift", sets: 3, reps: 8),
+                .init(name: "Calf Raise", sets: 3, reps: 15)
+            ]),
+        WorkoutTemplate(program: "Express (30 min)", level: "Beginner",
+            title: "Express Upper", subtitle: "Quick push/pull", minutes: 30,
+            exercises: [
+                .init(name: "Bench Press", sets: 3, reps: 6),
+                .init(name: "Lat Pulldown", sets: 3, reps: 10),
+                .init(name: "Lateral Raise", sets: 3, reps: 15)
             ])
     ]
 

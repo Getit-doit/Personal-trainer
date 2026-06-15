@@ -49,6 +49,18 @@ enum RoutineDay: Identifiable {
         }
     }
 
+    /// Rough session duration in minutes (built-in: hand-set; custom: estimated
+    /// from total sets at ~1.5 min/set plus warm-up).
+    var estimatedMinutes: Int {
+        switch self {
+        case .builtin(let t):
+            return t.minutes
+        case .custom(let c):
+            let totalSets = c.items.reduce(0) { $0 + max($1.sets, 1) }
+            return max(15, Int((Double(totalSets) * 1.5).rounded()) + 5)
+        }
+    }
+
     var equipment: [Equipment] {
         switch self {
         case .builtin(let t):
