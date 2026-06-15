@@ -80,17 +80,22 @@ struct BlueprintBackdrop: View {
 struct BlueprintGrid: View {
     var body: some View {
         Canvas { context, size in
-            let minor: CGFloat = 26
-            let drawLines: (CGFloat, Double, Double) -> Void = { step, opacity, width in
+            // Build paths first (no capture of the inout context), then stroke.
+            func gridPath(step: CGFloat) -> Path {
                 var path = Path()
                 var x: CGFloat = 0
-                while x <= size.width { path.move(to: .init(x: x, y: 0)); path.addLine(to: .init(x: x, y: size.height)); x += step }
+                while x <= size.width {
+                    path.move(to: .init(x: x, y: 0)); path.addLine(to: .init(x: x, y: size.height)); x += step
+                }
                 var y: CGFloat = 0
-                while y <= size.height { path.move(to: .init(x: 0, y: y)); path.addLine(to: .init(x: size.width, y: y)); y += step }
-                context.stroke(path, with: .color(.white.opacity(opacity)), lineWidth: width)
+                while y <= size.height {
+                    path.move(to: .init(x: 0, y: y)); path.addLine(to: .init(x: size.width, y: y)); y += step
+                }
+                return path
             }
-            drawLines(minor, 0.06, 0.5)        // minor grid
-            drawLines(minor * 5, 0.12, 0.8)    // major grid
+            let minor: CGFloat = 26
+            context.stroke(gridPath(step: minor), with: .color(.white.opacity(0.06)), lineWidth: 0.5)
+            context.stroke(gridPath(step: minor * 5), with: .color(.white.opacity(0.12)), lineWidth: 0.8)
         }
         .allowsHitTesting(false)
     }
