@@ -108,7 +108,7 @@ extension View {
     }
 }
 
-/// A reusable outlined "drawn" card on the blueprint.
+/// A reusable outlined "drawn" card on the blueprint, with a hand-sketched border.
 struct Card<Content: View>: View {
     @ViewBuilder var content: Content
 
@@ -117,12 +117,66 @@ struct Card<Content: View>: View {
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoughRect(seed: 11)
                     .fill(Color.white.opacity(0.05))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(Color.white.opacity(0.65), lineWidth: 1.5)
+                ZStack {
+                    // Two slightly different strokes → felt-tip "drawn twice" look.
+                    RoughRect(seed: 7).stroke(Color.white.opacity(0.75), lineWidth: 1.6)
+                    RoughRect(seed: 29).stroke(Color.white.opacity(0.35), lineWidth: 1.0)
+                }
             )
+    }
+}
+
+/// Tiny deterministic RNG so the sketch lines are stable across redraws
+/// (no shimmering) while still looking irregular.
+private struct SeededRNG {
+    var state: UInt64
+    init(_ seed: UInt64) { state = seed &* 2862933555777941757 &+ 3037000493 }
+    mutating func next() -> CGFloat {
+        state = state &* 6364136223846793005 &+ 1442695040888963407
+        return CGFloat(Double(state >> 11) / Double(1 << 53))
+    }
+    mutating func jitter(_ amp: CGFloat) -> CGFloat { (next() * 2 - 1) * amp }
+}
+
+/// A rounded-ish rectangle whose edges wobble slightly, like a marker outline.
+struct RoughRect: Shape {
+    var seed: UInt64 = 1
+    var amplitude: CGFloat = 1.6
+
+    func path(in rect: CGRect) -> Path {
+        var rng = SeededRNG(seed)
+        let r = rect.insetBy(dx: 3, dy: 3)
+        // Corners nudged a hair off-true.
+        let tl = CGPoint(x: r.minX + rng.jitter(2), y: r.minY + rng.jitter(2))
+        let tr = CGPoint(x: r.maxX + rng.jitter(2), y: r.minY + rng.jitter(2))
+        let br = CGPoint(x: r.maxX + rng.jitter(2), y: r.maxY + rng.jitter(2))
+        let bl = CGPoint(x: r.minX + rng.jitter(2), y: r.maxY + rng.jitter(2))
+
+        var path = Path()
+        addRoughLine(&path, from: tl, to: tr, rng: &rng)
+        addRoughLine(&path, from: tr, to: br, rng: &rng)
+        addRoughLine(&path, from: br, to: bl, rng: &rng)
+        addRoughLine(&path, from: bl, to: tl, rng: &rng)
+        path.closeSubpath()
+        return path
+    }
+
+    private func addRoughLine(_ path: inout Path, from a: CGPoint, to b: CGPoint, rng: inout SeededRNG) {
+        let segments = 6
+        let len = max(hypot(b.x - a.x, b.y - a.y), 0.001)
+        let nx = -(b.y - a.y) / len   // perpendicular unit vector
+        let ny = (b.x - a.x) / len
+        if path.isEmpty { path.move(to: a) } else { path.addLine(to: a) }
+        for i in 1...segments {
+            let t = CGFloat(i) / CGFloat(segments)
+            let wobble = i == segments ? 0 : rng.jitter(amplitude)
+            let x = a.x + (b.x - a.x) * t + nx * wobble
+            let y = a.y + (b.y - a.y) * t + ny * wobble
+            path.addLine(to: CGPoint(x: x, y: y))
+        }
     }
 }

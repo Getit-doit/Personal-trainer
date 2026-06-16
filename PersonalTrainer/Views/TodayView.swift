@@ -289,12 +289,13 @@ struct TodayView: View {
 
     private var startCard: some View {
         Button { showTemplatePicker = true } label: {
-            Label("Start Workout", systemImage: "play.fill")
+            Label("Browse All Workouts", systemImage: "square.grid.2x2")
                 .font(Theme.hand(20, relativeTo: .headline))
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Theme.accent, in: RoundedRectangle(cornerRadius: 16))
-                .foregroundStyle(Theme.blueprintDeep)
+                .background(Theme.accent.opacity(0.18), in: RoundedRectangle(cornerRadius: 16))
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.accent.opacity(0.5), lineWidth: 1))
+                .foregroundStyle(Theme.accent)
         }
     }
 }
