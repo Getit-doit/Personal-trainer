@@ -92,17 +92,23 @@ To run on your own iPhone, plug it in, pick it as the destination, and set your
 Apple ID under **Signing & Capabilities** (bundle id
 `com.getitdoit.PersonalTrainer`).
 
-## Enable the live Claude coach (optional)
+## The AI coach — three tiers
 
-The Coach works offline out of the box. To use Claude for richer replies:
+The Coach picks the best engine available, shown as a badge in the Coach tab:
 
-1. Get a key from the [Anthropic Console](https://console.anthropic.com/).
-2. In `PersonalTrainer/Services/CoachService.swift`, set
-   `Config.anthropicAPIKey = "sk-ant-..."`.
-3. Run — the coach now calls `claude-sonnet-4-6` with the athlete's profile as
-   system context.
+1. **Claude** — if you set `Config.anthropicAPIKey` in
+   `PersonalTrainer/Services/CoachService.swift` (smartest; needs network).
+2. **On-device AI** — Apple's Foundation Models (Apple Intelligence). A local
+   model that runs **offline, free, and private** with no key, on supported
+   devices (iOS 26+, Apple-Intelligence-capable hardware). Weaker than Claude
+   but far better than canned replies. Compiled only when the SDK is present, so
+   the project still builds on older Xcode.
+3. **Built-in coach** — a rule-based trainer that always works, zero setup.
 
-> Don't commit a real key. For production, proxy through your own backend.
+To enable the live Claude tier, get a key from the
+[Anthropic Console](https://console.anthropic.com/) and set
+`Config.anthropicAPIKey = "sk-ant-..."`. Don't commit a real key; for
+production, proxy through your own backend.
 
 ## Project structure
 

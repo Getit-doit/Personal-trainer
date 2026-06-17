@@ -1,19 +1,63 @@
 import Foundation
+#if canImport(FoundationModels)
+import FoundationModels
+#endif
 
-/// The in-app AI coach.
-///
-/// Works fully offline with a built-in rule-based trainer. If you add a Claude
-/// API key in `Config.anthropicAPIKey`, it will instead call Claude for richer,
-/// conversational coaching.
+/// The in-app AI coach, in three tiers (best available wins):
+///   1. Claude API — if `Config.anthropicAPIKey` is set (smartest, needs network)
+///   2. Apple on-device model — FoundationModels, if the device supports Apple
+///      Intelligence (weaker, but free, offline, and private — no key needed)
+///   3. Built-in rule-based trainer — always works, zero setup
 enum CoachService {
+
+    /// Which engine will currently answer (for UI labeling).
+    enum Engine {
+        case claude, onDevice, offline
+        var label: String {
+            switch self {
+            case .claude: return "Claude"
+            case .onDevice: return "On-device AI"
+            case .offline: return "Built-in coach"
+            }
+        }
+    }
+
+    static var activeEngine: Engine {
+        if !Config.anthropicAPIKey.isEmpty { return .claude }
+        #if canImport(FoundationModels)
+        if #available(iOS 26.0, *), OnDeviceCoach.isAvailable { return .onDevice }
+        #endif
+        return .offline
+    }
+
     static func reply(to message: String, history: [CoachMessage]) async -> String {
         if !Config.anthropicAPIKey.isEmpty {
             if let remote = try? await callClaude(message: message, history: history) {
                 return remote
             }
         }
+        #if canImport(FoundationModels)
+        if #available(iOS 26.0, *) {
+            if let onDevice = await OnDeviceCoach.reply(to: message, history: history) {
+                return onDevice
+            }
+        }
+        #endif
         return offlineReply(to: message)
     }
+
+    /// System prompt shared by the on-device model and Claude.
+    static let systemPrompt = """
+    You are an expert, encouraging functional-strength and longevity coach inside \
+    a fitness app. The athlete is a 33-year-old male, 5'10", started this block at \
+    217 lb, training weekday mornings before a desk job. Goals: functional lean \
+    strength and longevity. Constraints: sleeps only 6–7 hrs, high stress, and an \
+    ankle that inflames easily (always respect the mandatory ankle warm-up and \
+    introduce incline/impact/sprints/stairs gradually). Training is 3 days/week, \
+    scaling toward 5 as recovery allows, compound-first full-body. Favor progressive \
+    overload, autoregulation by RPE/reps-in-tank, and one nutrition "lever" at a \
+    time over full macro counting. Keep replies under 120 words unless asked for detail.
+    """
 
     // MARK: - Offline rule-based coach
 
@@ -104,18 +148,7 @@ enum CoachService {
         let body: [String: Any] = [
             "model": "claude-sonnet-4-6",
             "max_tokens": 500,
-            "system": """
-            You are an expert, encouraging functional-strength and longevity coach inside \
-            a fitness app. The athlete is a 33-year-old male, 5'10", started this block at \
-            217 lb, training weekday mornings before a desk job. Goals: functional lean \
-            strength and longevity. Constraints: sleeps only 6–7 hrs, high stress, and an \
-            ankle that inflames easily (always respect the mandatory ankle warm-up and \
-            introduce incline/impact/sprints/stairs gradually). Training is 3 days/week, \
-            scaling toward 5 as recovery allows, compound-first full-body. Favor \
-            progressive overload, autoregulation by RPE/reps-in-tank, and one nutrition \
-            "lever" at a time over full macro counting. Keep replies under 120 words \
-            unless asked for detail.
-            """,
+            "system": systemPrompt,
             "messages": messages
         ]
 

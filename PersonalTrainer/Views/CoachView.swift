@@ -76,6 +76,15 @@ struct CoachView: View {
             }
             .blueprintBackground()
             .navigationTitle("Coach")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "sparkles").font(.caption2)
+                        Text(CoachService.activeEngine.label).font(.caption2)
+                    }
+                    .foregroundStyle(.secondary)
+                }
+            }
         }
     }
 
