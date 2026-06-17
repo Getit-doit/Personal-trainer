@@ -38,12 +38,21 @@ enum CoachService {
         }
         #if canImport(FoundationModels)
         if #available(iOS 26.0, *) {
-            if let onDevice = await OnDeviceCoach.reply(to: message, history: history) {
+            if let onDevice = await OnDeviceCoach.shared.reply(to: message) {
                 return onDevice
             }
         }
         #endif
         return offlineReply(to: message)
+    }
+
+    /// Warm the on-device model (if that's the active engine) for a faster first reply.
+    static func prewarm() {
+        #if canImport(FoundationModels)
+        if #available(iOS 26.0, *), activeEngine == .onDevice {
+            Task { @MainActor in OnDeviceCoach.shared.prewarm() }
+        }
+        #endif
     }
 
     /// System prompt shared by the on-device model and Claude.

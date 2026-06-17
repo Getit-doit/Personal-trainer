@@ -76,6 +76,7 @@ struct CoachView: View {
             }
             .blueprintBackground()
             .navigationTitle("Coach")
+            .task { CoachService.prewarm() }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 4) {

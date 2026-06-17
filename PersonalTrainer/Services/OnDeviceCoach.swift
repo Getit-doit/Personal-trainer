@@ -5,30 +5,46 @@ import FoundationModels
 
 /// On-device coaching via Apple's Foundation Models (Apple Intelligence).
 ///
-/// This is the "weaker built-in AI" tier: a local ~3B model that runs entirely
-/// on device — no API key, no network, private. Available on Apple
-/// Intelligence-capable devices running iOS 26+. When unavailable, callers fall
-/// back to the rule-based coach.
+/// The "weaker built-in AI" tier: a local model that runs entirely on device —
+/// no API key, no network, private. Available on Apple Intelligence-capable
+/// devices running iOS 26+. A single session is kept alive so it retains
+/// conversation context natively and can be prewarmed for a faster first reply.
 @available(iOS 26.0, *)
-enum OnDeviceCoach {
-    static var isAvailable: Bool {
+@MainActor
+final class OnDeviceCoach {
+    static let shared = OnDeviceCoach()
+
+    nonisolated static var isAvailable: Bool {
         SystemLanguageModel.default.availability == .available
     }
 
-    static func reply(to message: String, history: [CoachMessage]) async -> String? {
-        guard isAvailable else { return nil }
+    private var session: LanguageModelSession?
 
-        // Fold a little recent context into the prompt (fresh session per call).
-        let recent = history.suffix(6).map { ($0.isUser ? "User: " : "Coach: ") + $0.text }
-        let prompt = (recent + ["User: \(message)", "Coach:"]).joined(separator: "\n")
+    private func ensureSession() {
+        if session == nil {
+            session = LanguageModelSession(instructions: CoachService.systemPrompt)
+        }
+    }
 
+    /// Warm the model so the first real reply isn't slow. Safe to call repeatedly.
+    func prewarm() {
+        guard Self.isAvailable else { return }
+        ensureSession()
+        session?.prewarm()
+    }
+
+    func reply(to message: String) async -> String? {
+        guard Self.isAvailable else { return nil }
+        ensureSession()
+        guard let session else { return nil }
         do {
-            let session = LanguageModelSession(instructions: CoachService.systemPrompt)
-            let response = try await session.respond(to: prompt)
+            let response = try await session.respond(to: message)
             let text = response.content.trimmingCharacters(in: .whitespacesAndNewlines)
             return text.isEmpty ? nil : text
         } catch {
-            return nil   // model busy, guardrail, or unsupported — fall back
+            // Context window exceeded, guardrail, or model busy — reset and fall back.
+            self.session = nil
+            return nil
         }
     }
 }
