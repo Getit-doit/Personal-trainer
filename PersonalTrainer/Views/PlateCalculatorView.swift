@@ -44,16 +44,11 @@ struct PlateCalculatorView: View {
     var onApply: () -> Void
 
     @AppStorage("barTypeRaw") private var barTypeRaw = BarType.barbell.rawValue
-    @AppStorage("useMicroPlates") private var useMicroPlates = false
 
     private var barType: BarType { BarType(rawValue: barTypeRaw) ?? .barbell }
 
-    private let standardPlates: [Double] = [45, 40, 35, 30, 25, 20, 15, 10, 5]
-    private let microPlates: [Double] = [2.5, 1.25]
-
-    private var denominations: [Double] {
-        useMicroPlates ? standardPlates + microPlates : standardPlates
-    }
+    /// Real-world plate denominations only.
+    private let denominations: [Double] = [45, 35, 25, 15, 10, 5, 2.5]
 
     /// Count of each plate per side, keyed by plate weight.
     @State private var perSide: [Double: Int] = [:]
@@ -233,16 +228,11 @@ struct PlateCalculatorView: View {
                 }
             }
 
-            // Weight stamped top + mirrored bottom (like a real plate)
+            // Weight stamped near the top, like a real plate
             Text(plate.clean)
-                .font(Theme.mono(10, weight: .semibold))
+                .font(Theme.mono(11, weight: .semibold))
                 .foregroundStyle(active ? Theme.ink : Theme.ink.opacity(0.55))
                 .offset(y: -labelOffset)
-            Text(plate.clean)
-                .font(Theme.mono(10, weight: .semibold))
-                .foregroundStyle(active ? Theme.ink.opacity(0.55) : Theme.ink.opacity(0.32))
-                .rotationEffect(.degrees(180))
-                .offset(y: labelOffset)
 
             // Punched center hole
             Circle()
@@ -264,9 +254,6 @@ struct PlateCalculatorView: View {
             }
             .pickerStyle(.menu)
             .tint(Theme.accent)
-
-            Toggle("Micro plates (2.5 / 1.25 lb)", isOn: $useMicroPlates)
-                .tint(Theme.accent)
 
             if let name = exerciseName, !name.isEmpty {
                 Button {

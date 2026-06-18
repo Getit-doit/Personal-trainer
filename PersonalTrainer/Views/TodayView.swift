@@ -36,7 +36,8 @@ struct TodayView: View {
                 .padding()
             }
             .blueprintBackground()
-            .navigationTitle("Today")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showProfile = true } label: {

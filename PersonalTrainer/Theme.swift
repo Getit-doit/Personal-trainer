@@ -68,10 +68,11 @@ enum Theme {
         let title = UIFont.systemFont(ofSize: 17, weight: .semibold)
         let large = UIFont.systemFont(ofSize: 32, weight: .bold)
 
+        // Transparent so the blueprint paper + grid runs to the very top.
         let nav = UINavigationBarAppearance()
-        nav.configureWithOpaqueBackground()
-        nav.backgroundColor = paper
-        nav.shadowColor = UIColor.white.withAlphaComponent(0.18)   // hairline rule
+        nav.configureWithTransparentBackground()
+        nav.backgroundColor = .clear
+        nav.shadowColor = .clear
         nav.titleTextAttributes = [.foregroundColor: ink, .font: title]
         nav.largeTitleTextAttributes = [.foregroundColor: ink, .font: large]
         UINavigationBar.appearance().standardAppearance = nav
