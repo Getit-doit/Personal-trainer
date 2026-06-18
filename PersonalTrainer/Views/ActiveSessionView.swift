@@ -140,11 +140,12 @@ struct ActiveSessionView: View {
                         rest.start(seconds: seconds)
                     } label: {
                         Text(restLabel(seconds))
-                            .font(.caption).bold()
+                            .font(Theme.mono(12, weight: .semibold))
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(Theme.accent.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
-                            .foregroundStyle(Theme.accentDeep)
+                            .padding(.vertical, 9)
+                            .background(Theme.accent.opacity(0.12))
+                            .overlay(Rectangle().stroke(Theme.accent.opacity(0.45), lineWidth: 1))
+                            .foregroundStyle(Theme.accent)
                     }
                     .buttonStyle(.plain)
                 }
@@ -186,12 +187,9 @@ struct ActiveSessionView: View {
                     session.ankleWarmupDone = true
                     try? context.save()
                 } label: {
-                    Text("Mark warm-up done — unlock logging")
-                        .frame(maxWidth: .infinity).bold()
-                        .foregroundStyle(Theme.blueprintDeep)
+                    Text("MARK WARM-UP DONE").blueprintPrimary()
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Theme.accent)
+                .buttonStyle(.plain)
             }
         } header: {
             Label("Required Ankle Warm-up", systemImage: "figure.walk")
@@ -314,18 +312,16 @@ struct ActiveSessionView: View {
                 .lineLimit(1...4)
                 .onChange(of: session.notes) { try? context.save() }
             HStack {
-                Text("Total Volume"); Spacer()
-                Text("\(session.totalVolume.clean) lb").bold()
+                Text("TOTAL VOLUME").font(Theme.mono(10)).tracking(1.4).foregroundStyle(.secondary)
+                Spacer()
+                Text("\(session.totalVolume.clean) lb").font(Theme.mono(18))
             }
             Button {
                 finish()
             } label: {
-                Text(session.isFinished ? "Finished ✓" : "Finish Workout")
-                    .frame(maxWidth: .infinity).bold()
-                    .foregroundStyle(Theme.blueprintDeep)
+                Text(session.isFinished ? "FINISHED ✓" : "FINISH WORKOUT").blueprintPrimary()
             }
-            .buttonStyle(.borderedProminent)
-            .tint(Theme.accent)
+            .buttonStyle(.plain)
             .disabled(session.isFinished)
         }
     }
@@ -478,21 +474,22 @@ struct SetRow: View {
                 intField(value: $set.reps, unit: "reps", width: 40)
                 if set.isDropSet {
                     Text("DROP")
-                        .font(.system(size: 9)).bold()
+                        .font(Theme.mono(9, weight: .semibold)).tracking(0.5)
                         .padding(.horizontal, 5).padding(.vertical, 1)
-                        .background(.orange.opacity(0.2), in: Capsule())
-                        .foregroundStyle(.orange)
+                        .overlay(Rectangle().stroke(Theme.amber, lineWidth: 1))
+                        .foregroundStyle(Theme.amber)
                 }
                 Spacer()
             }
             HStack(spacing: 16) {
                 HStack(spacing: 4) {
-                    Text("RPE").font(.caption2).foregroundStyle(.secondary)
+                    Text("RPE").font(Theme.mono(9)).tracking(1).foregroundStyle(.secondary)
                     TextField("RPE", value: $set.rpe, format: .number)
+                        .font(Theme.mono(13))
                         .keyboardType(.decimalPad).frame(width: 36).multilineTextAlignment(.center)
                 }
                 HStack(spacing: 4) {
-                    Text("Reps in tank").font(.caption2).foregroundStyle(.secondary)
+                    Text("IN TANK").font(Theme.mono(9)).tracking(1).foregroundStyle(.secondary)
                     Stepper("\(set.repsInTank)", value: $set.repsInTank, in: 0...6)
                         .fixedSize()
                 }
@@ -512,18 +509,20 @@ struct SetRow: View {
     private func field(value: Binding<Double>, unit: String, width: CGFloat, decimal: Bool) -> some View {
         HStack(spacing: 4) {
             TextField(unit, value: value, format: .number)
+                .font(Theme.mono(15))
                 .keyboardType(decimal ? .decimalPad : .numberPad)
                 .frame(width: width).multilineTextAlignment(.center)
-            Text(unit).font(.caption2).foregroundStyle(.secondary)
+            Text(unit.uppercased()).font(Theme.mono(9)).foregroundStyle(.secondary)
         }
     }
 
     private func intField(value: Binding<Int>, unit: String, width: CGFloat) -> some View {
         HStack(spacing: 4) {
             TextField(unit, value: value, format: .number)
+                .font(Theme.mono(15))
                 .keyboardType(.numberPad)
                 .frame(width: width).multilineTextAlignment(.center)
-            Text(unit).font(.caption2).foregroundStyle(.secondary)
+            Text(unit.uppercased()).font(Theme.mono(9)).foregroundStyle(.secondary)
         }
     }
 }

@@ -61,13 +61,11 @@ struct TodayView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(greeting).font(Theme.hand(28, relativeTo: .title))
-            if let profile {
-                Text(profile.goals)
-                    .font(.subheadline).foregroundStyle(.secondary)
-            }
-        }
+        TitleBlock(
+            eyebrow: greeting,
+            title: "Today",
+            caption: profile?.goals
+        )
     }
 
     private var greeting: String {
@@ -93,11 +91,10 @@ struct TodayView: View {
     private var recommendedCard: some View {
         if let next = ProgramScheduler.nextDay(program: resolvedProgram, custom: customTemplates, sessions: sessions) {
             Card {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Up next", systemImage: "calendar.badge.clock")
-                            .font(Theme.hand(19, relativeTo: .headline))
-                        Spacer()
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(spacing: 8) {
+                        Text("UP NEXT").font(Theme.label(10)).tracking(1.6).foregroundStyle(Theme.accent)
+                        Rectangle().fill(Color.white.opacity(0.16)).frame(height: 1)
                         Menu {
                             ForEach(programNames, id: \.self) { name in
                                 Button {
@@ -107,9 +104,9 @@ struct TodayView: View {
                                 }
                             }
                         } label: {
-                            HStack(spacing: 3) {
-                                Text(resolvedProgram).font(.caption).bold()
-                                Image(systemName: "chevron.down").font(.caption2)
+                            HStack(spacing: 4) {
+                                Text(resolvedProgram.uppercased()).font(Theme.mono(9)).tracking(0.6)
+                                Image(systemName: "chevron.down").font(.system(size: 8))
                             }
                             .foregroundStyle(Theme.accent)
                         }
@@ -120,10 +117,10 @@ struct TodayView: View {
                             eq.image.resizable().scaledToFit().frame(width: 20, height: 20)
                                 .foregroundStyle(Theme.accent)
                         }
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text(next.title).font(.subheadline).bold()
-                            Text("\(next.subtitle) · ≈\(next.estimatedMinutes) min")
-                                .font(.caption2).foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(next.title).font(.headline)
+                            Text("\(next.subtitle.uppercased()) · ≈\(next.estimatedMinutes) MIN")
+                                .font(Theme.mono(10)).tracking(0.5).foregroundStyle(.secondary)
                         }
                         Spacer()
                     }
@@ -131,11 +128,7 @@ struct TodayView: View {
                     Button {
                         startedSession = SessionFactory.start(next, context: context)
                     } label: {
-                        Text("Start \(next.title)")
-                            .font(Theme.hand(17, relativeTo: .headline))
-                            .frame(maxWidth: .infinity).padding(.vertical, 8)
-                            .background(Theme.accent, in: RoundedRectangle(cornerRadius: 12))
-                            .foregroundStyle(Theme.blueprintDeep)
+                        Text("START \(next.title.uppercased())").blueprintPrimary()
                     }
                     .buttonStyle(.plain)
                 }
@@ -162,7 +155,7 @@ struct TodayView: View {
     private var recoveryCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Recovery", systemImage: "bed.double.fill").font(Theme.hand(19, relativeTo: .headline))
+                SectionRule(title: "Recovery")
                 if let log = recoveryLog {
                     RecoveryEditor(log: log) { try? context.save() }
                     Text(advice(for: log))
@@ -187,12 +180,12 @@ struct TodayView: View {
         if health.isAvailable {
             Card {
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("Apple Health", systemImage: "heart.fill").font(Theme.hand(19, relativeTo: .headline))
+                    SectionRule(title: "Apple Health")
                     if health.authorized {
                         HStack(spacing: 12) {
-                            healthMetric("Sleep", health.lastNightSleepHours.map { "\($0.clean)h" }, "bed.double.fill", .blue)
-                            healthMetric("Steps", health.todaySteps.map { stepString($0) }, "figure.walk", .orange)
-                            healthMetric("Weight", health.latestBodyWeight.map { "\($0.clean) lb" }, "scalemass.fill", Theme.accent)
+                            healthMetric("Sleep", health.lastNightSleepHours.map { "\($0.clean)h" }, "bed.double.fill")
+                            healthMetric("Steps", health.todaySteps.map { stepString($0) }, "figure.walk")
+                            healthMetric("Weight", health.latestBodyWeight.map { "\($0.clean) lb" }, "scalemass.fill")
                         }
                         if let sleep = health.lastNightSleepHours, let log = recoveryLog {
                             Button {
@@ -222,11 +215,11 @@ struct TodayView: View {
         }
     }
 
-    private func healthMetric(_ title: String, _ value: String?, _ icon: String, _ color: Color) -> some View {
-        VStack(spacing: 4) {
-            Image(systemName: icon).foregroundStyle(color)
-            Text(value ?? "—").font(Theme.hand(18, relativeTo: .subheadline))
-            Text(title).font(.caption2).foregroundStyle(.secondary)
+    private func healthMetric(_ title: String, _ value: String?, _ icon: String) -> some View {
+        VStack(spacing: 5) {
+            Image(systemName: icon).font(.caption).foregroundStyle(Theme.accent)
+            Text(value ?? "—").font(Theme.mono(18))
+            Text(title.uppercased()).font(Theme.mono(9)).tracking(1).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
     }
@@ -245,7 +238,7 @@ struct TodayView: View {
     private var progressionCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 12) {
-                Label("Progression Targets", systemImage: "arrow.up.right.circle.fill").font(Theme.hand(19, relativeTo: .headline))
+                SectionRule(title: "Progression Targets")
                 if suggestions.isEmpty {
                     Text("Log your priority lifts (RDL, goblet squat) to get progression flags.")
                         .font(.caption).foregroundStyle(.secondary)
@@ -258,8 +251,8 @@ struct TodayView: View {
                                 Text(s.exerciseName).font(.subheadline).bold()
                                 Text(s.reason).font(.caption2).foregroundStyle(.secondary)
                                 if s.readyToProgress {
-                                    Text("Try \(s.suggestedWeight.clean) lb (was \(s.lastTopWeight.clean))")
-                                        .font(.caption2).bold().foregroundStyle(Theme.accentDeep)
+                                    Text("TRY \(s.suggestedWeight.clean) LB · WAS \(s.lastTopWeight.clean)")
+                                        .font(Theme.mono(10)).tracking(0.5).foregroundStyle(Theme.accent)
                                 }
                             }
                             Spacer()
@@ -277,7 +270,7 @@ struct TodayView: View {
         let lever = nutrition.first?.currentLever ?? ""
         Card {
             VStack(alignment: .leading, spacing: 6) {
-                Label("Today's Lever", systemImage: "target").font(Theme.hand(19, relativeTo: .headline))
+                SectionRule(title: "Today's Lever")
                 Text(lever.isEmpty ? "No lever set — pick one habit in the Fuel tab." : lever)
                     .font(.subheadline)
                     .foregroundStyle(lever.isEmpty ? .secondary : .primary)
@@ -289,14 +282,9 @@ struct TodayView: View {
 
     private var startCard: some View {
         Button { showTemplatePicker = true } label: {
-            Label("Browse All Workouts", systemImage: "square.grid.2x2")
-                .font(Theme.hand(20, relativeTo: .headline))
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Theme.accent.opacity(0.18), in: RoundedRectangle(cornerRadius: 16))
-                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.accent.opacity(0.5), lineWidth: 1))
-                .foregroundStyle(Theme.accent)
+            Text("BROWSE ALL WORKOUTS").blueprintSecondary()
         }
+        .buttonStyle(.plain)
     }
 }
 
