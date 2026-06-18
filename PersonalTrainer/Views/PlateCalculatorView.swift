@@ -31,11 +31,12 @@ enum BarType: String, CaseIterable, Identifiable {
     var mirrors: Bool { self != .dumbbell }
 }
 
-/// Visual barbell loader. Tap a plate button to add it **per side**; tap a
-/// loaded plate on the bar to remove it. Total = bar + (×2 unless dumbbell) ×
-/// plates. Plates: 5–45 lb in 5 lb steps + optional 2.5 / 1.25 lb micro set.
-/// If an `exerciseName` is supplied, the loadout can be saved as that lift's
-/// default and is auto-restored next time.
+/// Visual barbell loader — REVISED to a dimensioned blueprint elevation.
+///
+/// Plates are now monochrome outlines (white ink), differentiated by SIZE and a
+/// monospace denomination label rather than competition colors — matching the
+/// app icon's drawing language. Tap a plate button to add it **per side**; tap a
+/// loaded plate on the bar to remove it.
 struct PlateCalculatorView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var weight: Double
@@ -97,90 +98,159 @@ struct PlateCalculatorView: View {
         }
     }
 
-    // MARK: Barbell graphic
+    // MARK: Barbell elevation drawing
 
     private var barbell: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(alignment: .center, spacing: 1) {
-                // Bar shaft + collar
-                Rectangle().fill(Color.gray.opacity(0.5)).frame(width: 28, height: 6)
-                Rectangle().fill(Color.gray).frame(width: 7, height: 22)
-                    .clipShape(RoundedRectangle(cornerRadius: 2))
+        VStack(spacing: 6) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .center, spacing: 2) {
+                    // Bar shaft + collar (ink hairline, not solid gray)
+                    Rectangle().fill(Theme.ink.opacity(0.22)).frame(width: 30, height: 6)
+                        .overlay(Rectangle().stroke(Theme.hairline, lineWidth: 0.5))
+                    Rectangle().fill(Theme.ink.opacity(0.3)).frame(width: 7, height: 22)
 
-                if loadedPlates.isEmpty {
-                    Text("Empty bar — tap a plate below")
-                        .font(.caption).foregroundStyle(.secondary)
-                        .padding(.leading, 10)
-                } else {
-                    ForEach(Array(loadedPlates.enumerated()), id: \.offset) { _, plate in
-                        Button { removeOne(plate) } label: { plateView(plate) }
-                            .buttonStyle(.plain)
+                    if loadedPlates.isEmpty {
+                        Text("EMPTY BAR — TAP A PLATE BELOW")
+                            .font(Theme.mono(11)).tracking(1)
+                            .foregroundStyle(.secondary)
+                            .padding(.leading, 10)
+                    } else {
+                        ForEach(Array(loadedPlates.enumerated()), id: \.offset) { _, plate in
+                            Button { removeOne(plate) } label: { plateView(plate) }
+                                .buttonStyle(.plain)
+                        }
+                        // Sleeve end cap
+                        Rectangle().fill(Theme.ink.opacity(0.3)).frame(width: 8, height: 24)
                     }
-                    // Sleeve end cap
-                    Rectangle().fill(Color.gray.opacity(0.5)).frame(width: 12, height: 6)
+                    Spacer(minLength: 0)
                 }
-                Spacer(minLength: 0)
+                .frame(height: 100)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 4)
             }
-            .frame(height: 96)
-            .padding(.vertical, 8)
+
+            // Dimension line — echoes the icon's "45 LB" callout.
+            if !loadedPlates.isEmpty {
+                HStack(spacing: 8) {
+                    Text("◄").font(Theme.mono(10)).foregroundStyle(Theme.accent)
+                    Rectangle().fill(Theme.accent.opacity(0.5)).frame(height: 1)
+                    Text("\(perSideTotal.clean) LB / SIDE").font(Theme.mono(10)).tracking(1.2).foregroundStyle(Theme.accent)
+                    Rectangle().fill(Theme.accent.opacity(0.5)).frame(height: 1)
+                    Text("►").font(Theme.mono(10)).foregroundStyle(Theme.accent)
+                }
+                .padding(.horizontal, 8)
+            }
         }
-        .background(Theme.card, in: RoundedRectangle(cornerRadius: 14))
+        .padding(.vertical, 6)
+        .background(Rectangle().fill(Theme.card))
+        .overlay(Rectangle().stroke(Theme.hairline, lineWidth: 1))
+        .overlay(CornerTicks().stroke(Theme.accent.opacity(0.9), lineWidth: 1.2))
     }
 
+    /// A plate as a monochrome outlined rectangle, sized by weight, with a
+    /// rotated monospace denomination. No competition colors.
     private func plateView(_ plate: Double) -> some View {
-        let height = 36 + plate / 45 * 48        // 36…84 pt
-        let width = 9 + plate / 45 * 9           // 9…18 pt
-        return RoundedRectangle(cornerRadius: 3)
-            .fill(color(for: plate))
+        let height = 40 + plate / 45 * 48        // 40…88 pt
+        let width = 11 + plate / 45 * 9          // 11…20 pt
+        return RoundedRectangle(cornerRadius: 2)
+            .fill(Theme.accent.opacity(0.10))
             .frame(width: width, height: height)
             .overlay(
                 Text(plate.clean)
-                    .font(.system(size: 8, weight: .bold))
-                    .foregroundStyle(.white)
+                    .font(Theme.mono(9, weight: .semibold))
+                    .foregroundStyle(Theme.ink)
                     .rotationEffect(.degrees(-90))
             )
-            .overlay(RoundedRectangle(cornerRadius: 3).stroke(.black.opacity(0.15)))
+            .overlay(RoundedRectangle(cornerRadius: 2).stroke(Theme.accent, lineWidth: 1.4))
     }
 
     // MARK: Totals
 
     private var totals: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(barType.mirrors ? "Per side" : "Per dumbbell").font(.caption).foregroundStyle(.secondary)
-                Text("\(perSideTotal.clean) lb").font(.headline)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(barType.mirrors ? "PER SIDE" : "PER DUMBBELL")
+                    .font(Theme.label(9)).tracking(1.4).foregroundStyle(.secondary)
+                Text("\(perSideTotal.clean) lb").font(Theme.mono(16))
             }
             Spacer()
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("Total").font(.caption).foregroundStyle(.secondary)
-                Text("\(total.clean) lb").font(Theme.hand(26, relativeTo: .title2)).foregroundStyle(Theme.accentDeep)
+            VStack(alignment: .trailing, spacing: 3) {
+                Text("TOTAL · \(barType.weight.clean) BAR + \(barType.mirrors ? "2×" : "")\(perSideTotal.clean)")
+                    .font(Theme.label(9)).tracking(1.2).foregroundStyle(.secondary)
+                Text("\(total.clean) lb").font(Theme.mono(30, weight: .medium)).foregroundStyle(Theme.accent)
             }
         }
+        .padding(.vertical, 12)
+        .overlay(Rectangle().fill(Theme.hairline).frame(height: 1), alignment: .top)
+        .overlay(Rectangle().fill(Theme.hairline).frame(height: 1), alignment: .bottom)
         .padding(.horizontal, 4)
     }
 
     // MARK: Plate buttons
 
     private var plateButtons: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Tap to add (per side)").font(.caption).foregroundStyle(.secondary)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 66), spacing: 10)], spacing: 10) {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("TAP TO ADD — PER SIDE")
+                .font(Theme.label(10)).tracking(1.6).foregroundStyle(Theme.accent)
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: 9)], spacing: 14) {
                 ForEach(denominations, id: \.self) { plate in
+                    let count = perSide[plate] ?? 0
                     Button { perSide[plate, default: 0] += 1 } label: {
-                        VStack(spacing: 4) {
-                            Circle().fill(color(for: plate)).frame(width: 24, height: 24)
-                            Text("\(plate.clean) lb").font(.caption2).bold()
-                            Text("×\(perSide[plate] ?? 0)")
-                                .font(.system(size: 10)).foregroundStyle(.secondary).monospacedDigit()
+                        VStack(spacing: 7) {
+                            plateGlyph(plate, active: count > 0)
+                            Text("×\(count)")
+                                .font(Theme.mono(11))
+                                .foregroundStyle(count > 0 ? Theme.accent : Color.white.opacity(0.4))
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(Theme.card, in: RoundedRectangle(cornerRadius: 12))
                     }
                     .buttonStyle(.plain)
                 }
             }
         }
+    }
+
+    /// A face-on plate drawing: weight stamped near the top and again
+    /// upside-down near the bottom (symmetric about the center), with a
+    /// punched center hole. All plates share one size; the 10 / 5 / 2.5
+    /// render as hex bumper plates.
+    private func plateGlyph(_ plate: Double, active: Bool) -> some View {
+        let diameter: CGFloat = 56                  // uniform across denominations
+        let hex = plate <= 10                       // gym hex bumpers
+        let rim = active ? Theme.accent : Theme.ink.opacity(0.32)
+        let lineWidth: CGFloat = active ? 4.4 : 3.6 // ~2× the previous weight
+        let labelOffset = diameter * 0.30          // centers stamp between rim & hole
+
+        return ZStack {
+            // Plate body
+            Group {
+                if hex {
+                    Hexagon().fill(active ? Theme.accent.opacity(0.13) : Theme.ink.opacity(0.03))
+                    Hexagon().stroke(rim, style: StrokeStyle(lineWidth: lineWidth, lineJoin: .round))
+                } else {
+                    Circle().fill(active ? Theme.accent.opacity(0.13) : Theme.ink.opacity(0.03))
+                    Circle().strokeBorder(rim, lineWidth: lineWidth)
+                }
+            }
+
+            // Weight stamped top + mirrored bottom (like a real plate)
+            Text(plate.clean)
+                .font(Theme.mono(10, weight: .semibold))
+                .foregroundStyle(active ? Theme.ink : Theme.ink.opacity(0.55))
+                .offset(y: -labelOffset)
+            Text(plate.clean)
+                .font(Theme.mono(10, weight: .semibold))
+                .foregroundStyle(active ? Theme.ink.opacity(0.55) : Theme.ink.opacity(0.32))
+                .rotationEffect(.degrees(180))
+                .offset(y: labelOffset)
+
+            // Punched center hole
+            Circle()
+                .fill(Theme.blueprintDeep)
+                .frame(width: 11, height: 11)
+                .overlay(Circle().stroke(Theme.ink.opacity(active ? 0.4 : 0.22), lineWidth: 1))
+        }
+        .frame(width: diameter, height: diameter)
     }
 
     // MARK: Options
@@ -225,22 +295,6 @@ struct PlateCalculatorView: View {
         perSide[plate] = max(0, (perSide[plate] ?? 0) - 1)
     }
 
-    /// Distinct color per plate, loosely echoing competition plate colors.
-    private func color(for plate: Double) -> Color {
-        switch plate {
-        case 45: return .red
-        case 40: return .blue
-        case 35: return .yellow
-        case 30: return .indigo
-        case 25: return .green
-        case 20: return .mint
-        case 15: return .purple
-        case 10: return .orange
-        case 5: return .teal
-        default: return .gray            // micro plates
-        }
-    }
-
     /// On open: restore the exercise's saved loadout if the set has no weight
     /// yet; otherwise reflect the current weight on the bar.
     private func restoreOnAppear() {
@@ -267,6 +321,24 @@ struct PlateCalculatorView: View {
             }
         }
         if abs(remaining) < 0.01 { perSide = counts }
+    }
+}
+
+/// A flat-top hexagon — the silhouette of a gym hex/bumper plate.
+struct Hexagon: Shape {
+    func path(in rect: CGRect) -> Path {
+        let w = rect.width, h = rect.height
+        let cx = rect.midX, cy = rect.midY
+        let rx = w / 2, ry = h / 2
+        var p = Path()
+        // pointy-top hexagon, vertices every 60°
+        for i in 0..<6 {
+            let angle = CGFloat.pi / 180 * (60 * Double(i) - 90)
+            let pt = CGPoint(x: cx + rx * cos(angle), y: cy + ry * sin(angle))
+            if i == 0 { p.move(to: pt) } else { p.addLine(to: pt) }
+        }
+        p.closeSubpath()
+        return p
     }
 }
 

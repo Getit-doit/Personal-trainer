@@ -11,7 +11,7 @@ struct CoachMessage: Identifiable, Equatable {
 struct CoachView: View {
     @State private var messages: [CoachMessage] = [
         CoachMessage(
-            text: "Hey! I'm your AI coach 💪 Ask me anything about training, "
+            text: "Hey! I'm your AI coach. Ask me anything about training, "
                 + "nutrition, or recovery — or which plan to start.",
             isUser: false
         )

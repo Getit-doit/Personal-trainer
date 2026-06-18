@@ -72,7 +72,7 @@ struct ActiveSessionView: View {
             }
         }
         .alert(
-            "New PR! 🎉",
+            "New PR",
             isPresented: Binding(
                 get: { !newPRBanner.isEmpty },
                 set: { if !$0 { newPRBanner = [] } }

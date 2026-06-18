@@ -136,7 +136,7 @@ enum CoachService {
             """
         }
         return """
-        I'm your strength & longevity coach 💪 Ask me about progression, the ankle/cardio \
+        I'm your strength & longevity coach. Ask me about progression, the ankle/cardio \
         plan, sleep & stress, or your one nutrition lever. Start a session from the Train \
         tab — and don't skip the ankle warm-up.
         """
