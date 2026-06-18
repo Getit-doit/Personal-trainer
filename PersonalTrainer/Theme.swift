@@ -1,55 +1,58 @@
 import SwiftUI
+import UIKit
 
-/// Blueprint visual language: deep blue "paper", white ink lines, a faint grid,
-/// outlined cards, and a marker-style display font.
+/// Blueprint visual language (per the design review): a precise engineering
+/// drawing — deep-blue paper + faint grid, crisp 1px hairline cards with corner
+/// tick marks, one cyan accent (amber reserved for warnings), and a monospace
+/// "measurements" type system. No marker font, no sketch wobble.
 enum Theme {
     // Blueprint paper
-    static let blueprint = Color(red: 0.07, green: 0.24, blue: 0.49)
-    static let blueprintDeep = Color(red: 0.03, green: 0.13, blue: 0.30)
+    static let blueprint = Color(red: 0.078, green: 0.247, blue: 0.490)   // #143f7d
+    static let blueprintDeep = Color(red: 0.039, green: 0.137, blue: 0.314) // #0a2350
 
     // Ink
     static let ink = Color.white
-    static let accent = Color(red: 0.78, green: 0.91, blue: 1.0)   // chalk cyan
-    static let accentDeep = Color.white
+    static let accent = Color(red: 0.682, green: 0.863, blue: 1.0)   // #aedcff chalk cyan
+    static let accentDeep = Color(red: 0.039, green: 0.137, blue: 0.314) // navy, for text on cyan
+    /// Reserved strictly for warnings (ankle, weak links, low impact).
+    static let warning = Color(red: 0.957, green: 0.784, blue: 0.478) // #f4c87a amber
 
     /// Translucent white fill used for chips/cards on the blueprint.
-    static let card = Color.white.opacity(0.08)
+    static let card = Color.white.opacity(0.06)
     static let background = blueprint
 
-    /// Muscle-group accent dots, kept light so they read on blue.
-    static let muscleColors: [String: Color] = [
-        "Chest": Color(red: 1.0, green: 0.72, blue: 0.78),
-        "Back": Color(red: 0.62, green: 0.82, blue: 1.0),
-        "Legs": Color(red: 1.0, green: 0.84, blue: 0.62),
-        "Hinge": Color(red: 0.80, green: 0.78, blue: 1.0),
-        "Shoulders": Color(red: 0.86, green: 0.74, blue: 1.0),
-        "Arms": Color(red: 0.70, green: 0.95, blue: 0.92),
-        "Core": Color(red: 0.98, green: 0.95, blue: 0.70),
-        "Cardio": Color(red: 1.0, green: 0.70, blue: 0.70)
-    ]
+    /// Muscle dots are retired in the blueprint look — one neutral ink.
+    static func color(for muscle: String) -> Color { Color.white.opacity(0.5) }
 
-    static func color(for muscle: String) -> Color {
-        muscleColors[muscle] ?? accent
+    // MARK: Type system
+
+    /// Display/title face — Plex-Sans-like (system sans, bold). Scales with Dynamic Type.
+    static func title(_ size: CGFloat) -> Font {
+        .system(size: size, weight: .bold, design: .default)
     }
 
-    /// Hand-drawn / marker display font with Dynamic Type support.
+    /// Monospace face for labels, figures, and measurements (Plex-Mono-like).
+    static func mono(_ size: CGFloat, weight: Font.Weight = .medium) -> Font {
+        .system(size: size, weight: weight, design: .monospaced)
+    }
+
+    /// Back-compat shim: previous code called `Theme.hand(...)` for headings.
+    /// Now routes to the crisp title face (marker font retired).
     static func hand(_ size: CGFloat, relativeTo style: Font.TextStyle = .body) -> Font {
-        Font.custom("MarkerFelt-Wide", size: size, relativeTo: style)
+        .system(size: size, weight: .bold, design: .default)
     }
 
     /// Style the UIKit-backed nav and tab bars to match the blueprint.
     static func applyBlueprintAppearance() {
-        let paper = UIColor(red: 0.05, green: 0.16, blue: 0.36, alpha: 1)
+        let paper = UIColor(red: 0.031, green: 0.102, blue: 0.235, alpha: 1) // #081a3c
         let ink = UIColor.white
-        let marker = UIFont(name: "MarkerFelt-Wide", size: 20)
-        let markerLarge = UIFont(name: "MarkerFelt-Wide", size: 32)
 
         let nav = UINavigationBarAppearance()
         nav.configureWithOpaqueBackground()
         nav.backgroundColor = paper
         nav.shadowColor = .clear
-        nav.titleTextAttributes = [.foregroundColor: ink, .font: marker as Any].compactMapValues { $0 }
-        nav.largeTitleTextAttributes = [.foregroundColor: ink, .font: markerLarge as Any].compactMapValues { $0 }
+        nav.titleTextAttributes = [.foregroundColor: ink, .font: UIFont.systemFont(ofSize: 17, weight: .bold)]
+        nav.largeTitleTextAttributes = [.foregroundColor: ink, .font: UIFont.systemFont(ofSize: 32, weight: .bold)]
         UINavigationBar.appearance().standardAppearance = nav
         UINavigationBar.appearance().scrollEdgeAppearance = nav
         UINavigationBar.appearance().compactAppearance = nav
@@ -76,11 +79,10 @@ struct BlueprintBackdrop: View {
     }
 }
 
-/// A minor/major line grid drawn with thin white strokes.
+/// A minor (24pt) / major (120pt) line grid drawn with thin white strokes.
 struct BlueprintGrid: View {
     var body: some View {
         Canvas { context, size in
-            // Build paths first (no capture of the inout context), then stroke.
             func gridPath(step: CGFloat) -> Path {
                 var path = Path()
                 var x: CGFloat = 0
@@ -93,9 +95,8 @@ struct BlueprintGrid: View {
                 }
                 return path
             }
-            let minor: CGFloat = 26
-            context.stroke(gridPath(step: minor), with: .color(.white.opacity(0.06)), lineWidth: 0.5)
-            context.stroke(gridPath(step: minor * 5), with: .color(.white.opacity(0.12)), lineWidth: 0.8)
+            context.stroke(gridPath(step: 24), with: .color(.white.opacity(0.05)), lineWidth: 1)
+            context.stroke(gridPath(step: 120), with: .color(.white.opacity(0.11)), lineWidth: 1)
         }
         .allowsHitTesting(false)
     }
@@ -108,7 +109,25 @@ extension View {
     }
 }
 
-/// A reusable outlined "drawn" card on the blueprint, with a hand-sketched border.
+/// Short L-shaped tick marks at each corner — the blueprint "drawing" detail.
+struct CornerTicks: Shape {
+    var length: CGFloat = 11
+    func path(in rect: CGRect) -> Path {
+        var p = Path()
+        let l = length
+        // Top-left
+        p.move(to: CGPoint(x: rect.minX, y: rect.minY + l)); p.addLine(to: CGPoint(x: rect.minX, y: rect.minY)); p.addLine(to: CGPoint(x: rect.minX + l, y: rect.minY))
+        // Top-right
+        p.move(to: CGPoint(x: rect.maxX - l, y: rect.minY)); p.addLine(to: CGPoint(x: rect.maxX, y: rect.minY)); p.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + l))
+        // Bottom-right
+        p.move(to: CGPoint(x: rect.maxX, y: rect.maxY - l)); p.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY)); p.addLine(to: CGPoint(x: rect.maxX - l, y: rect.maxY))
+        // Bottom-left
+        p.move(to: CGPoint(x: rect.minX + l, y: rect.maxY)); p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY)); p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - l))
+        return p
+    }
+}
+
+/// A crisp hairline card with corner ticks — the blueprint panel.
 struct Card<Content: View>: View {
     @ViewBuilder var content: Content
 
@@ -116,67 +135,8 @@ struct Card<Content: View>: View {
         content
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoughRect(seed: 11)
-                    .fill(Color.white.opacity(0.05))
-            )
-            .overlay(
-                ZStack {
-                    // Two slightly different strokes → felt-tip "drawn twice" look.
-                    RoughRect(seed: 7).stroke(Color.white.opacity(0.75), lineWidth: 1.6)
-                    RoughRect(seed: 29).stroke(Color.white.opacity(0.35), lineWidth: 1.0)
-                }
-            )
-    }
-}
-
-/// Tiny deterministic RNG so the sketch lines are stable across redraws
-/// (no shimmering) while still looking irregular.
-private struct SeededRNG {
-    var state: UInt64
-    init(_ seed: UInt64) { state = seed &* 2862933555777941757 &+ 3037000493 }
-    mutating func next() -> CGFloat {
-        state = state &* 6364136223846793005 &+ 1442695040888963407
-        return CGFloat(Double(state >> 11) / Double(1 << 53))
-    }
-    mutating func jitter(_ amp: CGFloat) -> CGFloat { (next() * 2 - 1) * amp }
-}
-
-/// A rounded-ish rectangle whose edges wobble slightly, like a marker outline.
-struct RoughRect: Shape {
-    var seed: UInt64 = 1
-    var amplitude: CGFloat = 1.6
-
-    func path(in rect: CGRect) -> Path {
-        var rng = SeededRNG(seed)
-        let r = rect.insetBy(dx: 3, dy: 3)
-        // Corners nudged a hair off-true.
-        let tl = CGPoint(x: r.minX + rng.jitter(2), y: r.minY + rng.jitter(2))
-        let tr = CGPoint(x: r.maxX + rng.jitter(2), y: r.minY + rng.jitter(2))
-        let br = CGPoint(x: r.maxX + rng.jitter(2), y: r.maxY + rng.jitter(2))
-        let bl = CGPoint(x: r.minX + rng.jitter(2), y: r.maxY + rng.jitter(2))
-
-        var path = Path()
-        addRoughLine(&path, from: tl, to: tr, rng: &rng)
-        addRoughLine(&path, from: tr, to: br, rng: &rng)
-        addRoughLine(&path, from: br, to: bl, rng: &rng)
-        addRoughLine(&path, from: bl, to: tl, rng: &rng)
-        path.closeSubpath()
-        return path
-    }
-
-    private func addRoughLine(_ path: inout Path, from a: CGPoint, to b: CGPoint, rng: inout SeededRNG) {
-        let segments = 6
-        let len = max(hypot(b.x - a.x, b.y - a.y), 0.001)
-        let nx = -(b.y - a.y) / len   // perpendicular unit vector
-        let ny = (b.x - a.x) / len
-        if path.isEmpty { path.move(to: a) } else { path.addLine(to: a) }
-        for i in 1...segments {
-            let t = CGFloat(i) / CGFloat(segments)
-            let wobble = i == segments ? 0 : rng.jitter(amplitude)
-            let x = a.x + (b.x - a.x) * t + nx * wobble
-            let y = a.y + (b.y - a.y) * t + ny * wobble
-            path.addLine(to: CGPoint(x: x, y: y))
-        }
+            .background(Color.white.opacity(0.05))
+            .overlay(Rectangle().stroke(Color.white.opacity(0.28), lineWidth: 1))
+            .overlay(CornerTicks().stroke(Color.white.opacity(0.55), lineWidth: 1))
     }
 }
