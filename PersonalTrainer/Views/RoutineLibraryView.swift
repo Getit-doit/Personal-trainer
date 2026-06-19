@@ -85,11 +85,12 @@ struct RoutineLibraryView: View {
                 ForEach(TimeFilter.allCases) { option in
                     let selected = timeFilter == option
                     Button { timeFilter = option } label: {
-                        Text(option.rawValue)
-                            .font(.caption).bold()
-                            .padding(.horizontal, 12).padding(.vertical, 7)
-                            .background(selected ? Theme.accent : Theme.card, in: Capsule())
-                            .foregroundStyle(selected ? Theme.blueprintDeep : .white)
+                        Text(option.rawValue.uppercased())
+                            .font(Theme.mono(10, weight: .semibold)).tracking(0.6)
+                            .padding(.horizontal, 12).padding(.vertical, 8)
+                            .background(selected ? Theme.accent : Color.clear)
+                            .overlay(Rectangle().stroke(selected ? Color.clear : Theme.accent.opacity(0.45), lineWidth: 1))
+                            .foregroundStyle(selected ? Theme.blueprintDeep : Theme.accent)
                     }
                     .buttonStyle(.plain)
                 }
@@ -107,6 +108,7 @@ struct RoutineLibraryView: View {
                     if isCustom {
                         Image(systemName: "person.crop.circle").font(.caption).foregroundStyle(.secondary)
                     }
+                    Rectangle().fill(Color.white.opacity(0.16)).frame(height: 1)
                 }
                 .padding(.leading, 4)
                 ForEach(days) { day in
@@ -141,10 +143,11 @@ struct RoutineLibraryView: View {
                         Text(day.subtitle).font(.caption).foregroundStyle(.secondary)
                     }
                     Spacer()
-                    Text(day.level)
-                        .font(.caption2).bold()
+                    Text(day.level.uppercased())
+                        .font(Theme.mono(9, weight: .semibold)).tracking(0.6)
                         .padding(.horizontal, 8).padding(.vertical, 3)
-                        .background(Theme.card, in: Capsule())
+                        .overlay(Rectangle().stroke(Theme.hairline, lineWidth: 1))
+                        .foregroundStyle(.secondary)
                     if isCustom, case .custom(let template) = day {
                         Menu {
                             Button { editorTemplate = template } label: { Label("Edit", systemImage: "pencil") }
@@ -163,19 +166,14 @@ struct RoutineLibraryView: View {
                             .foregroundStyle(Theme.accent)
                     }
                     Spacer()
-                    Text("\(day.exerciseCount) exercises · ≈\(day.estimatedMinutes) min")
-                        .font(.caption2).foregroundStyle(.secondary)
+                    Text("\(day.exerciseCount) EX · ≈\(day.estimatedMinutes) MIN")
+                        .font(Theme.mono(9)).tracking(0.5).foregroundStyle(.secondary)
                 }
 
                 Button {
                     onStart(day); dismiss()
                 } label: {
-                    Text("Start \(day.title)")
-                        .font(Theme.hand(17, relativeTo: .headline))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(Theme.accent, in: RoundedRectangle(cornerRadius: 12))
-                        .foregroundStyle(Theme.blueprintDeep)
+                    Text("START \(day.title.uppercased())").blueprintPrimary()
                 }
                 .buttonStyle(.plain)
             }

@@ -47,8 +47,7 @@ struct OnboardingView: View {
     private var introCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 10) {
-                Label("How it works", systemImage: "ruler")
-                    .font(Theme.hand(19, relativeTo: .headline))
+                SectionRule(title: "How it works")
                 bullet("Compound-first full-body training, 3 days/week")
                 bullet("Log sets with RPE & reps-in-tank; lifts flag when ready to progress")
                 bullet("Mandatory ankle warm-up before every session")
@@ -67,8 +66,7 @@ struct OnboardingView: View {
     private var statsCard: some View {
         Card {
             VStack(alignment: .leading, spacing: 16) {
-                Label("Your starting blueprint", systemImage: "person.text.rectangle")
-                    .font(Theme.hand(19, relativeTo: .headline))
+                SectionRule(title: "Your starting blueprint")
 
                 field("Name") {
                     TextField("Name", text: $name).multilineTextAlignment(.trailing)

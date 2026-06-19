@@ -53,22 +53,22 @@ struct TrainView: View {
 
     private func row(for session: WorkoutSession) -> some View {
         HStack {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title(for: session)).font(Theme.hand(18, relativeTo: .headline))
-                Text(session.date.formatted(date: .abbreviated, time: .shortened))
-                    .font(.caption).foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title(for: session)).font(.headline)
+                Text(session.date.formatted(date: .abbreviated, time: .shortened).uppercased())
+                    .font(Theme.mono(9)).tracking(0.6).foregroundStyle(.secondary)
             }
             Spacer()
-            VStack(alignment: .trailing, spacing: 3) {
+            VStack(alignment: .trailing, spacing: 4) {
                 if !session.isFinished {
-                    Text("In progress")
-                        .font(.caption2).bold()
+                    Text("IN PROGRESS")
+                        .font(Theme.mono(8, weight: .semibold)).tracking(0.8)
                         .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(Theme.accent.opacity(0.2), in: Capsule())
-                        .foregroundStyle(Theme.accentDeep)
+                        .overlay(Rectangle().stroke(Theme.accent.opacity(0.6), lineWidth: 1))
+                        .foregroundStyle(Theme.accent)
                 }
-                Text("\(session.exercises.count) lifts · \(session.completedSetCount) sets")
-                    .font(.caption).foregroundStyle(.secondary)
+                Text("\(session.exercises.count) LIFTS · \(session.completedSetCount) SETS")
+                    .font(Theme.mono(9)).tracking(0.5).foregroundStyle(.secondary)
             }
         }
     }

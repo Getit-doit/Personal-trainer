@@ -29,6 +29,8 @@ struct CoachView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                TitleBlock(eyebrow: "Constraint-aware", title: "Coach")
+                    .padding(.horizontal).padding(.top, 8).padding(.bottom, 4)
                 ScrollViewReader { proxy in
                     ScrollView {
                         LazyVStack(spacing: 12) {
@@ -59,11 +61,11 @@ struct CoachView: View {
                                 Button {
                                     send(suggestion)
                                 } label: {
-                                    Text(suggestion)
-                                        .font(.caption).bold()
-                                        .padding(.horizontal, 12).padding(.vertical, 8)
-                                        .background(Theme.accent.opacity(0.15), in: Capsule())
-                                        .foregroundStyle(Theme.accentDeep)
+                                    Text(suggestion.uppercased())
+                                        .font(Theme.mono(10, weight: .semibold)).tracking(0.6)
+                                        .padding(.horizontal, 11).padding(.vertical, 8)
+                                        .overlay(Rectangle().stroke(Theme.accent.opacity(0.5), lineWidth: 1))
+                                        .foregroundStyle(Theme.accent)
                                 }
                             }
                         }
@@ -75,7 +77,8 @@ struct CoachView: View {
                 inputBar
             }
             .blueprintBackground()
-            .navigationTitle("Coach")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .task { CoachService.prewarm() }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -92,31 +95,42 @@ struct CoachView: View {
     private func bubble(_ message: CoachMessage) -> some View {
         HStack {
             if message.isUser { Spacer(minLength: 40) }
-            Text(message.text)
+            if message.isUser {
+                Text(message.text)
+                    .padding(12)
+                    .background(Theme.accent)
+                    .foregroundStyle(Theme.blueprintDeep)
+            } else {
+                VStack(alignment: .leading, spacing: 7) {
+                    Text("COACH").font(Theme.mono(9, weight: .semibold)).tracking(1.6).foregroundStyle(Theme.accent)
+                    Text(message.text).foregroundStyle(.primary)
+                }
                 .padding(12)
-                .background(
-                    message.isUser ? Theme.accent : Theme.card,
-                    in: RoundedRectangle(cornerRadius: 16, style: .continuous)
-                )
-                .foregroundStyle(message.isUser ? Theme.blueprintDeep : .primary)
+                .background(Theme.card)
+                .overlay(Rectangle().stroke(Theme.hairline, lineWidth: 1))
+            }
             if !message.isUser { Spacer(minLength: 40) }
         }
     }
 
     private var inputBar: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             TextField("Ask your coach…", text: $draft, axis: .vertical)
                 .lineLimit(1...4)
-                .padding(10)
-                .background(Theme.card, in: RoundedRectangle(cornerRadius: 20))
+                .padding(11)
+                .background(Theme.card)
+                .overlay(Rectangle().stroke(Theme.hairline, lineWidth: 1))
 
             Button {
                 send(draft)
             } label: {
-                Image(systemName: "arrow.up.circle.fill")
-                    .font(.title)
-                    .foregroundStyle(Theme.accent)
+                Image(systemName: "arrow.up")
+                    .font(.headline)
+                    .frame(width: 42, height: 42)
+                    .background(Theme.accent)
+                    .foregroundStyle(Theme.blueprintDeep)
             }
+            .buttonStyle(.plain)
             .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty || isThinking)
         }
         .padding()

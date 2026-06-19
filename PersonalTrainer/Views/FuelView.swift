@@ -12,6 +12,7 @@ struct FuelView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+                    TitleBlock(eyebrow: "One lever at a time", title: "Fuel")
                     if let today {
                         leverCard(today)
                         winsCard(today)
@@ -22,7 +23,8 @@ struct FuelView: View {
                 .padding()
             }
             .blueprintBackground()
-            .navigationTitle("Fuel")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: ensureToday)
         }
     }
@@ -44,7 +46,7 @@ struct FuelView: View {
     private func leverCard(_ log: NutritionLog) -> some View {
         Card {
             VStack(alignment: .leading, spacing: 8) {
-                Label("Current Lever", systemImage: "target").font(Theme.hand(19, relativeTo: .headline))
+                SectionRule(title: "Current Lever")
                 Text("Focus on one habit at a time.")
                     .font(.caption).foregroundStyle(.secondary)
                 TextField(
@@ -76,7 +78,7 @@ struct FuelView: View {
         ListEditorCard(
             title: "Weak Links",
             systemImage: "exclamationmark.triangle.fill",
-            tint: .orange,
+            tint: Theme.amber,
             placeholder: "e.g. Late-night snacking",
             items: Binding(
                 get: { log.weakLinks },
@@ -91,16 +93,16 @@ struct FuelView: View {
         if !past.isEmpty {
             Card {
                 VStack(alignment: .leading, spacing: 10) {
-                    Label("History", systemImage: "clock.arrow.circlepath").font(Theme.hand(19, relativeTo: .headline))
+                    SectionRule(title: "History")
                     ForEach(past.prefix(7)) { log in
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(log.date.formatted(date: .abbreviated, time: .omitted))
-                                .font(.caption).bold()
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(log.date.formatted(date: .abbreviated, time: .omitted).uppercased())
+                                .font(Theme.mono(10)).tracking(0.8)
                             if !log.currentLever.isEmpty {
                                 Text("Lever: \(log.currentLever)").font(.caption2).foregroundStyle(.secondary)
                             }
-                            Text("\(log.wins.count) wins · \(log.weakLinks.count) weak links")
-                                .font(.caption2).foregroundStyle(.secondary)
+                            Text("\(log.wins.count) WINS · \(log.weakLinks.count) WEAK LINKS")
+                                .font(Theme.mono(9)).tracking(0.5).foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -121,7 +123,7 @@ struct ListEditorCard: View {
     var body: some View {
         Card {
             VStack(alignment: .leading, spacing: 10) {
-                Label(title, systemImage: systemImage).font(Theme.hand(19, relativeTo: .headline)).foregroundStyle(tint)
+                SectionRule(title: title, tint: tint)
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     HStack {
                         Text("• \(item)")
