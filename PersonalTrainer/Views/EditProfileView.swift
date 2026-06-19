@@ -36,8 +36,9 @@ struct EditProfileView: View {
                     LabeledContent("Start weight") {
                         HStack(spacing: 4) {
                             TextField("Weight", value: $profile.startWeight, format: .number)
+                                .font(Theme.mono(15))
                                 .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 70)
-                            Text("lb").foregroundStyle(.secondary)
+                            Text("LB").font(Theme.mono(10)).foregroundStyle(.secondary)
                         }
                     }
                     Stepper("Days / week: \(profile.scheduleDaysPerWeek)",

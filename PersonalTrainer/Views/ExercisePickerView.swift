@@ -81,11 +81,12 @@ struct ExercisePickerView: View {
                 } else if let systemImage {
                     Image(systemName: systemImage)
                 }
-                Text(label).font(.caption).bold()
+                Text(label.uppercased()).font(Theme.mono(10, weight: .semibold)).tracking(0.5)
             }
-            .padding(.horizontal, 12).padding(.vertical, 7)
-            .background(selected ? Theme.accent : Theme.card, in: Capsule())
-            .foregroundStyle(selected ? Theme.blueprintDeep : .white)
+            .padding(.horizontal, 11).padding(.vertical, 8)
+            .background(selected ? Theme.accent : Color.clear)
+            .overlay(Rectangle().stroke(selected ? Color.clear : Theme.hairline, lineWidth: 1))
+            .foregroundStyle(selected ? Theme.blueprintDeep : Theme.accent)
         }
         .buttonStyle(.plain)
     }

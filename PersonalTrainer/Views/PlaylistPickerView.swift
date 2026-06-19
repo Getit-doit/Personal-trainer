@@ -40,8 +40,8 @@ struct PlaylistPickerView: View {
                                 Image(systemName: "music.note.list").foregroundStyle(Theme.accent)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(playlist.name)
-                                    Text("\(playlist.count) songs")
-                                        .font(.caption).foregroundStyle(.secondary)
+                                    Text("\(playlist.count) SONGS")
+                                        .font(Theme.mono(9)).tracking(0.6).foregroundStyle(.secondary)
                                 }
                                 Spacer()
                             }

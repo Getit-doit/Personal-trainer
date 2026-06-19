@@ -49,10 +49,10 @@ struct DropSetSheet: View {
                                     .font(.caption2).foregroundStyle(.secondary)
                             }
                             Text("\(weight.clean)")
-                                .font(.caption).bold()
+                                .font(Theme.mono(11, weight: .semibold))
                                 .padding(.horizontal, 8).padding(.vertical, 4)
-                                .background(Theme.accent.opacity(0.15), in: Capsule())
-                                .foregroundStyle(Theme.accentDeep)
+                                .overlay(Rectangle().stroke(Theme.accent.opacity(0.5), lineWidth: 1))
+                                .foregroundStyle(Theme.accent)
                         }
                     }
                 }
@@ -80,12 +80,13 @@ struct DropSetSheet: View {
             Text(title)
             Spacer()
             TextField(title, value: value, format: .number)
+                .font(Theme.mono(15))
                 .keyboardType(.decimalPad)
                 .multilineTextAlignment(.trailing)
                 .frame(width: 70)
             Stepper(title, value: value, in: 0...1000, step: 5)
                 .labelsHidden()
-            Text("lb").foregroundStyle(.secondary)
+            Text("LB").font(Theme.mono(10)).foregroundStyle(.secondary)
         }
     }
 }

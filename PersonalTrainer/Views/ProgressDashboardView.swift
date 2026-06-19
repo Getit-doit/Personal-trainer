@@ -168,8 +168,9 @@ struct AddPRSheet: View {
                 HStack {
                     Text("Weight"); Spacer()
                     TextField("Weight", value: $weight, format: .number)
+                        .font(Theme.mono(15))
                         .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 80)
-                    Text("lb").foregroundStyle(.secondary)
+                    Text("LB").font(Theme.mono(10)).foregroundStyle(.secondary)
                 }
                 Stepper("Reps: \(reps)", value: $reps, in: 1...20)
                 DatePicker("Date", selection: $date, displayedComponents: .date)
