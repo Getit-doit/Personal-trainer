@@ -85,6 +85,13 @@ enum Theme {
         tab.backgroundColor = paper
         UITabBar.appearance().standardAppearance = tab
         UITabBar.appearance().scrollEdgeAppearance = tab
+
+        // SwiftUI List/Form are UICollectionView/UITableView-backed; force their
+        // backing views transparent so the blueprint paper shows through (the
+        // SwiftUI .scrollContentBackground(.hidden) modifier alone isn't enough).
+        UICollectionView.appearance().backgroundColor = .clear
+        UITableView.appearance().backgroundColor = .clear
+        UITableViewCell.appearance().backgroundColor = .clear
     }
 }
 
