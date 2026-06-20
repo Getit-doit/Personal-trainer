@@ -43,6 +43,7 @@ struct ExercisePickerView: View {
                         }
                     }
                 }
+                .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .listRowBackground(Color.clear)
             }

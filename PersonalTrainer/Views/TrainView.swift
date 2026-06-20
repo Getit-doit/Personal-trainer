@@ -28,8 +28,10 @@ struct TrainView: View {
                         }
                         .onDelete(perform: delete)
                     }
+                    .listStyle(.plain)
                     .scrollContentBackground(.hidden)
                     .listRowBackground(Color.clear)
+                    .listRowSeparatorTint(Color.white.opacity(0.15))
                 }
             }
             .blueprintBackground()

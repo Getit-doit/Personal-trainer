@@ -78,4 +78,14 @@ extension View {
             .overlay(Rectangle().stroke(Theme.accent.opacity(0.55), lineWidth: 1))
             .foregroundStyle(Theme.accent)
     }
+
+    /// Blueprint text-field chrome: translucent fill + hairline border (replaces
+    /// the solid-black system `.roundedBorder` style on the dark paper).
+    func blueprintField() -> some View {
+        self
+            .padding(11)
+            .background(Theme.card)
+            .overlay(Rectangle().stroke(Theme.hairline, lineWidth: 1))
+            .tint(Theme.accent)
+    }
 }

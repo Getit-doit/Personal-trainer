@@ -56,7 +56,7 @@ struct FuelView: View {
                         set: { log.currentLever = $0; try? context.save() }
                     )
                 )
-                .textFieldStyle(.roundedBorder)
+                .blueprintField()
             }
         }
     }
@@ -139,7 +139,7 @@ struct ListEditorCard: View {
                 }
                 HStack {
                     TextField(placeholder, text: $draft)
-                        .textFieldStyle(.roundedBorder)
+                        .blueprintField()
                         .onSubmit(add)
                     Button(action: add) {
                         Image(systemName: "plus.circle.fill").foregroundStyle(tint)

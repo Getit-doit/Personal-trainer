@@ -43,6 +43,7 @@ struct ActiveSessionView: View {
                 finishSection
             }
         }
+        .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .listRowBackground(Color.clear)
         .blueprintBackground()

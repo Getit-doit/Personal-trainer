@@ -51,6 +51,7 @@ struct PlaylistPickerView: View {
                     .refreshable { music.loadPlaylists() }
                 }
             }
+            .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .listRowBackground(Color.clear)
             .blueprintBackground()

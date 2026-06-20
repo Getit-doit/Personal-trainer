@@ -96,7 +96,7 @@ struct OnboardingView: View {
                     Text("Primary goal").font(.subheadline).foregroundStyle(.secondary)
                     TextField("Goal", text: $goals, axis: .vertical)
                         .lineLimit(1...3)
-                        .textFieldStyle(.roundedBorder)
+                        .blueprintField()
                 }
             }
         }
