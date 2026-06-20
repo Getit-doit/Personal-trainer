@@ -40,12 +40,22 @@ final class OnDeviceCoach {
         do {
             let response = try await session.respond(to: message)
             let text = response.content.trimmingCharacters(in: .whitespacesAndNewlines)
-            return text.isEmpty ? nil : text
+            if text.isEmpty || isRefusal(text) { return nil }   // fall back to built-in coach
+            return text
         } catch {
             // Context window exceeded, guardrail, or model busy — reset and fall back.
             self.session = nil
             return nil
         }
+    }
+
+    /// The on-device model sometimes declines benign fitness questions. Treat an
+    /// obvious refusal as "no answer" so the helpful rule-based coach takes over.
+    private func isRefusal(_ text: String) -> Bool {
+        let t = text.lowercased()
+        return t.contains("cannot assist") || t.contains("can't assist")
+            || t.contains("can't help with that") || t.contains("cannot help with that")
+            || t.contains("unable to assist") || t.contains("i'm sorry, but i can")
     }
 }
 #endif
