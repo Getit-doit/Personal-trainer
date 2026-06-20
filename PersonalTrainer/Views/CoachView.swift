@@ -38,11 +38,7 @@ struct CoachView: View {
                                 bubble(message).id(message.id)
                             }
                             if isThinking {
-                                HStack {
-                                    CoachPendingView()
-                                    Spacer()
-                                }
-                                .padding(.horizontal)
+                                CoachPendingView()
                             }
                         }
                         .padding()
@@ -165,11 +161,11 @@ struct CoachPendingView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(spacing: 14) {
             BarbellLoaderView(scale: 0.8)
             TimelineView(.animation) { timeline in
                 let t = timeline.date.timeIntervalSinceReferenceDate
-                HStack(spacing: 6) {
+                HStack(spacing: 7) {
                     ForEach(0..<3, id: \.self) { i in
                         Circle()
                             .fill(Theme.accent)
@@ -178,9 +174,15 @@ struct CoachPendingView: View {
                     }
                 }
             }
-            Text(label)
-                .font(Theme.mono(9)).tracking(1.4)
-                .foregroundStyle(Theme.accent.opacity(0.6))
+            HStack(spacing: 8) {
+                Rectangle().fill(Theme.accent.opacity(0.4)).frame(width: 22, height: 1)
+                Text(label)
+                    .font(Theme.mono(9)).tracking(1.6)
+                    .foregroundStyle(Theme.accent.opacity(0.7))
+                Rectangle().fill(Theme.accent.opacity(0.4)).frame(width: 22, height: 1)
+            }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
     }
 }

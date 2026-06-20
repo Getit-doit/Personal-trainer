@@ -14,15 +14,16 @@ struct BarbellLoaderView: View {
     private let exitStart: Double = 3.0
     private let exitDuration: Double = 0.4
 
-    // Plate specs, inner → outer: (denomination, width, height, center offset)
+    // Plate specs, inner → outer: (width, height, center offset). The innermost
+    // sits just past the center grip so a bit of rod shows between them.
     private let plates: [(w: CGFloat, h: CGFloat, x: CGFloat)] = [
-        (16, 84, 43),   // 45
-        (14, 62, 62),   // 25
-        (11, 46, 78.5), // 10
-        (9, 34, 92.5)   // 5
+        (16, 84, 52),    // 45
+        (14, 62, 72),    // 25
+        (11, 46, 88.5),  // 10
+        (9, 34, 102.5)   // 5
     ]
 
-    private let baseWidth: CGFloat = 264
+    private let baseWidth: CGFloat = 292
     private let baseHeight: CGFloat = 104
 
     var body: some View {
@@ -45,10 +46,12 @@ struct BarbellLoaderView: View {
 
     private var bar: some View {
         ZStack {
+            // Full-length rod — extends past the outer plates as sleeves.
             Capsule().fill(Theme.hairline)
-                .frame(width: 208, height: 7)
-            Capsule().fill(Color.white.opacity(0.4))
-                .frame(width: 70, height: 12)
+                .frame(width: 262, height: 7)
+            // Lighter, thicker center grip.
+            Capsule().fill(Color.white.opacity(0.55))
+                .frame(width: 72, height: 12)
         }
     }
 

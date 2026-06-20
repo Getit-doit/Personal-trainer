@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 /// Workout history + entry point for starting a new session.
+/// Uses a ScrollView (not List) so the blueprint paper shows through cleanly.
 struct TrainView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \WorkoutSession.date, order: .reverse) private var sessions: [WorkoutSession]
@@ -10,28 +11,32 @@ struct TrainView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ScrollView {
                 if sessions.isEmpty {
                     ContentUnavailableView(
                         "No Workouts Yet",
                         systemImage: "dumbbell",
                         description: Text("Tap + to start a full-body session.")
                     )
+                    .padding(.top, 80)
                 } else {
-                    List {
+                    LazyVStack(spacing: 0) {
                         ForEach(sessions) { session in
                             NavigationLink {
                                 ActiveSessionView(session: session)
                             } label: {
                                 row(for: session)
                             }
-                            .listRowBackground(Color.clear)
+                            .buttonStyle(.plain)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    context.delete(session); try? context.save()
+                                } label: { Label("Delete", systemImage: "trash") }
+                            }
+                            Rectangle().fill(Color.white.opacity(0.12)).frame(height: 1)
                         }
-                        .onDelete(perform: delete)
                     }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
-                    .listRowSeparatorTint(Color.white.opacity(0.15))
+                    .padding(.horizontal)
                 }
             }
             .blueprintBackground()
@@ -54,7 +59,7 @@ struct TrainView: View {
     }
 
     private func row(for session: WorkoutSession) -> some View {
-        HStack {
+        HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title(for: session)).font(.headline)
                 Text(session.date.formatted(date: .abbreviated, time: .shortened).uppercased())
@@ -72,15 +77,13 @@ struct TrainView: View {
                 Text("\(session.exercises.count) LIFTS · \(session.completedSetCount) SETS")
                     .font(Theme.mono(9)).tracking(0.5).foregroundStyle(.secondary)
             }
+            Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary)
         }
+        .padding(.vertical, 14)
+        .contentShape(Rectangle())
     }
 
     private func title(for session: WorkoutSession) -> String {
         session.notes.isEmpty ? "Workout" : session.notes
-    }
-
-    private func delete(at offsets: IndexSet) {
-        for index in offsets { context.delete(sessions[index]) }
-        try? context.save()
     }
 }
