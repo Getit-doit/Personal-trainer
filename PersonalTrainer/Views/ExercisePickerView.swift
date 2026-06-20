@@ -46,6 +46,7 @@ struct ExercisePickerView: View {
                         Section {
                             ForEach(section.items) { exercise in
                                 row(exercise)
+                                    .listRowBackground(Color.clear)
                             }
                         } header: {
                             HStack(spacing: 8) {

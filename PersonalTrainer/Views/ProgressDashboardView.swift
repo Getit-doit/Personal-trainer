@@ -161,19 +161,22 @@ struct AddPRSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Picker("Exercise", selection: $name) {
-                    Text("Select…").tag("")
-                    ForEach(exercises) { Text($0.name).tag($0.name) }
+                Group {
+                    Picker("Exercise", selection: $name) {
+                        Text("Select…").tag("")
+                        ForEach(exercises) { Text($0.name).tag($0.name) }
+                    }
+                    HStack {
+                        Text("Weight"); Spacer()
+                        TextField("Weight", value: $weight, format: .number)
+                            .font(Theme.mono(15))
+                            .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 80)
+                        Text("LB").font(Theme.mono(10)).foregroundStyle(.secondary)
+                    }
+                    Stepper("Reps: \(reps)", value: $reps, in: 1...20)
+                    DatePicker("Date", selection: $date, displayedComponents: .date)
                 }
-                HStack {
-                    Text("Weight"); Spacer()
-                    TextField("Weight", value: $weight, format: .number)
-                        .font(Theme.mono(15))
-                        .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 80)
-                    Text("LB").font(Theme.mono(10)).foregroundStyle(.secondary)
-                }
-                Stepper("Reps: \(reps)", value: $reps, in: 1...20)
-                DatePicker("Date", selection: $date, displayedComponents: .date)
+                .listRowBackground(Color.clear)
             }
             .scrollContentBackground(.hidden)
             .listRowBackground(Color.clear)

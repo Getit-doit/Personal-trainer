@@ -30,22 +30,21 @@ struct ActiveSessionView: View {
 
     var body: some View {
         List {
-            musicSection
-            warmupSection
+            musicSection.listRowBackground(Color.clear)
+            warmupSection.listRowBackground(Color.clear)
 
             if session.ankleWarmupDone {
                 ForEach(session.sortedExercises) { exercise in
-                    exerciseSection(exercise)
+                    exerciseSection(exercise).listRowBackground(Color.clear)
                 }
-                addExerciseSection
-                restPresetSection
-                cardioSection
-                finishSection
+                addExerciseSection.listRowBackground(Color.clear)
+                restPresetSection.listRowBackground(Color.clear)
+                cardioSection.listRowBackground(Color.clear)
+                finishSection.listRowBackground(Color.clear)
             }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .listRowBackground(Color.clear)
         .blueprintBackground()
         .barLoadingOverlay(isSaving, label: "Saving to Health…")
         .navigationTitle(session.notes.isEmpty ? "Workout" : session.notes)

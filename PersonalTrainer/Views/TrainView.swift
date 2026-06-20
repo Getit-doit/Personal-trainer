@@ -25,12 +25,12 @@ struct TrainView: View {
                             } label: {
                                 row(for: session)
                             }
+                            .listRowBackground(Color.clear)
                         }
                         .onDelete(perform: delete)
                     }
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
-                    .listRowBackground(Color.clear)
                     .listRowSeparatorTint(Color.white.opacity(0.15))
                 }
             }

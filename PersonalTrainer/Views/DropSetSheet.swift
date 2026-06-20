@@ -40,6 +40,7 @@ struct DropSetSheet: View {
                 } footer: {
                     Text("Each stage is taken to failure with no rest before the next drop.")
                 }
+                .listRowBackground(Color.clear)
 
                 Section("Preview · \(ladder.count) drops") {
                     HStack(spacing: 6) {
@@ -56,6 +57,7 @@ struct DropSetSheet: View {
                         }
                     }
                 }
+                .listRowBackground(Color.clear)
             }
             .scrollContentBackground(.hidden)
             .listRowBackground(Color.clear)

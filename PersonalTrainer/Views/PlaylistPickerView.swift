@@ -47,6 +47,7 @@ struct PlaylistPickerView: View {
                             }
                         }
                         .tint(.primary)
+                        .listRowBackground(Color.clear)
                     }
                     .refreshable { music.loadPlaylists() }
                 }
