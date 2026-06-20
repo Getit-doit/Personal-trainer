@@ -39,7 +39,7 @@ struct CoachView: View {
                             }
                             if isThinking {
                                 HStack {
-                                    BarLoadingView(label: "Coach is loading up…")
+                                    CoachPendingView()
                                     Spacer()
                                 }
                                 .padding(.horizontal)
@@ -151,6 +151,36 @@ struct CoachView: View {
                 isThinking = false
                 messages.append(CoachMessage(text: reply, isUser: false))
             }
+        }
+    }
+}
+
+/// Pending-response state: the barbell loader, three pulsing dots, and a faint
+/// engine label — shown while the coach composes a reply.
+struct CoachPendingView: View {
+    private var label: String {
+        CoachService.activeEngine == .onDevice
+            ? "ON-DEVICE MODEL · WARMING"
+            : "\(CoachService.activeEngine.label.uppercased()) · THINKING"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            BarbellLoaderView(scale: 0.8)
+            TimelineView(.animation) { timeline in
+                let t = timeline.date.timeIntervalSinceReferenceDate
+                HStack(spacing: 6) {
+                    ForEach(0..<3, id: \.self) { i in
+                        Circle()
+                            .fill(Theme.accent)
+                            .frame(width: 6, height: 6)
+                            .opacity(0.3 + 0.7 * (0.5 + 0.5 * sin(t * 3 - Double(i) * 0.9)))
+                    }
+                }
+            }
+            Text(label)
+                .font(Theme.mono(9)).tracking(1.4)
+                .foregroundStyle(Theme.accent.opacity(0.6))
         }
     }
 }

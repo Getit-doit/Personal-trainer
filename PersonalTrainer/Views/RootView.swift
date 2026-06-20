@@ -36,22 +36,16 @@ struct RootView: View {
         }
         .overlay {
             if isLaunching {
-                ZStack {
-                    BlueprintBackdrop().ignoresSafeArea()
-                    VStack(spacing: 18) {
-                        Text("Functional Trainer")
-                            .font(Theme.hand(28, relativeTo: .title))
-                            .foregroundStyle(.white)
-                        BarLoadingView()
-                    }
-                }
-                .transition(.opacity)
+                LaunchView().transition(.opacity)
             }
         }
         .task {
+            // Warm the model / refresh health while we hold the launch screen,
+            // then let the loader finish a full loop so it never cuts mid-sequence.
+            CoachService.prewarm()
             if health.authorized { await health.refresh() }
-            try? await Task.sleep(for: .seconds(0.9))
-            withAnimation(.easeOut(duration: 0.4)) { isLaunching = false }
+            try? await Task.sleep(for: .seconds(3.7))   // one barbell-loader loop
+            withAnimation(.easeOut(duration: 0.5)) { isLaunching = false }
         }
     }
 }
