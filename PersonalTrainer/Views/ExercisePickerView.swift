@@ -1,44 +1,60 @@
 import SwiftUI
 import SwiftData
 
-/// A searchable picker over the exercise database, grouped by equipment with
-/// the blueprint equipment logo on each section. A chip row filters by type.
+/// A searchable picker over the exercise database, organized by **muscle group**
+/// so you can plan a session around what you want to train. A chip row jumps to
+/// a muscle; each row shows its equipment.
 struct ExercisePickerView: View {
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \Exercise.name) private var exercises: [Exercise]
     @State private var search = ""
-    @State private var filter: Equipment?
+    @State private var filter: String?
     var onPick: (Exercise) -> Void
+
+    /// Canonical training order; anything else falls to the end alphabetically.
+    private let muscleOrder = ["Legs", "Hinge", "Chest", "Back", "Shoulders", "Arms", "Core", "Cardio"]
+
+    private func order(_ muscle: String) -> Int {
+        muscleOrder.firstIndex(of: muscle) ?? muscleOrder.count
+    }
 
     private var filtered: [Exercise] {
         exercises.filter { ex in
-            (filter == nil || ex.equipment == filter)
+            (filter == nil || ex.muscleGroup == filter)
             && (search.isEmpty || ex.name.localizedCaseInsensitiveContains(search))
         }
     }
 
-    private var grouped: [(equipment: Equipment, items: [Exercise])] {
-        Dictionary(grouping: filtered, by: \.equipment)
+    private var muscleGroups: [String] {
+        var seen = Set<String>()
+        for ex in exercises where !seen.contains(ex.muscleGroup) { seen.insert(ex.muscleGroup) }
+        return seen.sorted { (order($0), $0) < (order($1), $1) }
+    }
+
+    private var grouped: [(muscle: String, items: [Exercise])] {
+        Dictionary(grouping: filtered, by: \.muscleGroup)
             .map { ($0.key, $0.value.sorted { $0.name < $1.name }) }
-            .sorted { $0.equipment.sortOrder < $1.equipment.sortOrder }
+            .sorted { (order($0.muscle), $0.muscle) < (order($1.muscle), $1.muscle) }
     }
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                equipmentFilterRow
+                muscleFilterRow
                 List {
-                    ForEach(grouped, id: \.equipment) { section in
+                    ForEach(grouped, id: \.muscle) { section in
                         Section {
                             ForEach(section.items) { exercise in
                                 row(exercise)
                             }
                         } header: {
                             HStack(spacing: 8) {
-                                section.equipment.image
-                                    .resizable().scaledToFit().frame(width: 22, height: 22)
+                                Text(section.muscle.uppercased())
+                                    .font(Theme.label(11)).tracking(1.6)
                                     .foregroundStyle(Theme.accent)
-                                Text(section.equipment.name)
+                                Rectangle().fill(Color.white.opacity(0.16)).frame(height: 1)
+                                Text("\(section.items.count)")
+                                    .font(Theme.mono(9)).foregroundStyle(.secondary)
                             }
                         }
                     }
@@ -57,12 +73,12 @@ struct ExercisePickerView: View {
         }
     }
 
-    private var equipmentFilterRow: some View {
+    private var muscleFilterRow: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                chip(nil, label: "All", systemImage: "square.grid.2x2")
-                ForEach(Equipment.allCases) { eq in
-                    chip(eq, label: eq.name, image: eq.image)
+                chip(nil, label: "All")
+                ForEach(muscleGroups, id: \.self) { muscle in
+                    chip(muscle, label: muscle)
                 }
             }
             .padding(.horizontal)
@@ -71,23 +87,16 @@ struct ExercisePickerView: View {
     }
 
     @ViewBuilder
-    private func chip(_ eq: Equipment?, label: String, systemImage: String? = nil, image: Image? = nil) -> some View {
-        let selected = filter == eq
+    private func chip(_ muscle: String?, label: String) -> some View {
+        let selected = filter == muscle
         Button {
-            filter = selected ? nil : eq
+            filter = selected ? nil : muscle
         } label: {
-            HStack(spacing: 5) {
-                if let image {
-                    image.resizable().scaledToFit().frame(width: 16, height: 16)
-                } else if let systemImage {
-                    Image(systemName: systemImage)
-                }
-                Text(label.uppercased()).font(Theme.mono(10, weight: .semibold)).tracking(0.5)
-            }
-            .padding(.horizontal, 11).padding(.vertical, 8)
-            .background(selected ? Theme.accent : Color.clear)
-            .overlay(Rectangle().stroke(selected ? Color.clear : Theme.hairline, lineWidth: 1))
-            .foregroundStyle(selected ? Theme.blueprintDeep : Theme.accent)
+            Text(label.uppercased()).font(Theme.mono(10, weight: .semibold)).tracking(0.5)
+                .padding(.horizontal, 11).padding(.vertical, 8)
+                .background(selected ? Theme.accent : Color.clear)
+                .overlay(Rectangle().stroke(selected ? Color.clear : Theme.hairline, lineWidth: 1))
+                .foregroundStyle(selected ? Theme.blueprintDeep : Theme.accent)
         }
         .buttonStyle(.plain)
     }
@@ -97,20 +106,23 @@ struct ExercisePickerView: View {
             onPick(exercise)
             dismiss()
         } label: {
-            HStack {
-                Circle().fill(Theme.color(for: exercise.muscleGroup)).frame(width: 8, height: 8)
+            HStack(spacing: 10) {
+                exercise.equipment.image
+                    .resizable().scaledToFit().frame(width: 20, height: 20)
+                    .foregroundStyle(Theme.accent)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(exercise.name)
                     HStack(spacing: 6) {
-                        Text(exercise.muscleGroup)
+                        Text(exercise.equipment.name.uppercased())
                         if exercise.isPriorityProgression {
-                            Text("· Priority").foregroundStyle(Theme.accent)
+                            Text("· PRIORITY").foregroundStyle(Theme.accent)
                         }
                     }
-                    .font(.caption2).foregroundStyle(.secondary)
+                    .font(Theme.mono(9)).tracking(0.4).foregroundStyle(.secondary)
                 }
                 Spacer()
-                Text(exercise.type.rawValue).font(.caption2).foregroundStyle(.secondary)
+                Text(exercise.type.rawValue.uppercased())
+                    .font(Theme.mono(9)).foregroundStyle(.secondary)
                 Image(systemName: "plus").foregroundStyle(Theme.accent)
             }
         }
