@@ -30,15 +30,18 @@ enum CoachService {
         return .offline
     }
 
-    static func reply(to message: String, history: [CoachMessage]) async -> String {
+    /// Answer the athlete. `memory` is a freshly-built markdown briefing about the
+    /// account holder (current time, time since last workout, recent workout
+    /// summaries, PRs, and fuel decisions) that every engine reads before replying.
+    static func reply(to message: String, history: [CoachMessage], memory: String = "") async -> String {
         if !Config.anthropicAPIKey.isEmpty {
-            if let remote = try? await callClaude(message: message, history: history) {
+            if let remote = try? await callClaude(message: message, history: history, memory: memory) {
                 return remote
             }
         }
         #if canImport(FoundationModels)
         if #available(iOS 26.0, *) {
-            if let onDevice = await OnDeviceCoach.shared.reply(to: message) {
+            if let onDevice = await OnDeviceCoach.shared.reply(to: message, memory: memory) {
                 return onDevice
             }
         }
@@ -144,7 +147,7 @@ enum CoachService {
 
     // MARK: - Claude API (optional)
 
-    private static func callClaude(message: String, history: [CoachMessage]) async throws -> String {
+    private static func callClaude(message: String, history: [CoachMessage], memory: String) async throws -> String {
         guard let url = URL(string: "https://api.anthropic.com/v1/messages") else {
             throw CoachError.badURL
         }
@@ -154,10 +157,16 @@ enum CoachService {
         }
         messages.append(["role": "user", "content": message])
 
+        // Prepend the live athlete memory to the system prompt so the model reads
+        // it before answering — current time, recency, recent training and fuel.
+        let system = memory.isEmpty ? systemPrompt
+            : systemPrompt + "\n\nRead this current memory about the athlete before "
+                + "answering, and reference it where relevant:\n\n" + memory
+
         let body: [String: Any] = [
             "model": "claude-sonnet-4-6",
             "max_tokens": 500,
-            "system": systemPrompt,
+            "system": system,
             "messages": messages
         ]
 

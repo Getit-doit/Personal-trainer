@@ -19,10 +19,13 @@ final class OnDeviceCoach {
     }
 
     private var session: LanguageModelSession?
+    /// The last memory briefing we sent, so we only re-inject it when it changes.
+    private var lastMemory = ""
 
     private func ensureSession() {
         if session == nil {
             session = LanguageModelSession(instructions: CoachService.systemPrompt)
+            lastMemory = ""
         }
     }
 
@@ -33,18 +36,30 @@ final class OnDeviceCoach {
         session?.prewarm()
     }
 
-    func reply(to message: String) async -> String? {
+    func reply(to message: String, memory: String = "") async -> String? {
         guard Self.isAvailable else { return nil }
         ensureSession()
         guard let session else { return nil }
+
+        // Inject the athlete memory as a context block before the question, but
+        // only when it has changed since the last turn — the persistent session
+        // already remembers what we sent earlier, so we avoid repeating it.
+        var prompt = message
+        if !memory.isEmpty && memory != lastMemory {
+            prompt = "Current memory about the athlete — read before answering and "
+                + "reference where relevant:\n\n\(memory)\n\nQuestion: \(message)"
+            lastMemory = memory
+        }
+
         do {
-            let response = try await session.respond(to: message)
+            let response = try await session.respond(to: prompt)
             let text = response.content.trimmingCharacters(in: .whitespacesAndNewlines)
             if text.isEmpty || isRefusal(text) { return nil }   // fall back to built-in coach
             return text
         } catch {
             // Context window exceeded, guardrail, or model busy — reset and fall back.
             self.session = nil
+            self.lastMemory = ""
             return nil
         }
     }

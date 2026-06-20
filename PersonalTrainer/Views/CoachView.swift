@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 /// A chat message in the coach conversation.
 struct CoachMessage: Identifiable, Equatable {
@@ -9,6 +10,12 @@ struct CoachMessage: Identifiable, Equatable {
 
 /// The AI coach chat screen.
 struct CoachView: View {
+    @Query private var profiles: [UserProfile]
+    @Query private var sessions: [WorkoutSession]
+    @Query private var nutrition: [NutritionLog]
+    @Query private var prs: [PersonalBest]
+    @Query private var exercises: [Exercise]
+
     @State private var messages: [CoachMessage] = [
         CoachMessage(
             text: "Hey! I'm your AI coach. Ask me anything about training, "
@@ -141,8 +148,19 @@ struct CoachView: View {
         draft = ""
         isThinking = true
 
+        // Build a fresh memory briefing so the coach knows the current time, how
+        // long it's been since the last workout, recent session summaries, and
+        // the latest fuel decisions before it answers.
+        let memory = CoachMemory.build(
+            profile: profiles.first,
+            sessions: sessions,
+            nutrition: nutrition,
+            prs: prs,
+            exercises: exercises
+        )
+
         Task {
-            let reply = await CoachService.reply(to: trimmed, history: history)
+            let reply = await CoachService.reply(to: trimmed, history: history, memory: memory)
             await MainActor.run {
                 isThinking = false
                 messages.append(CoachMessage(text: reply, isUser: false))

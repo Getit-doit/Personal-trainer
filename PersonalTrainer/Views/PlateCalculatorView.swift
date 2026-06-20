@@ -150,18 +150,6 @@ struct PlateCalculatorView: View {
         return RoundedRectangle(cornerRadius: 2)
             .fill(Theme.accent.opacity(0.10))
             .frame(width: width, height: height)
-            .overlay(
-                // Only stamp the wider plates; thin ones get cramped/garbled.
-                Group {
-                    if plate >= 25 {
-                        Text(plate.clean)
-                            .font(Theme.mono(8, weight: .semibold))
-                            .foregroundStyle(Theme.ink.opacity(0.9))
-                            .fixedSize()
-                            .rotationEffect(.degrees(-90))
-                    }
-                }
-            )
             .overlay(RoundedRectangle(cornerRadius: 2).stroke(Theme.accent, lineWidth: 1.4))
     }
 
