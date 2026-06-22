@@ -7,9 +7,19 @@ struct LeverCheckInsView: View {
     @Environment(\.modelContext) private var context
     @ObservedObject private var notif = NotificationCoach.shared
     @Query(sort: \DietHabit.startDate) private var habits: [DietHabit]
+    @Query private var profiles: [UserProfile]
+    @Query private var sessions: [WorkoutSession]
+    @Query private var nutrition: [NutritionLog]
+    @Query private var prs: [PersonalBest]
+    @Query private var exercises: [Exercise]
+
     @State private var showAdd = false
+    @State private var aiSuggestions: [HabitEngine.Suggestion] = []
+    @State private var loadingAI = false
+    @State private var aiTried = false
 
     private var active: [DietHabit] { habits.filter(\.isActive) }
+    private var hasGenerativeCoach: Bool { CoachService.activeEngine != .offline }
 
     var body: some View {
         ScrollView {
@@ -29,6 +39,7 @@ struct LeverCheckInsView: View {
                     }
                 }
 
+                aiSuggestionsCard
                 suggestionsCard
             }
             .padding()
@@ -49,8 +60,86 @@ struct LeverCheckInsView: View {
             }
         }
         .task {
-            if !notif.authorized { /* prompt shown via card */ }
+            if hasGenerativeCoach && !aiTried { await generateAISuggestions() }
         }
+    }
+
+    // MARK: AI-recommended levers
+
+    @ViewBuilder
+    private var aiSuggestionsCard: some View {
+        if hasGenerativeCoach {
+            Card {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        SectionRule(title: "AI recommended for you")
+                        Button {
+                            Task { await generateAISuggestions() }
+                        } label: {
+                            Image(systemName: "arrow.clockwise").font(.caption).foregroundStyle(Theme.accent)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(loadingAI)
+                    }
+
+                    if loadingAI {
+                        HStack(spacing: 8) {
+                            ProgressView().scaleEffect(0.8)
+                            Text("Thinking up levers for you…")
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
+                    } else if aiSuggestions.isEmpty {
+                        Text(aiTried
+                             ? "No new suggestions right now — tap refresh to try again."
+                             : "Personalized to your goal, recent training, and fuel.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        ForEach(aiSuggestions, id: \.title) { s in
+                            suggestionRow(s)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func generateAISuggestions() async {
+        guard hasGenerativeCoach else { return }
+        loadingAI = true
+        defer { loadingAI = false; aiTried = true }
+        let memory = CoachMemory.build(
+            profile: profiles.first, sessions: sessions,
+            nutrition: nutrition, prs: prs, exercises: exercises
+        )
+        let existing = Set(habits.map { $0.title.lowercased() })
+        if let ideas = await CoachService.suggestLevers(memory: memory, avoid: habits.map(\.title)) {
+            aiSuggestions = ideas.filter { !existing.contains($0.title.lowercased()) }
+        }
+    }
+
+    /// A selectable suggestion row that adds the lever when tapped.
+    private func suggestionRow(_ s: HabitEngine.Suggestion) -> some View {
+        Button { addSuggestion(s) } label: {
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: "plus.circle.fill").foregroundStyle(Theme.accent)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(s.title).font(.subheadline)
+                    Text(s.question).font(.caption2).foregroundStyle(.secondary)
+                }
+                Spacer(minLength: 8)
+                Text(s.goodAnswerIsYes ? "YES = WIN" : "NO = WIN")
+                    .font(Theme.mono(8)).tracking(1).foregroundStyle(.secondary)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func addSuggestion(_ s: HabitEngine.Suggestion) {
+        let habit = DietHabit(title: s.title, question: s.question, goodAnswerIsYes: s.goodAnswerIsYes)
+        context.insert(habit)
+        try? context.save()
+        notif.rescheduleAll()
+        aiSuggestions.removeAll { $0.title == s.title }
     }
 
     // MARK: Permission
@@ -181,28 +270,17 @@ struct LeverCheckInsView: View {
     // MARK: Suggestions
 
     private var suggestionsCard: some View {
-        Card {
-            VStack(alignment: .leading, spacing: 10) {
-                SectionRule(title: "Quick add")
-                let existing = Set(habits.map(\.title))
-                ForEach(HabitEngine.suggestions.filter { !existing.contains($0.title) }, id: \.title) { s in
-                    Button {
-                        let habit = DietHabit(title: s.title, question: s.question,
-                                              goodAnswerIsYes: s.goodAnswerIsYes)
-                        context.insert(habit)
-                        try? context.save()
-                        notif.rescheduleAll()
-                    } label: {
-                        HStack {
-                            Image(systemName: "plus.circle.fill").foregroundStyle(Theme.accent)
-                            Text(s.title)
-                            Spacer()
-                            Text(s.goodAnswerIsYes ? "YES = WIN" : "NO = WIN")
-                                .font(Theme.mono(8)).tracking(1).foregroundStyle(.secondary)
+        let existing = Set(habits.map(\.title))
+        let starters = HabitEngine.suggestions.filter { !existing.contains($0.title) }
+        return Group {
+            if !starters.isEmpty {
+                Card {
+                    VStack(alignment: .leading, spacing: 10) {
+                        SectionRule(title: "Starter levers")
+                        ForEach(starters, id: \.title) { s in
+                            suggestionRow(s)
                         }
-                        .font(.subheadline)
                     }
-                    .buttonStyle(.plain)
                 }
             }
         }

@@ -74,6 +74,57 @@ enum CoachService {
         return nil
     }
 
+    // MARK: - AI-recommended levers
+
+    private struct LeverIdea: Decodable {
+        let title: String
+        let question: String
+        let winIsYes: Bool
+    }
+
+    /// Ask the active generative engine for personalized nutrition-lever ideas,
+    /// grounded in the athlete's memory briefing. Returns nil when no generative
+    /// engine is available or the model didn't return usable JSON (callers fall
+    /// back to the built-in starter levers).
+    static func suggestLevers(memory: String, avoid: [String]) async -> [HabitEngine.Suggestion]? {
+        guard activeEngine != .offline else { return nil }
+        let avoidList = avoid.isEmpty ? "none" : avoid.joined(separator: ", ")
+        let prompt = """
+        Suggest 4 personalized nutrition "lever" habits for this athlete to check in on. \
+        A lever is one simple, specific daily habit (not a whole diet). Tailor them to the \
+        athlete's goal, recent training, and any fuel weak links in the context below.
+        Return ONLY a JSON array, no prose or code fences. Each element exactly:
+        {"title": "<=3 word tag", "question": "a short yes/no check-in question", "winIsYes": true or false}
+        winIsYes is true when answering "Yes" is the good outcome (e.g. drank protein), \
+        false when "No" is good (e.g. no soda). Do not duplicate these existing levers: \(avoidList).
+
+        Athlete context:
+        \(memory)
+        """
+        guard let raw = await oneShot(prompt) else { return nil }
+        return parseLevers(raw)
+    }
+
+    /// Extract a JSON array of lever ideas from a (possibly chatty) model reply.
+    private static func parseLevers(_ raw: String) -> [HabitEngine.Suggestion]? {
+        guard let start = raw.firstIndex(of: "["), let end = raw.lastIndex(of: "]"), start < end else {
+            return nil
+        }
+        let json = String(raw[start...end])
+        guard let data = json.data(using: .utf8),
+              let ideas = try? JSONDecoder().decode([LeverIdea].self, from: data) else {
+            return nil
+        }
+        let suggestions = ideas.prefix(6).map {
+            HabitEngine.Suggestion(
+                title: $0.title.trimmingCharacters(in: .whitespacesAndNewlines),
+                question: $0.question.trimmingCharacters(in: .whitespacesAndNewlines),
+                goodAnswerIsYes: $0.winIsYes
+            )
+        }.filter { !$0.title.isEmpty && !$0.question.isEmpty }
+        return suggestions.isEmpty ? nil : suggestions
+    }
+
     /// Warm the on-device model (if that's the active engine) for a faster first reply.
     static func prewarm() {
         #if canImport(FoundationModels)
