@@ -100,4 +100,88 @@ enum HabitEngine {
                    question: "Did you get vegetables in every day this week?",
                    goodAnswerIsYes: true)
     ]
+
+    // MARK: - Daily-habit intake
+
+    /// One answer choice. `lever` is the suggestion this answer points to (nil if
+    /// the answer indicates no lever is needed).
+    struct IntakeOption {
+        let label: String
+        let lever: Suggestion?
+    }
+
+    /// A question the coach asks about the athlete's daily habits.
+    struct IntakeQuestion: Identifiable {
+        let id: String
+        let prompt: String
+        let options: [IntakeOption]
+    }
+
+    static let intake: [IntakeQuestion] = [
+        IntakeQuestion(id: "soda", prompt: "How often do you drink soda or sugary drinks?", options: [
+            IntakeOption(label: "Daily", lever: suggestion("No soda")),
+            IntakeOption(label: "Weekly", lever: suggestion("No soda")),
+            IntakeOption(label: "Rarely", lever: nil),
+            IntakeOption(label: "Never", lever: nil)
+        ]),
+        IntakeQuestion(id: "protein_am", prompt: "Do you eat a protein-rich breakfast?", options: [
+            IntakeOption(label: "Most days", lever: nil),
+            IntakeOption(label: "Sometimes", lever: suggestion("Morning protein")),
+            IntakeOption(label: "Rarely", lever: suggestion("Morning protein"))
+        ]),
+        IntakeQuestion(id: "water", prompt: "How's your daily water intake?", options: [
+            IntakeOption(label: "Plenty", lever: nil),
+            IntakeOption(label: "So-so", lever: suggestion("Hydration")),
+            IntakeOption(label: "Low", lever: suggestion("Hydration"))
+        ]),
+        IntakeQuestion(id: "late_snack", prompt: "Do you snack late at night?", options: [
+            IntakeOption(label: "Often", lever: suggestion("No late-night snacking")),
+            IntakeOption(label: "Sometimes", lever: suggestion("No late-night snacking")),
+            IntakeOption(label: "Rarely", lever: nil)
+        ]),
+        IntakeQuestion(id: "fast_food", prompt: "How often is it fast food or takeout?", options: [
+            IntakeOption(label: "Often", lever: suggestion("No fast food")),
+            IntakeOption(label: "Weekly", lever: suggestion("No fast food")),
+            IntakeOption(label: "Rarely", lever: nil)
+        ]),
+        IntakeQuestion(id: "alcohol", prompt: "How often do you drink alcohol?", options: [
+            IntakeOption(label: "Most days", lever: suggestion("No alcohol")),
+            IntakeOption(label: "Weekly", lever: nil),
+            IntakeOption(label: "Rarely", lever: nil)
+        ]),
+        IntakeQuestion(id: "veggies", prompt: "Do you eat vegetables every day?", options: [
+            IntakeOption(label: "Most days", lever: nil),
+            IntakeOption(label: "Sometimes", lever: suggestion("Veggies daily")),
+            IntakeOption(label: "Rarely", lever: suggestion("Veggies daily"))
+        ])
+    ]
+
+    /// Look up a starter suggestion by title (used to wire intake answers to levers).
+    static func suggestion(_ title: String) -> Suggestion? {
+        suggestions.first { $0.title == title }
+    }
+
+    /// The levers implied by a set of intake answers (questionID → selected index),
+    /// de-duplicated. This is the fully-offline result; AI can add to it.
+    static func deterministicLevers(from answers: [String: Int]) -> [Suggestion] {
+        var seen = Set<String>()
+        var result: [Suggestion] = []
+        for q in intake {
+            guard let idx = answers[q.id], q.options.indices.contains(idx),
+                  let lever = q.options[idx].lever, !seen.contains(lever.title) else { continue }
+            seen.insert(lever.title)
+            result.append(lever)
+        }
+        return result
+    }
+
+    /// A readable summary of the athlete's answers, for grounding AI suggestions.
+    static func intakeSummary(from answers: [String: Int]) -> String {
+        var lines: [String] = []
+        for q in intake {
+            guard let idx = answers[q.id], q.options.indices.contains(idx) else { continue }
+            lines.append("- \(q.prompt) → \(q.options[idx].label)")
+        }
+        return lines.joined(separator: "\n")
+    }
 }

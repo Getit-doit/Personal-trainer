@@ -14,9 +14,7 @@ struct LeverCheckInsView: View {
     @Query private var exercises: [Exercise]
 
     @State private var showAdd = false
-    @State private var aiSuggestions: [HabitEngine.Suggestion] = []
-    @State private var loadingAI = false
-    @State private var aiTried = false
+    @State private var showIntake = false
 
     private var active: [DietHabit] { habits.filter(\.isActive) }
     private var hasGenerativeCoach: Bool { CoachService.activeEngine != .offline }
@@ -59,61 +57,33 @@ struct LeverCheckInsView: View {
                 notif.rescheduleAll()
             }
         }
-        .task {
-            if hasGenerativeCoach && !aiTried { await generateAISuggestions() }
+        .sheet(isPresented: $showIntake) {
+            HabitIntakeView(
+                memory: CoachMemory.build(
+                    profile: profiles.first, sessions: sessions,
+                    nutrition: nutrition, prs: prs, exercises: exercises
+                ),
+                existingTitles: habits.map(\.title)
+            )
         }
     }
 
-    // MARK: AI-recommended levers
+    // MARK: Build levers from daily habits
 
-    @ViewBuilder
     private var aiSuggestionsCard: some View {
-        if hasGenerativeCoach {
-            Card {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        SectionRule(title: "AI recommended for you")
-                        Button {
-                            Task { await generateAISuggestions() }
-                        } label: {
-                            Image(systemName: "arrow.clockwise").font(.caption).foregroundStyle(Theme.accent)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(loadingAI)
-                    }
-
-                    if loadingAI {
-                        HStack(spacing: 8) {
-                            ProgressView().scaleEffect(0.8)
-                            Text("Thinking up levers for you…")
-                                .font(.caption).foregroundStyle(.secondary)
-                        }
-                    } else if aiSuggestions.isEmpty {
-                        Text(aiTried
-                             ? "No new suggestions right now — tap refresh to try again."
-                             : "Personalized to your goal, recent training, and fuel.")
-                            .font(.caption).foregroundStyle(.secondary)
-                    } else {
-                        ForEach(aiSuggestions, id: \.title) { s in
-                            suggestionRow(s)
-                        }
-                    }
+        Card {
+            VStack(alignment: .leading, spacing: 10) {
+                SectionRule(title: "Build your levers")
+                Text(hasGenerativeCoach
+                     ? "Answer a few quick questions about your daily habits and your coach will suggest levers tailored to you."
+                     : "Answer a few quick questions about your daily habits and we'll suggest levers that fit.")
+                    .font(.caption).foregroundStyle(.secondary)
+                Button { showIntake = true } label: {
+                    Label("Answer a few questions", systemImage: "text.bubble")
+                        .blueprintPrimary()
                 }
+                .buttonStyle(.plain)
             }
-        }
-    }
-
-    private func generateAISuggestions() async {
-        guard hasGenerativeCoach else { return }
-        loadingAI = true
-        defer { loadingAI = false; aiTried = true }
-        let memory = CoachMemory.build(
-            profile: profiles.first, sessions: sessions,
-            nutrition: nutrition, prs: prs, exercises: exercises
-        )
-        let existing = Set(habits.map { $0.title.lowercased() })
-        if let ideas = await CoachService.suggestLevers(memory: memory, avoid: habits.map(\.title)) {
-            aiSuggestions = ideas.filter { !existing.contains($0.title.lowercased()) }
         }
     }
 
@@ -139,7 +109,6 @@ struct LeverCheckInsView: View {
         context.insert(habit)
         try? context.save()
         notif.rescheduleAll()
-        aiSuggestions.removeAll { $0.title == s.title }
     }
 
     // MARK: Permission
@@ -410,5 +379,152 @@ struct AddHabitView: View {
         )
         onSave(habit)
         dismiss()
+    }
+}
+
+/// The coach interviews the athlete about their daily habits, then recommends
+/// levers targeting the weak spots. AI personalizes the list when available;
+/// a deterministic mapping makes it work fully offline too.
+struct HabitIntakeView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @ObservedObject private var notif = NotificationCoach.shared
+
+    let memory: String
+    let existingTitles: [String]
+
+    private enum Phase { case questions, loading, results }
+    @State private var phase: Phase = .questions
+    @State private var answers: [String: Int] = [:]
+    @State private var results: [HabitEngine.Suggestion] = []
+    @State private var added: Set<String> = []
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    switch phase {
+                    case .questions: questionsSection
+                    case .loading: loadingSection
+                    case .results: resultsSection
+                    }
+                }
+                .padding()
+            }
+            .blueprintBackground()
+            .navigationTitle("Your habits")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(phase == .results ? "Done" : "Cancel") { dismiss() }
+                }
+            }
+        }
+    }
+
+    private var questionsSection: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("A few quick questions so your coach can suggest the right levers.")
+                .font(.callout).foregroundStyle(.secondary)
+            ForEach(HabitEngine.intake) { q in
+                VStack(alignment: .leading, spacing: 8) {
+                    SectionRule(title: q.prompt)
+                    Picker(q.prompt, selection: Binding(
+                        get: { answers[q.id] ?? -1 },
+                        set: { answers[q.id] = $0 }
+                    )) {
+                        ForEach(q.options.indices, id: \.self) { i in
+                            Text(q.options[i].label).tag(i)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+            }
+            Button { Task { await build() } } label: {
+                Label("Build my levers", systemImage: "wand.and.stars").blueprintPrimary()
+            }
+            .buttonStyle(.plain)
+            .disabled(answers.isEmpty)
+            .padding(.top, 4)
+        }
+    }
+
+    private var loadingSection: some View {
+        VStack(spacing: 14) {
+            ProgressView()
+            Text("Building levers from your habits…")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity).padding(.vertical, 50)
+    }
+
+    private var resultsSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            if results.isEmpty {
+                SectionRule(title: "Looking solid")
+                Text("Your daily habits look strong — no obvious levers right now. You can still add one from the Starter list, or re-answer to explore.")
+                    .font(.callout).foregroundStyle(.secondary)
+            } else {
+                SectionRule(title: "Recommended for you")
+                Text("Tap any to start tracking it.").font(.caption).foregroundStyle(.secondary)
+                ForEach(results, id: \.title) { resultRow($0) }
+            }
+            Button { phase = .questions } label: {
+                Label("Re-answer", systemImage: "arrow.uturn.backward").blueprintSecondary()
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 4)
+        }
+    }
+
+    private func resultRow(_ s: HabitEngine.Suggestion) -> some View {
+        let isAdded = added.contains(s.title)
+        return Button {
+            guard !isAdded else { return }
+            let habit = DietHabit(title: s.title, question: s.question, goodAnswerIsYes: s.goodAnswerIsYes)
+            modelContext.insert(habit)
+            try? modelContext.save()
+            notif.rescheduleAll()
+            added.insert(s.title)
+        } label: {
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: isAdded ? "checkmark.circle.fill" : "plus.circle.fill")
+                    .foregroundStyle(Theme.accent)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(s.title).font(.subheadline)
+                    Text(s.question).font(.caption2).foregroundStyle(.secondary)
+                }
+                Spacer(minLength: 8)
+                Text(s.goodAnswerIsYes ? "YES = WIN" : "NO = WIN")
+                    .font(Theme.mono(8)).tracking(1).foregroundStyle(.secondary)
+            }
+            .opacity(isAdded ? 0.5 : 1)
+        }
+        .buttonStyle(.plain)
+        .disabled(isAdded)
+    }
+
+    private func build() async {
+        phase = .loading
+        let deterministic = HabitEngine.deterministicLevers(from: answers)
+        var merged = deterministic
+
+        if CoachService.activeEngine != .offline {
+            let summary = HabitEngine.intakeSummary(from: answers)
+            let grounded = memory.isEmpty
+                ? "## Daily habit answers\n\(summary)"
+                : memory + "\n\n## Daily habit answers\n\(summary)"
+            if let ai = await CoachService.suggestLevers(memory: grounded, avoid: existingTitles) {
+                var seen = Set(ai.map { $0.title.lowercased() })
+                merged = ai
+                for d in deterministic where !seen.contains(d.title.lowercased()) {
+                    merged.append(d); seen.insert(d.title.lowercased())
+                }
+            }
+        }
+
+        let existingLower = Set(existingTitles.map { $0.lowercased() })
+        results = Array(merged.filter { !existingLower.contains($0.title.lowercased()) }.prefix(6))
+        phase = .results
     }
 }
