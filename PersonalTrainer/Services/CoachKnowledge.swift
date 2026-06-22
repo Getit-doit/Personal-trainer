@@ -72,7 +72,7 @@ enum CoachKnowledge {
         KnowledgeEntry(
             id: "warmup",
             title: "Warming up",
-            keywords: ["warmup", "warm up", "warm-up", "prep", "before lifting", "before workout"],
+            keywords: ["warmup", "warm up", "warm-up", "prep", "before lifting", "mobility drill"],
             content: """
             A good warm-up takes 8–10 minutes: 5 min easy cardio, then dynamic mobility \
             (leg swings, hip circles, band pull-aparts, ankle circles), then 1–2 light \
@@ -311,7 +311,7 @@ enum CoachKnowledge {
         KnowledgeEntry(
             id: "rest_periods",
             title: "Rest between sets",
-            keywords: ["rest", "rest period", "rest time", "how long rest", "between sets", "timer"],
+            keywords: ["rest", "rest period", "rest time", "how long rest", "between sets", "rest interval"],
             content: """
             Rest long enough to perform: ~2–3 min on heavy compounds, ~60–90 sec on \
             accessories. Cutting rest too short on big lifts costs you reps and load. If \
@@ -385,6 +385,133 @@ enum CoachKnowledge {
             bodyweight full-body circuit (squat, push, hinge, row, carry) covers the bases. \
             Something brief and consistent always beats an ideal session you skip.
             """
+        ),
+
+        // MARK: App features
+        KnowledgeEntry(
+            id: "app_overview",
+            title: "How the app works",
+            keywords: ["app", "how does", "overview", "features", "use this app", "getting started", "tabs", "what can"],
+            content: """
+            This app has five tabs: Today (recovery check-in, what's recommended, progression \
+            flags, and your nutrition lever), Train (start a workout from a routine or build \
+            your own), Progress (charts, PRs, and your Rewards), Fuel (your nutrition lever and \
+            habit check-ins), and Coach (me). It personalizes everything to the profile you set \
+            in onboarding — your goal, experience, equipment, and any injuries.
+            """
+        ),
+        KnowledgeEntry(
+            id: "lever_checkins",
+            title: "Nutrition lever check-ins & streaks",
+            keywords: ["lever", "check-in", "checkin", "habit", "streak", "streaks", "notification", "yes no", "milestone", "track habit"],
+            content: """
+            In the Fuel tab you can track nutrition "levers" — one simple habit at a time \
+            (e.g. no soda, protein at breakfast). The coach checks in with Yes/No notifications \
+            every few days and keeps a streak of how long you've held it. Answering the good way \
+            extends the streak; a slip resets it. Hit milestones (a week, a month, etc.) and the \
+            app celebrates. Keep one or two levers going rather than overhauling everything.
+            """
+        ),
+        KnowledgeEntry(
+            id: "build_levers",
+            title: "Getting lever suggestions",
+            keywords: ["suggest", "recommend", "build levers", "which habit", "what habit", "intake", "questions", "habit suggestions"],
+            content: """
+            Tap "Build your levers" in Fuel and answer a few quick questions about your daily \
+            eating; the coach then asks short follow-ups and recommends levers tailored to your \
+            weak spots and goal. Tap any suggestion to start tracking it. It works offline too — \
+            the questionnaire maps your answers to sensible habits even without the AI.
+            """
+        ),
+        KnowledgeEntry(
+            id: "rewards",
+            title: "Achievements, levels & rewards",
+            keywords: ["achievement", "achievements", "reward", "rewards", "level", "levels", "points", "badge", "badges", "recognition", "gamify", "trophy"],
+            content: """
+            The app gamifies consistency: you earn achievements (bronze/silver/gold) for things \
+            like logging workouts, weekly streaks, PRs, doing your warm-ups, and holding nutrition \
+            streaks. Each gives points that build your level. See them on the Recognition card on \
+            Today and the full wall in Progress → Rewards — the coach writes you a personal note \
+            when you unlock one. They're there to keep momentum; showing up is the real win.
+            """
+        ),
+        KnowledgeEntry(
+            id: "exercise_library",
+            title: "The exercise library & difficulty",
+            keywords: ["exercise library", "exercises", "library", "difficulty", "beginner", "intermediate", "advanced", "level", "which exercises", "swap exercise"],
+            content: """
+            The library has 100+ exercises tagged by equipment (barbell, dumbbell, kettlebell, \
+            cable, machine, bodyweight, cardio) and difficulty (Beginner, Intermediate, Advanced). \
+            When I build or suggest a plan I pull lifts at or below your experience level — basics \
+            like squats and push-ups are used at every level, while technical lifts (power cleans, \
+            pistol squats) are reserved for Advanced. Browse them grouped by muscle in the picker.
+            """
+        ),
+        KnowledgeEntry(
+            id: "warmup_gate",
+            title: "The warm-up gate",
+            keywords: ["warm-up gate", "warmup gate", "locked", "mark warm-up", "before logging", "required warm-up"],
+            content: """
+            Every session starts with a guided warm-up checklist, and set logging stays locked \
+            until you mark it done. It's there because warming up cuts injury risk and lets you \
+            lift better — a few minutes of easy cardio, dynamic mobility, and a light ramp-up set. \
+            Don't skip it; it also counts toward a warm-up achievement.
+            """
+        ),
+        KnowledgeEntry(
+            id: "progression_flags",
+            title: "Ready-to-progress flags",
+            keywords: ["ready to progress", "progression flag", "suggested weight", "when to add weight", "auto progression", "today tab"],
+            content: """
+            Log every set with weight, RPE, and reps-in-tank, and the app tracks each priority \
+            lift. When you clear all your target reps with reps still in the tank, the lift flags \
+            as "ready to progress" on the Today tab with a suggested next weight. That's your cue \
+            to add the smallest jump next session — progressive overload on autopilot.
+            """
+        ),
+        KnowledgeEntry(
+            id: "plate_calculator",
+            title: "The plate calculator",
+            keywords: ["plate", "plates", "barbell", "load", "per side", "calculator", "how much weight", "bar math"],
+            content: """
+            When logging a barbell lift you can type a weight or use the visual plate loader: tap \
+            plates to add them per side and tap a loaded plate to remove it — the bar drawing and \
+            total update as you go (bar weight plus both sides). Handy for setting up the bar fast \
+            without doing the math.
+            """
+        ),
+        KnowledgeEntry(
+            id: "rest_timer",
+            title: "The rest timer",
+            keywords: ["rest timer", "timer", "rest between", "auto-start", "countdown", "live activity"],
+            content: """
+            A rest timer auto-starts after you complete a set and shows on the lock screen / \
+            Dynamic Island so you can put the phone down. You can adjust the default rest and the \
+            on-screen presets in your profile. Rest ~2–3 min on heavy compounds, ~60–90 sec on \
+            accessories.
+            """
+        ),
+        KnowledgeEntry(
+            id: "ai_tiers",
+            title: "How the AI coach works",
+            keywords: ["ai", "coach", "on-device", "offline", "private", "privacy", "claude", "model", "internet", "how do you work"],
+            content: """
+            I run in tiers: an on-device Apple Intelligence model on supported phones (private, \
+            works offline, no data leaves your device), an optional smarter cloud model if an API \
+            key is added, and a built-in knowledge base that always works with no network. Either \
+            way I read your profile and recent training before answering, so advice fits you.
+            """
+        ),
+        KnowledgeEntry(
+            id: "profile_personalization",
+            title: "Your profile & personalization",
+            keywords: ["profile", "personalize", "experience", "equipment", "injury", "injuries", "goal", "edit profile", "limitations"],
+            content: """
+            Your profile drives everything — set your goal, experience level, days per week, the \
+            equipment you have, and any injuries or limitations (edit it any time from Today). I \
+            program around the gear you actually own and work around injuries you list, and I pick \
+            exercises that match your experience. Keep it current and the coaching stays relevant.
+            """
         )
     ]
 
@@ -395,7 +522,8 @@ enum CoachKnowledge {
         "with", "that", "this", "get", "got", "have", "has", "any", "about", "best",
         "good", "way", "ways", "help", "need", "want", "should", "would", "could",
         "from", "when", "does", "doing", "into", "out", "but", "not", "more", "some",
-        "they", "them", "their", "than", "then", "much", "many", "lot", "very", "really"
+        "they", "them", "their", "than", "then", "much", "many", "lot", "very", "really",
+        "work", "works", "working", "use", "using", "make", "made"
     ]
 
     /// Lowercased content tokens (≥3 chars, no stopwords) for matching.
