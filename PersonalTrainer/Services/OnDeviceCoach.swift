@@ -36,18 +36,22 @@ final class OnDeviceCoach {
         session?.prewarm()
     }
 
-    func reply(to message: String, memory: String = "") async -> String? {
+    /// `memory` is the stable athlete briefing (injected only when it changes, so
+    /// the persistent session isn't spammed). `reference` is per-question grounding
+    /// (e.g. relevant internal-library entries) and is prepended every turn since
+    /// it varies with the question.
+    func reply(to message: String, memory: String = "", reference: String = "") async -> String? {
         guard Self.isAvailable else { return nil }
         ensureSession()
         guard let session else { return nil }
 
-        // Inject the athlete memory as a context block before the question, but
-        // only when it has changed since the last turn — the persistent session
-        // already remembers what we sent earlier, so we avoid repeating it.
         var prompt = message
+        if !reference.isEmpty {
+            prompt = "Relevant reference for this question:\n\n\(reference)\n\nQuestion: \(message)"
+        }
         if !memory.isEmpty && memory != lastMemory {
             prompt = "Current memory about the athlete — read before answering and "
-                + "reference where relevant:\n\n\(memory)\n\nQuestion: \(message)"
+                + "reference where relevant:\n\n\(memory)\n\n\(prompt)"
             lastMemory = memory
         }
 

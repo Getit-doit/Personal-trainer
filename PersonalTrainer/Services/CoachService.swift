@@ -34,14 +34,21 @@ enum CoachService {
     /// account holder (current time, time since last workout, recent workout
     /// summaries, PRs, and fuel decisions) that every engine reads before replying.
     static func reply(to message: String, history: [CoachMessage], memory: String = "") async -> String {
+        // Pull the most relevant entries from the internal library and add them
+        // as grounding context — this sharpens the on-device model (no internet)
+        // and Claude alike, and powers the offline coach below.
+        let knowledge = CoachKnowledge.context(for: message)
+
         if !Config.anthropicAPIKey.isEmpty {
-            if let remote = try? await callClaude(message: message, history: history, memory: memory) {
+            // Claude is stateless per call, so memory + reference both go in system.
+            let grounded = [memory, knowledge].filter { !$0.isEmpty }.joined(separator: "\n\n")
+            if let remote = try? await callClaude(message: message, history: history, memory: grounded) {
                 return remote
             }
         }
         #if canImport(FoundationModels)
         if #available(iOS 26.0, *) {
-            if let onDevice = await OnDeviceCoach.shared.reply(to: message, memory: memory) {
+            if let onDevice = await OnDeviceCoach.shared.reply(to: message, memory: memory, reference: knowledge) {
                 return onDevice
             }
         }
@@ -94,78 +101,19 @@ enum CoachService {
     under 120 words unless asked for detail.
     """
 
-    // MARK: - Offline rule-based coach
+    // MARK: - Offline coach (internal knowledge library)
 
+    /// Answers by searching the internal coaching library (`CoachKnowledge`) and
+    /// returning the best-matching entry. Falls back to a guiding default when
+    /// nothing matches well enough.
     private static func offlineReply(to message: String) -> String {
-        let text = message.lowercased()
-
-        if text.contains("lose") && (text.contains("weight") || text.contains("fat")) {
-            return """
-            To lose fat sustainably, aim for a small calorie deficit (~300–500 kcal/day) \
-            and keep protein high (~0.8 g per lb of bodyweight). Combine 3 strength \
-            sessions a week with 2 short cardio/HIIT sessions. Strength training keeps \
-            muscle while you cut. Want me to suggest a weekly split?
-            """
-        }
-        if text.contains("muscle") || text.contains("bulk") || text.contains("gain") {
-            return """
-            For muscle gain, train each muscle group 2x/week, push close to failure, and \
-            progressively add weight or reps. Eat in a slight surplus (~250 kcal over \
-            maintenance) with 0.8–1 g protein per lb. Run the compound-first Full Body \
-            A/B/C split from the Train tab.
-            """
-        }
-        if text.contains("ankle") || text.contains("knee") || text.contains("joint")
-            || text.contains("injur") || text.contains("pain") || text.contains("hurt") {
-            return """
-            Always warm up fully before lifting, and work around the joint that bothers \
-            you — keep cardio low-impact (incline walking) and add incline, stairs, or \
-            sprints in small steps weeks apart. If the area is warm, swollen, or sharply \
-            painful, skip impact that day and stick to pain-free, low-load work. Add the \
-            specific limitation in your profile so the coaching adapts to it.
-            """
-        }
-        if text.contains("sleep") || text.contains("stress") {
-            return """
-            When sleep is short or stress is high, autoregulate: keep top sets at RPE 7 \
-            (2+ reps in tank) and cut a set rather than skipping the session. A short \
-            sauna or easy walk down-regulates stress. Protect a consistent wake time — \
-            that moves sleep quality more than anything.
-            """
-        }
-        if text.contains("sore") || text.contains("recovery") || text.contains("rest") {
-            return """
-            Soreness is normal, especially after new exercises. Prioritize sleep, stay \
-            hydrated, and do light walking on rest days. If a joint hurts sharply, back \
-            off and reassess. Add training days only once recovery consistently holds up.
-            """
-        }
-        if text.contains("beginner") || text.contains("start") || text.contains("new") {
-            return """
-            Start with Full Body A from the Train tab, on the number of days that fits \
-            your schedule. Warm up first, lead with the compounds, and log every set with \
-            RPE and reps-in-tank. Add a little weight when a lift clears all target reps \
-            with 2+ in the tank.
-            """
-        }
-        if text.contains("protein") || text.contains("diet") || text.contains("eat") || text.contains("lever") {
-            return """
-            Skip full macro counting for now — pick one lever in the Fuel tab and nail it \
-            daily (e.g. 30g protein at breakfast or a hydration swap). Once it's automatic, \
-            move to the next weak link. One habit at a time beats tracking everything.
-            """
-        }
-        if text.contains("plan") || text.contains("routine") || text.contains("workout") || text.contains("progress") {
-            return """
-            The Train tab has a compound-first Full Body A/B/C split — tap + to start one. \
-            Lifts flag as "ready to progress" on the Today tab once you clear all target \
-            reps with reps in the tank. Want a recommendation based on today's recovery?
-            """
+        if let answer = CoachKnowledge.bestAnswer(for: message) {
+            return answer
         }
         return """
-        I'm your strength & longevity coach. Ask me about progression, your training \
-        plan, cardio, sleep & stress, or your one nutrition lever. Start a session from \
-        the Train tab — and don't skip the warm-up.
+        I'm your strength & longevity coach. Ask me about fat loss, building muscle, \
+        progression, your training plan, cardio, sleep & stress, injuries, or your one \
+        nutrition lever. Start a session from the Train tab — and don't skip the warm-up.
         """
     }
 
