@@ -26,12 +26,18 @@ enum CoachMemory {
         if let p = profile {
             lines.append("## Profile")
             if !p.name.isEmpty { lines.append("- Name: \(p.name)") }
+            if !p.sex.isEmpty { lines.append("- Sex: \(p.sex)") }
+            if p.age > 0 { lines.append("- Age: \(p.age)") }
             lines.append("- Height: \(Int(p.heightInches) / 12)'\(Int(p.heightInches) % 12)\"")
-            lines.append("- Starting weight: \(p.startWeight.clean) lb")
+            lines.append("- Weight: \(p.startWeight.clean) lb")
+            if !p.experience.isEmpty { lines.append("- Experience: \(p.experience)") }
             lines.append("- Goal: \(p.goals)")
             lines.append("- Schedule: \(p.scheduleDaysPerWeek) days/week")
+            if !p.equipment.isEmpty {
+                lines.append("- Equipment available: \(p.equipment.joined(separator: ", "))")
+            }
             if !p.constraints.isEmpty {
-                lines.append("- Constraints: \(p.constraints.joined(separator: "; "))")
+                lines.append("- Constraints / injuries: \(p.constraints.joined(separator: "; "))")
             }
         }
 

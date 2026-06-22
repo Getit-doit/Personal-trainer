@@ -76,17 +76,22 @@ enum CoachService {
         #endif
     }
 
-    /// System prompt shared by the on-device model and Claude.
+    /// System prompt shared by the on-device model and Claude. Intentionally
+    /// generic — the athlete's specifics (stats, goal, experience, equipment,
+    /// constraints/injuries, recent training) are supplied per-message via the
+    /// memory briefing built by `CoachMemory`. Always personalize from that.
     static let systemPrompt = """
-    You are an expert, encouraging functional-strength and longevity coach inside \
-    a fitness app. The athlete is a 33-year-old male, 5'10", started this block at \
-    217 lb, training weekday mornings before a desk job. Goals: functional lean \
-    strength and longevity. Constraints: sleeps only 6–7 hrs, high stress, and an \
-    ankle that inflames easily (always respect the mandatory ankle warm-up and \
-    introduce incline/impact/sprints/stairs gradually). Training is 3 days/week, \
-    scaling toward 5 as recovery allows, compound-first full-body. Favor progressive \
-    overload, autoregulation by RPE/reps-in-tank, and one nutrition "lever" at a \
-    time over full macro counting. Keep replies under 120 words unless asked for detail.
+    You are an expert, encouraging strength, conditioning, and longevity coach \
+    inside a fitness app. Personalize every answer to the athlete using the \
+    profile and memory provided with the conversation: their goal, experience \
+    level, available equipment, schedule, and any stated constraints or injuries \
+    — and never program around equipment they don't have or aggravate an injury \
+    they've listed. Always have them warm up before lifting and introduce \
+    impact (incline, stairs, sprints) gradually. Favor progressive overload, \
+    autoregulation by RPE/reps-in-tank, compound-first training, and one \
+    nutrition "lever" at a time over full macro counting. When asked for a plan, \
+    build it around their experience, days per week, and equipment. Keep replies \
+    under 120 words unless asked for detail.
     """
 
     // MARK: - Offline rule-based coach
@@ -110,36 +115,37 @@ enum CoachService {
             A/B/C split from the Train tab.
             """
         }
-        if text.contains("ankle") {
+        if text.contains("ankle") || text.contains("knee") || text.contains("joint")
+            || text.contains("injur") || text.contains("pain") || text.contains("hurt") {
             return """
-            Always run the full ankle warm-up before lifting — circles, knee-to-wall \
-            dorsiflexion, banded eversion/inversion, slow calf raises, then 5 min easy \
-            incline walk. Keep cardio low-impact (incline walking) and add incline, \
-            stairs, or sprints in small steps weeks apart. If the ankle is warm or \
-            swollen, skip impact that day and stick to seated/low-load work.
+            Always warm up fully before lifting, and work around the joint that bothers \
+            you — keep cardio low-impact (incline walking) and add incline, stairs, or \
+            sprints in small steps weeks apart. If the area is warm, swollen, or sharply \
+            painful, skip impact that day and stick to pain-free, low-load work. Add the \
+            specific limitation in your profile so the coaching adapts to it.
             """
         }
         if text.contains("sleep") || text.contains("stress") {
             return """
-            On 6–7 hrs and high stress, autoregulate: if you're under-slept, keep top \
-            sets at RPE 7 (2+ reps in tank) and cut a set rather than skipping the \
-            session. A 5–10 min steam-room or easy incline walk down-regulates stress. \
-            Protect a consistent wake time — that moves sleep quality more than anything.
+            When sleep is short or stress is high, autoregulate: keep top sets at RPE 7 \
+            (2+ reps in tank) and cut a set rather than skipping the session. A short \
+            sauna or easy walk down-regulates stress. Protect a consistent wake time — \
+            that moves sleep quality more than anything.
             """
         }
         if text.contains("sore") || text.contains("recovery") || text.contains("rest") {
             return """
-            Soreness is normal, especially after new exercises. Prioritize sleep (your \
-            6–7 hrs is the limiter), stay hydrated, and do light incline walking on rest \
-            days. If a joint — especially the ankle — hurts sharply, back off and \
-            reassess. Scale toward 5 days only once recovery holds up.
+            Soreness is normal, especially after new exercises. Prioritize sleep, stay \
+            hydrated, and do light walking on rest days. If a joint hurts sharply, back \
+            off and reassess. Add training days only once recovery consistently holds up.
             """
         }
         if text.contains("beginner") || text.contains("start") || text.contains("new") {
             return """
-            Start with Full Body A 3 days a week from the Train tab. Do the ankle warm-up \
-            first, lead with the compounds, and log every set with RPE and reps-in-tank. \
-            Add a little weight when a lift clears all target reps with 2+ in the tank.
+            Start with Full Body A from the Train tab, on the number of days that fits \
+            your schedule. Warm up first, lead with the compounds, and log every set with \
+            RPE and reps-in-tank. Add a little weight when a lift clears all target reps \
+            with 2+ in the tank.
             """
         }
         if text.contains("protein") || text.contains("diet") || text.contains("eat") || text.contains("lever") {
@@ -157,9 +163,9 @@ enum CoachService {
             """
         }
         return """
-        I'm your strength & longevity coach. Ask me about progression, the ankle/cardio \
-        plan, sleep & stress, or your one nutrition lever. Start a session from the Train \
-        tab — and don't skip the ankle warm-up.
+        I'm your strength & longevity coach. Ask me about progression, your training \
+        plan, cardio, sleep & stress, or your one nutrition lever. Start a session from \
+        the Train tab — and don't skip the warm-up.
         """
     }
 

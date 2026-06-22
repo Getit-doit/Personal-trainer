@@ -20,7 +20,7 @@ struct PersonalTrainerApp: App {
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
-        // Seed the body-weight history on first launch so charts aren't empty.
+        // Seed the exercise library on first launch (profile is set in onboarding).
         SeedData.seedIfNeeded(context: container.mainContext)
     }
 

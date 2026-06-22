@@ -15,6 +15,19 @@ struct EditProfileView: View {
     @AppStorage("restAccessory") private var restAccessory = 90
     @AppStorage("autoStartRest") private var autoStartRest = true
 
+    private let equipmentOptions = [
+        "Full gym", "Barbell", "Dumbbells", "Kettlebell",
+        "Machines / cables", "Resistance bands", "Pull-up bar", "Bodyweight only"
+    ]
+
+    /// Bridge the stored `[String]` equipment to the `Set<String>` FlowChips uses.
+    private var equipmentBinding: Binding<Set<String>> {
+        Binding(
+            get: { Set(profile.equipment) },
+            set: { profile.equipment = Array($0).sorted() }
+        )
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -22,6 +35,12 @@ struct EditProfileView: View {
                     LabeledContent("Name") {
                         TextField("Name", text: $profile.name).multilineTextAlignment(.trailing)
                     }
+                    Picker("Sex", selection: $profile.sex) {
+                        Text("Unspecified").tag("")
+                        Text("Male").tag("Male")
+                        Text("Female").tag("Female")
+                    }
+                    Stepper("Age: \(profile.age)", value: $profile.age, in: 13...100)
                     LabeledContent("Height") {
                         HStack(spacing: 4) {
                             Picker("ft", selection: $feet) {
@@ -33,13 +52,18 @@ struct EditProfileView: View {
                         }
                         .pickerStyle(.menu).tint(Theme.accent)
                     }
-                    LabeledContent("Start weight") {
+                    LabeledContent("Weight") {
                         HStack(spacing: 4) {
                             TextField("Weight", value: $profile.startWeight, format: .number)
                                 .font(Theme.mono(15))
                                 .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 70)
                             Text("LB").font(Theme.mono(10)).foregroundStyle(.secondary)
                         }
+                    }
+                    Picker("Experience", selection: $profile.experience) {
+                        Text("Beginner").tag("Beginner")
+                        Text("Intermediate").tag("Intermediate")
+                        Text("Advanced").tag("Advanced")
                     }
                     Stepper("Days / week: \(profile.scheduleDaysPerWeek)",
                             value: $profile.scheduleDaysPerWeek, in: 2...6)
@@ -49,6 +73,17 @@ struct EditProfileView: View {
                 Section("Goal") {
                     TextField("Primary goal", text: $profile.goals, axis: .vertical)
                         .lineLimit(1...3)
+                }
+                .listRowBackground(Color.clear)
+
+                Section {
+                    FlowChips(options: equipmentOptions, selection: equipmentBinding)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                } header: {
+                    Text("Equipment")
+                } footer: {
+                    Text("Plan suggestions and the AI coach build around what you select.")
                 }
                 .listRowBackground(Color.clear)
 
@@ -68,16 +103,16 @@ struct EditProfileView: View {
 
                 Section {
                     ListEditorCard(
-                        title: "Constraints",
+                        title: "Injuries & limitations",
                         systemImage: "exclamationmark.triangle.fill",
                         tint: .orange,
-                        placeholder: "e.g. Ankle inflames easily",
+                        placeholder: "e.g. Bad left knee",
                         items: $profile.constraints
                     )
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
                 } footer: {
-                    Text("Constraints inform the AI coach and the mandatory ankle warm-up.")
+                    Text("These inform the AI coach so it programs around your limitations.")
                 }
             }
             .scrollContentBackground(.hidden)

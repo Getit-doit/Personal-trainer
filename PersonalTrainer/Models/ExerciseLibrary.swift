@@ -30,8 +30,8 @@ struct WorkoutTemplate: Identifiable {
     let exercises: [TemplateExercise]
 }
 
-/// Static training content: the exercise database (by equipment), the 3-day
-/// full-body split, and the mandatory ankle warm-up checklist.
+/// Static training content: the exercise database (by equipment), the
+/// full-body split, and the guided warm-up checklist.
 enum TrainingContent {
 
     static let muscleGroups = ["Legs", "Hinge", "Chest", "Back", "Shoulders", "Arms", "Core"]
@@ -266,12 +266,13 @@ enum TrainingContent {
         return seen.sorted { $0.sortOrder < $1.sortOrder }
     }
 
-    /// Mandatory ankle prep — every item must be checked before lifting.
-    static let ankleWarmup: [String] = [
-        "Ankle circles — 10 each direction",
-        "Dorsiflexion knee-to-wall rocks — 2×10",
-        "Banded eversion / inversion — 2×10",
-        "Slow calf raises — 2×15",
-        "5 min easy incline walk"
+    /// Guided warm-up — every item is checked before lifting.
+    static let generalWarmup: [String] = [
+        "5 min easy cardio (walk, bike, or row)",
+        "Leg swings — 10 each leg, front & side",
+        "Hip circles & bodyweight squats — 2×10",
+        "Arm circles & band pull-aparts — 2×15",
+        "Ankle circles & calf raises — 2×15",
+        "1–2 light warm-up sets of your first lift"
     ]
 }

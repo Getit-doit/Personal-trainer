@@ -25,7 +25,7 @@ enum RewardEngine {
         let workoutsThisWeek: Int
         let weekStreak: Int          // consecutive weeks with ≥1 workout
         let prCount: Int
-        let ankleWarmups: Int
+        let warmups: Int
         let longestDietStreak: Int   // best current streak across all habits, days
         let steamRoomSessions: Int
 
@@ -33,7 +33,7 @@ enum RewardEngine {
             let finished = sessions.filter(\.isFinished)
             finishedWorkouts = finished.count
             prCount = prs.count
-            ankleWarmups = finished.filter(\.ankleWarmupDone).count
+            warmups = finished.filter(\.warmupDone).count
             steamRoomSessions = finished.filter(\.steamRoom).count
 
             let cal = Calendar.current
@@ -82,8 +82,8 @@ enum RewardEngine {
         Def(id: "pr_10", title: "Record Breaker", detail: "10 personal records.",
             icon: "rosette", tier: .gold, points: 80) { $0.prCount >= 10 },
 
-        Def(id: "ankle_10", title: "Joint Steward", detail: "Did the ankle warm-up 10 times.",
-            icon: "shoeprints.fill", tier: .silver, points: 40) { $0.ankleWarmups >= 10 },
+        Def(id: "warmup_10", title: "Warm-up Warrior", detail: "Completed the warm-up 10 times.",
+            icon: "figure.cooldown", tier: .silver, points: 40) { $0.warmups >= 10 },
         Def(id: "steam_5", title: "Down-Regulator", detail: "5 steam-room recovery sessions.",
             icon: "humidity.fill", tier: .bronze, points: 20) { $0.steamRoomSessions >= 5 },
 

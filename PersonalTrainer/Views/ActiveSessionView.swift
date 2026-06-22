@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-/// The live workout screen: ankle warm-up gate → exercise/set logging with
+/// The live workout screen: warm-up gate → exercise/set logging with
 /// RPE & reps-in-tank → low-impact cardio finisher → steam room / notes / finish.
 struct ActiveSessionView: View {
     @Environment(\.modelContext) private var context
@@ -33,7 +33,7 @@ struct ActiveSessionView: View {
             musicSection.listRowBackground(Color.clear)
             warmupSection.listRowBackground(Color.clear)
 
-            if session.ankleWarmupDone {
+            if session.warmupDone {
                 ForEach(session.sortedExercises) { exercise in
                     exerciseSection(exercise).listRowBackground(Color.clear)
                 }
@@ -176,15 +176,15 @@ struct ActiveSessionView: View {
 
     private var warmupSection: some View {
         Section {
-            if session.ankleWarmupDone {
-                Label("Ankle warm-up complete", systemImage: "checkmark.seal.fill")
+            if session.warmupDone {
+                Label("Warm-up complete", systemImage: "checkmark.seal.fill")
                     .foregroundStyle(Theme.accent)
             } else {
-                ForEach(TrainingContent.ankleWarmup, id: \.self) { item in
+                ForEach(TrainingContent.generalWarmup, id: \.self) { item in
                     WarmupRow(text: item)
                 }
                 Button {
-                    session.ankleWarmupDone = true
+                    session.warmupDone = true
                     try? context.save()
                 } label: {
                     Text("MARK WARM-UP DONE").blueprintPrimary()
@@ -192,10 +192,10 @@ struct ActiveSessionView: View {
                 .buttonStyle(.plain)
             }
         } header: {
-            Label("Required Ankle Warm-up", systemImage: "figure.walk")
+            Label("Required Warm-up", systemImage: "figure.walk")
         } footer: {
-            if !session.ankleWarmupDone {
-                Text("Logging is locked until the ankle warm-up is done. The ankle inflames easily — don't skip it.")
+            if !session.warmupDone {
+                Text("Logging is locked until the warm-up is done — it primes your joints and lifts. Don't skip it.")
             }
         }
     }
@@ -298,7 +298,7 @@ struct ActiveSessionView: View {
         } header: {
             Label("Cardio Finisher", systemImage: "heart.fill")
         } footer: {
-            Text("Defaults to incline walking. Add incline, stairs, or sprints gradually and watch ankle load.")
+            Text("Defaults to incline walking. Add incline, stairs, or sprints gradually and watch the impact level.")
         }
     }
 
@@ -547,8 +547,8 @@ struct CardioEditor: View {
                 Text("Incline"); Spacer()
                 Stepper("\(cardio.incline.clean)%", value: $cardio.incline, in: 0...20, step: 0.5).fixedSize()
             }
-            Picker("Ankle load", selection: $cardio.ankleLoadRaw) {
-                ForEach(AnkleLoad.allCases, id: \.rawValue) { load in
+            Picker("Impact level", selection: $cardio.impactLevelRaw) {
+                ForEach(ImpactLevel.allCases, id: \.rawValue) { load in
                     Text(load.rawValue).tag(load.rawValue)
                 }
             }
@@ -557,6 +557,6 @@ struct CardioEditor: View {
         .onChange(of: cardio.durationMinutes) { onChange() }
         .onChange(of: cardio.speed) { onChange() }
         .onChange(of: cardio.incline) { onChange() }
-        .onChange(of: cardio.ankleLoadRaw) { onChange() }
+        .onChange(of: cardio.impactLevelRaw) { onChange() }
     }
 }

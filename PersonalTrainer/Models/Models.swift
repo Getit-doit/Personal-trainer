@@ -8,24 +8,37 @@ import SwiftData
 @Model
 final class UserProfile {
     var name: String
+    var sex: String = ""               // "Male" / "Female" / "" (unspecified)
+    var age: Int = 0
     var heightInches: Double
     var startWeight: Double
+    var experience: String = "Beginner"   // Beginner / Intermediate / Advanced
     var goals: String
+    /// Equipment the athlete can train with — drives plan suggestions.
+    var equipment: [String] = []
     var constraints: [String]
     var scheduleDaysPerWeek: Int
 
     init(
         name: String,
+        sex: String = "",
+        age: Int = 0,
         heightInches: Double,
         startWeight: Double,
+        experience: String = "Beginner",
         goals: String,
+        equipment: [String] = [],
         constraints: [String],
         scheduleDaysPerWeek: Int
     ) {
         self.name = name
+        self.sex = sex
+        self.age = age
         self.heightInches = heightInches
         self.startWeight = startWeight
+        self.experience = experience
         self.goals = goals
+        self.equipment = equipment
         self.constraints = constraints
         self.scheduleDaysPerWeek = scheduleDaysPerWeek
     }
@@ -90,8 +103,8 @@ final class WorkoutSession {
     var date: Date
     var notes: String
     var steamRoom: Bool
-    /// Mandatory ankle warm-up gate — set logging is blocked until this is true.
-    var ankleWarmupDone: Bool
+    /// Warm-up gate — set logging is blocked until this is true.
+    var warmupDone: Bool
     var isFinished: Bool
 
     @Relationship(deleteRule: .cascade, inverse: \LoggedExercise.session)
@@ -104,13 +117,13 @@ final class WorkoutSession {
         date: Date = .now,
         notes: String = "",
         steamRoom: Bool = false,
-        ankleWarmupDone: Bool = false,
+        warmupDone: Bool = false,
         isFinished: Bool = false
     ) {
         self.date = date
         self.notes = notes
         self.steamRoom = steamRoom
-        self.ankleWarmupDone = ankleWarmupDone
+        self.warmupDone = warmupDone
         self.isFinished = isFinished
         self.exercises = []
     }
@@ -207,28 +220,28 @@ final class SetLog {
 
 // MARK: - Cardio finisher
 
-enum AnkleLoad: String, Codable, CaseIterable {
+enum ImpactLevel: String, Codable, CaseIterable {
     case none = "None"
     case light = "Light"
     case moderate = "Moderate"
     case high = "High"
 }
 
-/// Low-impact-by-default cardio finisher. Tracks ankle load so impact can be
-/// introduced gradually.
+/// Low-impact-by-default cardio finisher. Tracks impact level so impact can be
+/// introduced gradually (useful for anyone managing joints).
 @Model
 final class CardioEntry {
     var modality: String          // e.g. "Incline Walk"
     var durationMinutes: Double
     var speed: Double             // mph
     var incline: Double          // %
-    var ankleLoadRaw: String
+    var impactLevelRaw: String
     var notes: String
     var session: WorkoutSession?
 
-    var ankleLoad: AnkleLoad {
-        get { AnkleLoad(rawValue: ankleLoadRaw) ?? .light }
-        set { ankleLoadRaw = newValue.rawValue }
+    var impactLevel: ImpactLevel {
+        get { ImpactLevel(rawValue: impactLevelRaw) ?? .light }
+        set { impactLevelRaw = newValue.rawValue }
     }
 
     init(
@@ -236,14 +249,14 @@ final class CardioEntry {
         durationMinutes: Double = 15,
         speed: Double = 3.0,
         incline: Double = 5,
-        ankleLoad: AnkleLoad = .light,
+        impactLevel: ImpactLevel = .light,
         notes: String = ""
     ) {
         self.modality = modality
         self.durationMinutes = durationMinutes
         self.speed = speed
         self.incline = incline
-        self.ankleLoadRaw = ankleLoad.rawValue
+        self.impactLevelRaw = impactLevel.rawValue
         self.notes = notes
     }
 }

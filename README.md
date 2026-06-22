@@ -1,24 +1,27 @@
 # Functional Strength & Longevity Trainer 🏋️
 
-A native iPhone app built around one athlete's profile and goals: **functional
-lean strength + longevity**, trained 3 days/week (scaling toward 5), with a
-desk job, limited sleep, high stress, and an ankle that inflames easily. Built
-with **SwiftUI**, **SwiftData**, and **Swift Charts**.
+A native iPhone strength, conditioning, and longevity trainer for **anyone**.
+On first launch it asks for your stats, experience, goal, schedule, available
+equipment, and any injuries, then builds the experience around you — feeding the
+AI coach, plan suggestions, and the warm-up gate. Built with **SwiftUI**,
+**SwiftData**, and **Swift Charts**.
 
 > **Blueprint theme:** deep-blue "drafting paper" with a faint engineering grid,
 > white outlined cards, a marker-style display font for a hand-drawn feel, and a
 > matching blueprint app icon + launch screen.
 
-## The athlete this is tuned for
+## Onboarding builds your profile
 
-- 33M, 5'10", started this block at 217 lb, weekday morning training
-- Goals: functional lean strength + longevity
-- Constraints: 6–7 hrs sleep, high stress, ankle inflames easily (mandatory
-  ankle warm-up; introduce incline/impact/sprints/stairs gradually)
-- Schedule: 3 days/week, compound-first full-body, scaling toward 5
+The opening flow captures what the app needs to program for you:
 
-These are seeded into the user profile on first launch and inform the coach and
-the warm-up gate.
+- Name, sex, age, height, current weight
+- Experience level (Beginner / Intermediate / Advanced)
+- Days per week and primary goal
+- Equipment you can train with
+- Injuries & limitations the coach should program around
+
+Nothing is hardcoded to a specific person — the profile drives the coach (via a
+per-message memory briefing), the plan suggestions, and the warm-up gate.
 
 ## Core features
 
@@ -60,14 +63,16 @@ Mapped from the project spec (`PersonalTrainer/Models/Models.swift`):
 
 | Spec model | App type | Notes |
 | ---------- | -------- | ----- |
-| User | `UserProfile` | name, height, startWeight, goals, constraints[], schedule |
+| User | `UserProfile` | name, sex, age, height, weight, experience, goals, equipment[], constraints[], schedule |
 | Exercise | `Exercise` | name, type (compound/accessory), muscleGroup, priority flag, targets, increment |
-| WorkoutSession | `WorkoutSession` | date, exercises[], cardio, notes, steamRoom, ankleWarmupDone |
+| WorkoutSession | `WorkoutSession` | date, exercises[], cardio, notes, steamRoom, warmupDone |
 | SetLog | `SetLog` | weight, reps, rpe, repsInTank (+ estimated 1RM) |
 | PersonalBest | `PersonalBest` | exercise, value (est. 1RM), date, source (logged/manual) |
 | NutritionLog | `NutritionLog` | date, wins[], weakLinks[], currentLever |
 | RecoveryLog | `RecoveryLog` | date, sleepHours, stressLevel |
-| (cardio) | `CardioEntry` | modality, duration, speed, incline, ankleLoad |
+| (cardio) | `CardioEntry` | modality, duration, speed, incline, impactLevel |
+| DietHabit | `DietHabit` | lever check-in question, streak, schedule |
+| Achievement | `Achievement` | earned reward (recognition system) |
 
 ### Progression logic
 
