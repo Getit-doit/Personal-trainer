@@ -86,6 +86,7 @@ struct LeverCheckInsView: View {
     private func habitCard(_ habit: DietHabit) -> some View {
         let days = HabitEngine.streakDays(habit)
         let next = HabitEngine.nextMilestone(habit)
+        let last = habit.checkIns.max(by: { $0.date < $1.date })
         return Card {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .top) {
@@ -137,6 +138,19 @@ struct LeverCheckInsView: View {
                     }.buttonStyle(.plain)
                 }
 
+                // Confirmation that the most recent answer registered. The streak
+                // counts elapsed days held, so it ticks at day boundaries — this
+                // makes each check-in visibly land.
+                if let last {
+                    HStack(spacing: 6) {
+                        Image(systemName: last.wasGood ? "checkmark.circle.fill" : "arrow.counterclockwise.circle")
+                            .foregroundStyle(last.wasGood ? Theme.accent : Theme.amber)
+                        Text("Checked in \(checkInWhen(last.date)): \(last.answeredYes ? "Yes" : "No")"
+                             + (last.wasGood ? "" : " — streak reset"))
+                            .font(.caption2).foregroundStyle(.secondary)
+                    }
+                }
+
                 if !habit.lastReflection.isEmpty {
                     Text("Last reflection: \(habit.lastReflection)")
                         .font(.caption2).foregroundStyle(.secondary)
@@ -155,6 +169,13 @@ struct LeverCheckInsView: View {
                 notif.rescheduleAll()
             } label: { Label("Delete", systemImage: "trash") }
         }
+    }
+
+    private func checkInWhen(_ date: Date) -> String {
+        let cal = Calendar.current
+        if cal.isDateInToday(date) { return "today" }
+        if cal.isDateInYesterday(date) { return "yesterday" }
+        return date.formatted(date: .abbreviated, time: .omitted)
     }
 
     // MARK: Suggestions

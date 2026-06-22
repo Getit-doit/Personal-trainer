@@ -143,9 +143,9 @@ struct CoachView: View {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
+        draft = ""   // clear the field first so it reliably empties after sending
         let history = messages
         messages.append(CoachMessage(text: trimmed, isUser: true))
-        draft = ""
         isThinking = true
 
         // Build a fresh memory briefing so the coach knows the current time, how

@@ -50,7 +50,12 @@ struct TodayView: View {
             .sheet(isPresented: $showProfile) {
                 if let profile { EditProfileView(profile: profile) }
             }
-            .onAppear(perform: ensureRecoveryLog)
+            .onAppear {
+                ensureRecoveryLog()
+                // Grant/refresh achievements so the Recognition card reflects work
+                // just finished (e.g. returning here after completing a session).
+                NotificationCoach.shared.evaluateRewards()
+            }
             .navigationDestination(item: $startedSession) { session in
                 ActiveSessionView(session: session)
             }
