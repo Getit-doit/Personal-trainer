@@ -15,20 +15,26 @@ enum SeedData {
     /// installs. Existing exercises are left untouched.
     private static func seedExercises(_ context: ModelContext) {
         let existing = (try? context.fetch(FetchDescriptor<Exercise>())) ?? []
-        let existingNames = Set(existing.map(\.name))
-        for seed in TrainingContent.exercises where !existingNames.contains(seed.name) {
-            context.insert(
-                Exercise(
-                    name: seed.name,
-                    type: seed.type,
-                    muscleGroup: seed.muscleGroup,
-                    equipment: seed.equipment,
-                    isPriorityProgression: seed.priority,
-                    targetSets: seed.sets,
-                    targetReps: seed.reps,
-                    increment: seed.increment
+        let existingByName = Dictionary(existing.map { ($0.name, $0) }, uniquingKeysWith: { a, _ in a })
+        for seed in TrainingContent.exercises {
+            let difficulty = TrainingContent.difficulty(for: seed.name)
+            if let existing = existingByName[seed.name] {
+                existing.difficulty = difficulty   // backfill tag on prior installs
+            } else {
+                context.insert(
+                    Exercise(
+                        name: seed.name,
+                        type: seed.type,
+                        muscleGroup: seed.muscleGroup,
+                        equipment: seed.equipment,
+                        difficulty: difficulty,
+                        isPriorityProgression: seed.priority,
+                        targetSets: seed.sets,
+                        targetReps: seed.reps,
+                        increment: seed.increment
+                    )
                 )
-            )
+            }
         }
     }
 }

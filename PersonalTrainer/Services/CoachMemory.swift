@@ -88,7 +88,33 @@ enum CoachMemory {
             if !fuel.weakLinks.isEmpty { lines.append("- Weak links: \(fuel.weakLinks.joined(separator: ", "))") }
         }
 
+        // MARK: Exercise options matched to experience
+        let exerciseSection = exerciseOptions(exercises, experience: profile?.experience ?? "Beginner")
+        if !exerciseSection.isEmpty {
+            let level = profile?.experience ?? "Beginner"
+            lines.append("## Exercise options (\(level) level and below — only program from these)")
+            lines.append(contentsOf: exerciseSection)
+        }
+
         return lines.joined(separator: "\n")
+    }
+
+    /// Catalog exercises at or below the athlete's level, grouped by muscle
+    /// (compounds first), so the coach builds plans only from suitable lifts.
+    private static func exerciseOptions(_ exercises: [Exercise], experience: String) -> [String] {
+        let ceiling = (Difficulty(rawValue: experience) ?? .beginner).rank
+        let eligible = exercises.filter { $0.difficulty.rank <= ceiling }
+        guard !eligible.isEmpty else { return [] }
+        let order = ["Legs", "Hinge", "Chest", "Back", "Shoulders", "Arms", "Core", "Cardio"]
+        var lines: [String] = []
+        for group in order {
+            let inGroup = eligible.filter { $0.muscleGroup == group }
+                .sorted { ($0.type == .compound ? 0 : 1, $0.name) < ($1.type == .compound ? 0 : 1, $1.name) }
+            guard !inGroup.isEmpty else { continue }
+            let names = inGroup.prefix(10).map(\.name).joined(separator: ", ")
+            lines.append("- \(group): \(names)")
+        }
+        return lines
     }
 
     // MARK: - Helpers

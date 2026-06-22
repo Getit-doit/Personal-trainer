@@ -115,6 +115,8 @@ struct ExercisePickerView: View {
                     Text(exercise.name)
                     HStack(spacing: 6) {
                         Text(exercise.equipment.name.uppercased())
+                        Text("· \(exercise.difficulty.rawValue.uppercased())")
+                            .foregroundStyle(difficultyColor(exercise.difficulty))
                         if exercise.isPriorityProgression {
                             Text("· PRIORITY").foregroundStyle(Theme.accent)
                         }
@@ -128,5 +130,13 @@ struct ExercisePickerView: View {
             }
         }
         .tint(.primary)
+    }
+
+    private func difficultyColor(_ d: Difficulty) -> Color {
+        switch d {
+        case .beginner: return .secondary
+        case .intermediate: return Theme.accent
+        case .advanced: return Theme.amber
+        }
     }
 }

@@ -326,6 +326,45 @@ enum TrainingContent {
         templates.filter { $0.program == program }
     }
 
+    // MARK: - Difficulty tagging
+
+    /// Expert-tier lifts: high skill/technique or coordination demands.
+    private static let advancedExercises: Set<String> = [
+        "Power Clean", "Pistol Squat", "Nordic Hamstring Curl", "Turkish Get-Up",
+        "Kettlebell Snatch", "Kettlebell Clean & Press", "Zercher Squat"
+    ]
+
+    /// Intermediate-tier lifts: loaded barbell compounds and harder bodyweight /
+    /// kettlebell movements that need some training experience.
+    private static let intermediateExercises: Set<String> = [
+        "Deadlift", "Sumo Deadlift", "Romanian Deadlift", "Trap Bar Deadlift",
+        "Good Morning", "Bent-Over Row", "Pendlay Row", "Barbell Hip Thrust",
+        "Barbell Lunge", "Push Press", "Landmine Press", "Rack Pull",
+        "Back Squat", "Front Squat", "Box Squat", "Pause Squat",
+        "Overhead Press", "Pin Press", "Bench Press", "Incline Bench Press",
+        "Decline Bench Press", "Close-Grip Bench Press", "Bulgarian Split Squat",
+        "Dumbbell Romanian Deadlift", "Dumbbell Deadlift", "Dumbbell Thruster",
+        "Renegade Row", "Arnold Press", "Kettlebell Swing",
+        "Kettlebell Romanian Deadlift", "Kettlebell Front Rack Squat",
+        "Kettlebell Reverse Lunge", "Hack Squat", "Smith Machine Squat",
+        "Pull-Up", "Chin-Up", "Dip", "Inverted Row", "Pike Push-Up",
+        "Diamond Push-Up", "Hanging Leg Raise", "Jump Squat", "Burpee"
+    ]
+
+    /// The difficulty tier for a catalog exercise (defaults to beginner).
+    static func difficulty(for name: String) -> Difficulty {
+        if advancedExercises.contains(name) { return .advanced }
+        if intermediateExercises.contains(name) { return .intermediate }
+        return .beginner
+    }
+
+    /// Catalog exercises appropriate for an experience level — that level and
+    /// everything easier, so a plan never out-skills the athlete.
+    static func exercises(forExperience experience: String) -> [ExerciseSeed] {
+        let ceiling = (Difficulty(rawValue: experience) ?? .beginner).rank
+        return exercises.filter { difficulty(for: $0.name).rank <= ceiling }
+    }
+
     /// Distinct equipment used by a template, for badge display.
     private static let equipmentByName: [String: Equipment] =
         Dictionary(exercises.map { ($0.name, $0.equipment) }, uniquingKeysWith: { a, _ in a })

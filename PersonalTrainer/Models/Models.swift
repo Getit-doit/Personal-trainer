@@ -51,6 +51,24 @@ enum ExerciseType: String, Codable, CaseIterable {
     case accessory = "Accessory"
 }
 
+/// Skill/experience tier for an exercise. Aligns with the athlete's profile
+/// experience level so the coach can pull exercises that match (or are a step
+/// below) their level. "Advanced" is the expert tier.
+enum Difficulty: String, Codable, CaseIterable {
+    case beginner = "Beginner"
+    case intermediate = "Intermediate"
+    case advanced = "Advanced"
+
+    /// Higher = more demanding, for "at or below my level" comparisons.
+    var rank: Int {
+        switch self {
+        case .beginner: return 0
+        case .intermediate: return 1
+        case .advanced: return 2
+        }
+    }
+}
+
 /// A reusable exercise definition. `isPriorityProgression` marks lifts the user
 /// wants to push first (e.g. RDL, goblet squat).
 @Model
@@ -59,6 +77,7 @@ final class Exercise {
     var typeRaw: String
     var muscleGroup: String
     var equipmentRaw: String = Equipment.barbell.rawValue
+    var difficultyRaw: String = Difficulty.beginner.rawValue
     var isPriorityProgression: Bool
     var targetSets: Int
     var targetReps: Int
@@ -75,11 +94,17 @@ final class Exercise {
         set { equipmentRaw = newValue.rawValue }
     }
 
+    var difficulty: Difficulty {
+        get { Difficulty(rawValue: difficultyRaw) ?? .beginner }
+        set { difficultyRaw = newValue.rawValue }
+    }
+
     init(
         name: String,
         type: ExerciseType,
         muscleGroup: String,
         equipment: Equipment = .barbell,
+        difficulty: Difficulty = .beginner,
         isPriorityProgression: Bool = false,
         targetSets: Int = 3,
         targetReps: Int = 8,
@@ -89,6 +114,7 @@ final class Exercise {
         self.typeRaw = type.rawValue
         self.muscleGroup = muscleGroup
         self.equipmentRaw = equipment.rawValue
+        self.difficultyRaw = difficulty.rawValue
         self.isPriorityProgression = isPriorityProgression
         self.targetSets = targetSets
         self.targetReps = targetReps
