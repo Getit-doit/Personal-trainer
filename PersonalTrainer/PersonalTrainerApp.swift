@@ -14,7 +14,8 @@ struct PersonalTrainerApp: App {
                 for: UserProfile.self, Exercise.self, WorkoutSession.self,
                 LoggedExercise.self, SetLog.self, CardioEntry.self,
                 PersonalBest.self, NutritionLog.self, RecoveryLog.self,
-                CustomTemplate.self, CustomTemplateItem.self
+                CustomTemplate.self, CustomTemplateItem.self,
+                DietHabit.self, HabitCheckIn.self, Achievement.self
             )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")

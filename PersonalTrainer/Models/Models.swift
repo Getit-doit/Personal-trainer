@@ -368,3 +368,112 @@ final class CustomTemplateItem {
         self.order = order
     }
 }
+
+// MARK: - Diet lever check-ins
+
+/// A single nutrition "lever" the coach checks in on via notifications with
+/// Yes/No buttons — e.g. "Have you had any soda the last few days?" or "Did you
+/// drink your protein every morning this week?". Streaks are computed from the
+/// check-in history; milestones are celebrated.
+@Model
+final class DietHabit {
+    /// Stable id carried in the notification payload so responses route back here.
+    var id: UUID = UUID()
+    var title: String                 // short tag, e.g. "No soda"
+    var question: String              // the notification body / prompt
+    /// True when answering "Yes" is the *good* outcome (e.g. "drank protein").
+    /// False when "No" is good (e.g. "no soda").
+    var goodAnswerIsYes: Bool
+    var startDate: Date
+    var isActive: Bool
+    /// Ask roughly every N days.
+    var frequencyDays: Int
+    var hour: Int                     // preferred check-in time
+    var minute: Int
+    /// Largest streak milestone (in days) already celebrated, so we don't repeat.
+    var lastCelebratedMilestone: Int
+    /// Most recent "how do you feel?" reflection captured at a celebration.
+    var lastReflection: String
+
+    @Relationship(deleteRule: .cascade, inverse: \HabitCheckIn.habit)
+    var checkIns: [HabitCheckIn]
+
+    init(
+        title: String,
+        question: String,
+        goodAnswerIsYes: Bool,
+        startDate: Date = .now,
+        isActive: Bool = true,
+        frequencyDays: Int = 3,
+        hour: Int = 18,
+        minute: Int = 0
+    ) {
+        self.id = UUID()
+        self.title = title
+        self.question = question
+        self.goodAnswerIsYes = goodAnswerIsYes
+        self.startDate = startDate
+        self.isActive = isActive
+        self.frequencyDays = frequencyDays
+        self.hour = hour
+        self.minute = minute
+        self.lastCelebratedMilestone = 0
+        self.lastReflection = ""
+        self.checkIns = []
+    }
+}
+
+/// One answer to a diet-lever check-in.
+@Model
+final class HabitCheckIn {
+    var date: Date
+    var answeredYes: Bool
+    /// Whether this answer counted as the good outcome for the habit.
+    var wasGood: Bool
+    var habit: DietHabit?
+
+    init(date: Date = .now, answeredYes: Bool, wasGood: Bool) {
+        self.date = date
+        self.answeredYes = answeredYes
+        self.wasGood = wasGood
+    }
+}
+
+// MARK: - Recognition & rewards (gamification)
+
+/// An earned achievement. Display fields are snapshotted from the catalog at
+/// grant time so old awards still render even if the catalog changes.
+@Model
+final class Achievement {
+    var id: UUID = UUID()
+    var defID: String          // catalog key (also prevents duplicates)
+    var title: String
+    var detail: String
+    var icon: String           // SF Symbol name
+    var tier: String           // bronze / silver / gold
+    var points: Int
+    var dateEarned: Date
+    /// AI-written personalized recognition line, filled in when available.
+    var recognition: String
+
+    init(
+        defID: String,
+        title: String,
+        detail: String,
+        icon: String,
+        tier: String,
+        points: Int,
+        dateEarned: Date = .now,
+        recognition: String = ""
+    ) {
+        self.id = UUID()
+        self.defID = defID
+        self.title = title
+        self.detail = detail
+        self.icon = icon
+        self.tier = tier
+        self.points = points
+        self.dateEarned = dateEarned
+        self.recognition = recognition
+    }
+}

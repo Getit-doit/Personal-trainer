@@ -1,0 +1,315 @@
+import SwiftUI
+import SwiftData
+
+/// Manage diet-lever check-ins: the coach asks these as Yes/No notifications,
+/// tracks streaks, and celebrates milestones. Also answerable in-app.
+struct LeverCheckInsView: View {
+    @Environment(\.modelContext) private var context
+    @ObservedObject private var notif = NotificationCoach.shared
+    @Query(sort: \DietHabit.startDate) private var habits: [DietHabit]
+    @State private var showAdd = false
+
+    private var active: [DietHabit] { habits.filter(\.isActive) }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                TitleBlock(eyebrow: "Coach check-ins", title: "Levers",
+                           caption: "Yes / No · streaks")
+
+                if !notif.authorized {
+                    permissionCard
+                }
+
+                if active.isEmpty {
+                    emptyState
+                } else {
+                    ForEach(active) { habit in
+                        habitCard(habit)
+                    }
+                }
+
+                suggestionsCard
+            }
+            .padding()
+        }
+        .blueprintBackground()
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button { showAdd = true } label: { Image(systemName: "plus") }
+            }
+        }
+        .sheet(isPresented: $showAdd) {
+            AddHabitView { habit in
+                context.insert(habit)
+                try? context.save()
+                notif.rescheduleAll()
+            }
+        }
+        .task {
+            if !notif.authorized { /* prompt shown via card */ }
+        }
+    }
+
+    // MARK: Permission
+
+    private var permissionCard: some View {
+        Card {
+            VStack(alignment: .leading, spacing: 10) {
+                SectionRule(title: "Notifications off", tint: Theme.amber)
+                Text("Turn on notifications so the coach can ask your check-ins with Yes/No buttons and celebrate your streaks.")
+                    .font(.caption).foregroundStyle(.secondary)
+                Button {
+                    Task { await notif.requestAuthorization() }
+                } label: {
+                    Text("Enable check-ins").blueprintPrimary()
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private var emptyState: some View {
+        Card {
+            VStack(alignment: .leading, spacing: 8) {
+                SectionRule(title: "No levers yet")
+                Text("Add a nutrition lever below. The coach will check in every few days and keep a streak going.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    // MARK: Habit card
+
+    private func habitCard(_ habit: DietHabit) -> some View {
+        let days = HabitEngine.streakDays(habit)
+        let next = HabitEngine.nextMilestone(habit)
+        return Card {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(habit.title).font(Theme.hand(20))
+                        Text(habit.goodAnswerIsYes ? "Win = Yes" : "Win = No")
+                            .font(Theme.mono(9)).tracking(1).foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("\(days)").font(Theme.mono(28, weight: .semibold))
+                            .foregroundStyle(Theme.accent)
+                        Text("DAY STREAK").font(Theme.mono(8)).tracking(1.2).foregroundStyle(.secondary)
+                    }
+                }
+
+                if let next {
+                    let prev = HabitEngine.milestones.last { $0 <= days } ?? 0
+                    let span = max(1, next - prev)
+                    let progress = Double(days - prev) / Double(span)
+                    VStack(alignment: .leading, spacing: 4) {
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Rectangle().fill(Theme.card)
+                                Rectangle().fill(Theme.accent)
+                                    .frame(width: geo.size.width * min(1, max(0, progress)))
+                            }
+                        }
+                        .frame(height: 6)
+                        .overlay(Rectangle().stroke(Theme.hairline, lineWidth: 1))
+                        Text("\(next - days) days to \(next)-day mark")
+                            .font(Theme.mono(9)).tracking(0.5).foregroundStyle(.secondary)
+                    }
+                } else if days >= HabitEngine.milestones.last! {
+                    Text("Past every milestone — legendary.")
+                        .font(Theme.mono(9)).tracking(0.5).foregroundStyle(Theme.accent)
+                }
+
+                Divider().overlay(Theme.hairline)
+
+                Text(habit.question).font(.subheadline)
+
+                HStack(spacing: 10) {
+                    Button { notif.record(habit: habit, answeredYes: true) } label: {
+                        Text("YES").blueprintSecondary()
+                    }.buttonStyle(.plain)
+                    Button { notif.record(habit: habit, answeredYes: false) } label: {
+                        Text("NO").blueprintSecondary()
+                    }.buttonStyle(.plain)
+                }
+
+                if !habit.lastReflection.isEmpty {
+                    Text("Last reflection: \(habit.lastReflection)")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
+            }
+        }
+        .contextMenu {
+            Button(role: .destructive) {
+                habit.isActive = false
+                try? context.save()
+                notif.rescheduleAll()
+            } label: { Label("Stop tracking", systemImage: "pause.circle") }
+            Button(role: .destructive) {
+                context.delete(habit)
+                try? context.save()
+                notif.rescheduleAll()
+            } label: { Label("Delete", systemImage: "trash") }
+        }
+    }
+
+    // MARK: Suggestions
+
+    private var suggestionsCard: some View {
+        Card {
+            VStack(alignment: .leading, spacing: 10) {
+                SectionRule(title: "Quick add")
+                let existing = Set(habits.map(\.title))
+                ForEach(HabitEngine.suggestions.filter { !existing.contains($0.title) }, id: \.title) { s in
+                    Button {
+                        let habit = DietHabit(title: s.title, question: s.question,
+                                              goodAnswerIsYes: s.goodAnswerIsYes)
+                        context.insert(habit)
+                        try? context.save()
+                        notif.rescheduleAll()
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill").foregroundStyle(Theme.accent)
+                            Text(s.title)
+                            Spacer()
+                            Text(s.goodAnswerIsYes ? "YES = WIN" : "NO = WIN")
+                                .font(Theme.mono(8)).tracking(1).foregroundStyle(.secondary)
+                        }
+                        .font(.subheadline)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+}
+
+/// Create a custom diet lever, with an AI button to phrase the question.
+struct AddHabitView: View {
+    @Environment(\.dismiss) private var dismiss
+    let onSave: (DietHabit) -> Void
+
+    @State private var title = ""
+    @State private var question = ""
+    @State private var goodAnswerIsYes = true
+    @State private var frequencyDays = 3
+    @State private var time = Calendar.current.date(bySettingHour: 18, minute: 0, second: 0, of: .now) ?? .now
+    @State private var suggesting = false
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    field("Lever", "e.g. No soda", text: $title)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            SectionRule(title: "Check-in question")
+                            Button {
+                                Task { await suggestQuestion() }
+                            } label: {
+                                HStack(spacing: 4) {
+                                    if suggesting { ProgressView().scaleEffect(0.7) }
+                                    else { Image(systemName: "sparkles") }
+                                    Text("AI").font(Theme.mono(9)).tracking(1)
+                                }
+                                .foregroundStyle(Theme.accent)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty || suggesting)
+                        }
+                        TextField("e.g. Have you had any soda the last few days?",
+                                  text: $question, axis: .vertical)
+                            .lineLimit(1...3)
+                            .blueprintField()
+                    }
+
+                    Card {
+                        VStack(alignment: .leading, spacing: 10) {
+                            SectionRule(title: "What counts as a win?")
+                            Picker("", selection: $goodAnswerIsYes) {
+                                Text("Answering Yes").tag(true)
+                                Text("Answering No").tag(false)
+                            }
+                            .pickerStyle(.segmented)
+                            Text(goodAnswerIsYes
+                                 ? "Good when you can say Yes (e.g. \"drank protein\")."
+                                 : "Good when you can say No (e.g. \"no soda\").")
+                                .font(.caption2).foregroundStyle(.secondary)
+                        }
+                    }
+
+                    Card {
+                        VStack(alignment: .leading, spacing: 12) {
+                            SectionRule(title: "Cadence")
+                            Stepper("Every \(frequencyDays) day\(frequencyDays == 1 ? "" : "s")",
+                                    value: $frequencyDays, in: 1...14)
+                            DatePicker("Time of day", selection: $time, displayedComponents: .hourAndMinute)
+                        }
+                    }
+                }
+                .padding()
+            }
+            .blueprintBackground()
+            .navigationTitle("New Lever")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add") { save() }
+                        .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty
+                                  || question.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+    }
+
+    private func field(_ label: String, _ placeholder: String, text: Binding<String>) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            SectionRule(title: label)
+            TextField(placeholder, text: text).blueprintField()
+        }
+    }
+
+    private func suggestQuestion() async {
+        suggesting = true
+        defer { suggesting = false }
+
+        // Offline rule-based coach can't phrase a question — use a clean template.
+        guard CoachService.activeEngine != .offline else {
+            question = goodAnswerIsYes
+                ? "Have you stayed on track with \(title.lowercased()) the last few days?"
+                : "Have you slipped on \(title.lowercased()) the last few days?"
+            return
+        }
+
+        let win = goodAnswerIsYes ? "answering Yes is the good outcome" : "answering No is the good outcome"
+        let prompt = "Write one short, friendly check-in question (max 18 words) a fitness "
+            + "coach would send for the nutrition habit \"\(title)\", where \(win). "
+            + "Return only the question."
+        if let reply = await CoachService.oneShot(prompt) {
+            let cleaned = reply.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !cleaned.isEmpty { question = cleaned }
+        }
+    }
+
+    private func save() {
+        let cal = Calendar.current
+        let habit = DietHabit(
+            title: title.trimmingCharacters(in: .whitespacesAndNewlines),
+            question: question.trimmingCharacters(in: .whitespacesAndNewlines),
+            goodAnswerIsYes: goodAnswerIsYes,
+            frequencyDays: frequencyDays,
+            hour: cal.component(.hour, from: time),
+            minute: cal.component(.minute, from: time)
+        )
+        onSave(habit)
+        dismiss()
+    }
+}

@@ -12,6 +12,7 @@ struct TodayView: View {
     @Query(sort: \RecoveryLog.date, order: .reverse) private var recovery: [RecoveryLog]
     @Query(sort: \NutritionLog.date, order: .reverse) private var nutrition: [NutritionLog]
     @Query(sort: \CustomTemplate.order) private var customTemplates: [CustomTemplate]
+    @Query(sort: \Achievement.dateEarned, order: .reverse) private var achievements: [Achievement]
 
     @State private var startedSession: WorkoutSession?
     @State private var showTemplatePicker = false
@@ -30,6 +31,7 @@ struct TodayView: View {
                     recoveryCard
                     healthCard
                     progressionCard
+                    recognitionCard
                     nutritionCard
                     startCard
                 }
@@ -76,6 +78,42 @@ struct TodayView: View {
         case 12..<17: return "Good afternoon"
         default: return "Good evening"
         }
+    }
+
+    // MARK: Recognition / rewards
+
+    private var recognitionCard: some View {
+        let points = achievements.reduce(0) { $0 + $1.points }
+        let level = RewardEngine.level(forPoints: points)
+        return NavigationLink {
+            AchievementsView()
+        } label: {
+            Card {
+                VStack(alignment: .leading, spacing: 10) {
+                    SectionRule(title: "Recognition",
+                                trailing: "\(achievements.count) EARNED")
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("LEVEL \(level)").font(Theme.mono(10)).tracking(1.5)
+                                .foregroundStyle(.secondary)
+                            Text("\(points) pts").font(Theme.mono(20, weight: .semibold))
+                                .foregroundStyle(Theme.accent)
+                        }
+                        Spacer()
+                        if let latest = achievements.first {
+                            HStack(spacing: 6) {
+                                Image(systemName: latest.icon).foregroundStyle(Theme.accent)
+                                Text(latest.title).font(.subheadline)
+                            }
+                        } else {
+                            Text("Earn your first badge").font(.caption).foregroundStyle(.secondary)
+                        }
+                        Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: Recommended today

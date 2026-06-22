@@ -64,6 +64,20 @@ final class OnDeviceCoach {
         }
     }
 
+    /// A stateless one-off generation on a throwaway session, so utility prompts
+    /// (achievement recognition, question phrasing) never pollute the chat context.
+    func oneShot(_ prompt: String) async -> String? {
+        guard Self.isAvailable else { return nil }
+        let temp = LanguageModelSession(instructions: CoachService.systemPrompt)
+        do {
+            let response = try await temp.respond(to: prompt)
+            let text = response.content.trimmingCharacters(in: .whitespacesAndNewlines)
+            return (text.isEmpty || isRefusal(text)) ? nil : text
+        } catch {
+            return nil
+        }
+    }
+
     /// The on-device model sometimes declines benign fitness questions. Treat an
     /// obvious refusal as "no answer" so the helpful rule-based coach takes over.
     private func isRefusal(_ text: String) -> Bool {

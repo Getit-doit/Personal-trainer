@@ -49,6 +49,24 @@ enum CoachService {
         return offlineReply(to: message)
     }
 
+    /// A stateless single-shot generation for utility copy (achievement
+    /// recognition, check-in question phrasing). Unlike `reply`, it carries no
+    /// chat history and never touches the persistent on-device session. Returns
+    /// nil when no generative engine is available (callers supply a fallback).
+    static func oneShot(_ prompt: String) async -> String? {
+        if !Config.anthropicAPIKey.isEmpty {
+            if let remote = try? await callClaude(message: prompt, history: [], memory: "") {
+                return remote
+            }
+        }
+        #if canImport(FoundationModels)
+        if #available(iOS 26.0, *) {
+            return await OnDeviceCoach.shared.oneShot(prompt)
+        }
+        #endif
+        return nil
+    }
+
     /// Warm the on-device model (if that's the active engine) for a faster first reply.
     static func prewarm() {
         #if canImport(FoundationModels)

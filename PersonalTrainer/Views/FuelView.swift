@@ -6,6 +6,7 @@ import SwiftData
 struct FuelView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \NutritionLog.date, order: .reverse) private var logs: [NutritionLog]
+    @Query(sort: \DietHabit.startDate) private var habits: [DietHabit]
     @State private var today: NutritionLog?
 
     var body: some View {
@@ -18,6 +19,7 @@ struct FuelView: View {
                         winsCard(today)
                         weakLinksCard(today)
                     }
+                    checkInsCard
                     historyCard
                 }
                 .padding()
@@ -85,6 +87,44 @@ struct FuelView: View {
                 set: { log.weakLinks = $0; try? context.save() }
             )
         )
+    }
+
+    /// Diet-lever check-ins: the coach asks Yes/No questions and tracks streaks.
+    private var checkInsCard: some View {
+        let active = habits.filter(\.isActive)
+        let bestStreak = active.map { HabitEngine.streakDays($0) }.max() ?? 0
+        return NavigationLink {
+            LeverCheckInsView()
+        } label: {
+            Card {
+                VStack(alignment: .leading, spacing: 10) {
+                    SectionRule(title: "Lever Check-ins",
+                                trailing: active.isEmpty ? "SET UP" : "\(active.count) ACTIVE")
+                    if active.isEmpty {
+                        Text("Let the coach check in with Yes/No questions and celebrate your streaks.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text("\(bestStreak)").font(Theme.mono(26, weight: .semibold))
+                                .foregroundStyle(Theme.accent)
+                            Text("DAY BEST STREAK").font(Theme.mono(9)).tracking(1)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary)
+                        }
+                        ForEach(active.prefix(3)) { habit in
+                            HStack {
+                                Text("• \(habit.title)").font(.subheadline)
+                                Spacer()
+                                Text("\(HabitEngine.streakDays(habit))d")
+                                    .font(Theme.mono(11)).foregroundStyle(Theme.accent)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder
