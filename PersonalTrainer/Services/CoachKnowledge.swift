@@ -109,7 +109,7 @@ enum CoachKnowledge {
         KnowledgeEntry(
             id: "shoulder_pain",
             title: "Shoulder discomfort",
-            keywords: ["shoulder", "shoulders", "rotator", "cuff", "shoulder pain", "pressing hurts"],
+            keywords: ["shoulder", "shoulders", "rotator", "cuff", "shoulder pain", "pressing"],
             content: """
             For touchy shoulders, swap straight-bar pressing for neutral-grip dumbbell or \
             landmine presses, keep elbows slightly tucked, and add face pulls and band \
@@ -121,7 +121,7 @@ enum CoachKnowledge {
         KnowledgeEntry(
             id: "back_pain",
             title: "Lower-back discomfort",
-            keywords: ["back", "lower back", "lumbar", "back pain", "spine", "deadlift hurts"],
+            keywords: ["back", "lower back", "lumbar", "back pain", "spine"],
             content: """
             For a grumpy lower back, brace your core hard, keep a neutral spine, and pull \
             from a height (rack pulls or blocks) if floor deadlifts aggravate it. Hip \
@@ -133,7 +133,7 @@ enum CoachKnowledge {
         KnowledgeEntry(
             id: "ankle",
             title: "Ankle care and impact",
-            keywords: ["ankle", "ankles", "calf", "impact", "running hurts"],
+            keywords: ["ankle", "ankles", "calf", "impact", "dorsiflexion"],
             content: """
             If your ankle flares easily, warm it thoroughly (circles, knee-to-wall \
             dorsiflexion, banded work, calf raises) and keep cardio low-impact — incline \
@@ -405,6 +405,18 @@ enum CoachKnowledge {
             .filter { $0.count >= 3 && !stopwords.contains($0) }
     }
 
+    /// Whether a query token and a candidate (keyword or title word) match.
+    /// Exact match always counts; partial (substring) matches require the shorter
+    /// side to be ≥4 chars, so plurals/compounds match ("squat"↔"squats",
+    /// "reps"↔"reps in tank") without short keywords hitting interiors of unrelated
+    /// words (e.g. "eat" inside "creatine").
+    private static func termMatch(_ token: String, _ candidate: String) -> Bool {
+        if candidate == token { return true }
+        if candidate.count >= 4 && token.contains(candidate) { return true }
+        if token.count >= 4 && candidate.contains(token) { return true }
+        return false
+    }
+
     /// Rank entries by relevance to a query. Keyword hits weigh most, then title,
     /// then body. Returns `(entry, score)` sorted high→low for nonzero scores.
     static func scored(_ query: String) -> [(entry: KnowledgeEntry, score: Double)] {
@@ -418,9 +430,9 @@ enum CoachKnowledge {
             var score = 0.0
 
             for t in q {
-                if kw.contains(where: { $0 == t || $0.contains(t) || t.contains($0) }) {
+                if kw.contains(where: { termMatch(t, $0) }) {
                     score += 5
-                } else if titleTokens.contains(where: { $0 == t || $0.contains(t) || t.contains($0) }) {
+                } else if titleTokens.contains(where: { termMatch(t, $0) }) {
                     score += 3
                 } else if body.contains(t) {
                     score += 1
@@ -441,8 +453,9 @@ enum CoachKnowledge {
         let ranked = scored(query)
         guard let top = ranked.first, top.score >= 5 else { return nil }
         var parts = [top.entry.content]
-        // Add a second strong, distinct entry for a fuller answer.
-        if ranked.count > 1, ranked[1].score >= 5 {
+        // Add a second entry only when it's robustly on-topic too (multi-signal),
+        // so a tangential match isn't tacked onto a clear single-topic question.
+        if ranked.count > 1, ranked[1].score >= 8 {
             parts.append(ranked[1].entry.content)
         }
         return parts.joined(separator: "\n\n")
