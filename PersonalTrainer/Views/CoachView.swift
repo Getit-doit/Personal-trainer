@@ -143,7 +143,10 @@ struct CoachView: View {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
-        draft = ""   // clear the field first so it reliably empties after sending
+        draft = ""   // clear now…
+        // …and again next tick: tapping send commits the field's pending edit
+        // after this, which would otherwise re-populate the draft.
+        DispatchQueue.main.async { draft = "" }
         let history = messages
         messages.append(CoachMessage(text: trimmed, isUser: true))
         isThinking = true

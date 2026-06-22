@@ -211,8 +211,9 @@ enum CoachService {
     impact (incline, stairs, sprints) gradually. Favor progressive overload, \
     autoregulation by RPE/reps-in-tank, compound-first training, and one \
     nutrition "lever" at a time over full macro counting. When asked for a plan, \
-    build it around their experience, days per week, and equipment. Keep replies \
-    under 120 words unless asked for detail.
+    give a concrete plan — list each training day with specific exercises and \
+    sets×reps drawn from their exercise options — not just general principles. \
+    Keep replies under 120 words unless asked for detail (a plan counts as detail).
     """
 
     // MARK: - Offline coach (internal knowledge library)

@@ -263,7 +263,7 @@ enum CoachKnowledge {
         KnowledgeEntry(
             id: "consistency",
             title: "Staying consistent",
-            keywords: ["consistent", "consistency", "motivation", "habit", "skip", "discipline", "routine", "lazy"],
+            keywords: ["consistent", "consistency", "motivation", "discipline", "skip", "skipping", "show up", "lazy"],
             content: """
             Adherence is the real program. Make it easy to show up: schedule sessions, \
             keep a minimum version ("just the main lift") for busy days, and never miss \
@@ -322,7 +322,7 @@ enum CoachKnowledge {
         KnowledgeEntry(
             id: "frequency_split",
             title: "Frequency and splits",
-            keywords: ["split", "frequency", "full body", "ppl", "upper lower", "how many days", "schedule"],
+            keywords: ["split", "frequency", "full body", "ppl", "upper lower", "how many days", "days per week", "training days", "schedule"],
             content: """
             Match your split to your days. 3 days: full-body each session. 4 days: \
             upper/lower. 5–6 days: push/pull/legs or a body-part split. Hitting each muscle \
@@ -511,6 +511,18 @@ enum CoachKnowledge {
             equipment you have, and any injuries or limitations (edit it any time from Today). I \
             program around the gear you actually own and work around injuries you list, and I pick \
             exercises that match your experience. Keep it current and the coaching stays relevant.
+            """
+        ),
+        KnowledgeEntry(
+            id: "programs_templates",
+            title: "Programs you can start",
+            keywords: ["plan", "plans", "program", "programs", "routine", "routines", "template", "templates", "start a workout", "what plans", "which plan", "what can i start", "ready-made", "preset"],
+            content: """
+            The Train tab has ready-made programs you can start with one tap: Full Body A/B/C \
+            (beginner, 3 days), Push / Pull / Legs (intermediate, 4–6 days), a Conditioning day, \
+            and Express 30-minute sessions. You can also build and save your own custom routine, \
+            or start an empty session. The Today tab recommends which day to do next based on \
+            your program and recovery. Pick a program that fits your days per week.
             """
         )
     ]
