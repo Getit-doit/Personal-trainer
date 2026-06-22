@@ -184,4 +184,26 @@ enum HabitEngine {
         }
         return lines.joined(separator: "\n")
     }
+
+    /// A coarse topic for a lever title, used to de-duplicate suggestions that mean
+    /// the same thing (e.g. "Morning protein" and "Eat protein at breakfast").
+    static func topicKey(for title: String) -> String {
+        let t = title.lowercased()
+        let topics: [(String, [String])] = [
+            ("soda", ["soda", "pop", "soft drink", "sugary drink", "cola"]),
+            ("protein", ["protein"]),
+            ("water", ["water", "hydrat"]),
+            ("snack", ["snack"]),
+            ("fastfood", ["fast food", "takeout", "take-out", "drive-thru", "drive thru"]),
+            ("alcohol", ["alcohol", "beer", "wine", "drinking"]),
+            ("veg", ["veg", "vegetable", "greens", "salad"]),
+            ("carbs", ["carb"]),
+            ("sugar", ["sugar", "sweets", "dessert", "candy"]),
+            ("macros", ["macro", "calorie", "track"]),
+            ("fruit", ["fruit"]),
+            ("fiber", ["fiber", "fibre"])
+        ]
+        for (key, cues) in topics where cues.contains(where: { t.contains($0) }) { return key }
+        return t   // no known topic: dedupe only against the exact title
+    }
 }

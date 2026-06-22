@@ -393,11 +393,14 @@ struct HabitIntakeView: View {
     let memory: String
     let existingTitles: [String]
 
-    private enum Phase { case questions, loading, results }
+    private enum Phase { case questions, followups, loading, results }
     @State private var phase: Phase = .questions
     @State private var answers: [String: Int] = [:]
+    @State private var followUps: [String] = []
+    @State private var followAnswers: [String] = []
     @State private var results: [HabitEngine.Suggestion] = []
     @State private var added: Set<String> = []
+    @State private var loadingText = "Working…"
 
     var body: some View {
         NavigationStack {
@@ -405,6 +408,7 @@ struct HabitIntakeView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     switch phase {
                     case .questions: questionsSection
+                    case .followups: followupsSection
                     case .loading: loadingSection
                     case .results: resultsSection
                     }
@@ -440,8 +444,8 @@ struct HabitIntakeView: View {
                     .pickerStyle(.segmented)
                 }
             }
-            Button { Task { await build() } } label: {
-                Label("Build my levers", systemImage: "wand.and.stars").blueprintPrimary()
+            Button { Task { await goToFollowups() } } label: {
+                Label("Continue", systemImage: "arrow.right").blueprintPrimary()
             }
             .buttonStyle(.plain)
             .disabled(answers.isEmpty)
@@ -449,10 +453,42 @@ struct HabitIntakeView: View {
         }
     }
 
+    /// Conversational step: the coach asks AI-generated follow-up questions about
+    /// the athlete's eating, answered in free text.
+    private var followupsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("A couple of follow-ups so your coach can tailor this to you. Answer what you like — or skip.")
+                .font(.callout).foregroundStyle(.secondary)
+            ForEach(followUps.indices, id: \.self) { i in
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("COACH").font(Theme.mono(9, weight: .semibold)).tracking(1.6)
+                            .foregroundStyle(Theme.accent)
+                        Text(followUps[i]).font(.subheadline)
+                    }
+                    TextField("Your answer…", text: Binding(
+                        get: { i < followAnswers.count ? followAnswers[i] : "" },
+                        set: { if i < followAnswers.count { followAnswers[i] = $0 } }
+                    ), axis: .vertical)
+                    .lineLimit(1...3)
+                    .blueprintField()
+                }
+            }
+            Button { Task { await build() } } label: {
+                Label("Build my levers", systemImage: "wand.and.stars").blueprintPrimary()
+            }
+            .buttonStyle(.plain).padding(.top, 4)
+            Button { Task { await build() } } label: {
+                Text("Skip").blueprintSecondary()
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
     private var loadingSection: some View {
         VStack(spacing: 14) {
             ProgressView()
-            Text("Building levers from your habits…")
+            Text(loadingText)
                 .font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity).padding(.vertical, 50)
@@ -504,27 +540,70 @@ struct HabitIntakeView: View {
         .disabled(isAdded)
     }
 
-    private func build() async {
+    /// After the structured questions, have the coach ask conversational follow-ups
+    /// (AI-generated when available; a single open question otherwise).
+    private func goToFollowups() async {
+        loadingText = "Reading your answers…"
         phase = .loading
-        let deterministic = HabitEngine.deterministicLevers(from: answers)
-        var merged = deterministic
+        if let qs = await CoachService.followUpQuestions(context: groundedContext()) {
+            followUps = qs
+        } else {
+            followUps = ["Anything else about your daily eating, cravings, or schedule you'd like your coach to factor in?"]
+        }
+        followAnswers = Array(repeating: "", count: followUps.count)
+        phase = .followups
+    }
 
+    /// The athlete context (memory + structured answers + any follow-up answers).
+    private func groundedContext() -> String {
+        var parts: [String] = []
+        if !memory.isEmpty { parts.append(memory) }
+        let summary = HabitEngine.intakeSummary(from: answers)
+        if !summary.isEmpty { parts.append("## Daily habit answers\n\(summary)") }
+        let followText = zip(followUps, followAnswers).compactMap { q, a -> String? in
+            let ans = a.trimmingCharacters(in: .whitespacesAndNewlines)
+            return ans.isEmpty ? nil : "- \(q) → \(ans)"
+        }.joined(separator: "\n")
+        if !followText.isEmpty { parts.append("## Follow-up answers\n\(followText)") }
+        return parts.joined(separator: "\n\n")
+    }
+
+    private func build() async {
+        loadingText = "Building your levers…"
+        phase = .loading
+
+        let deterministic = HabitEngine.deterministicLevers(from: answers)   // flagged concerns
+        var ai: [HabitEngine.Suggestion] = []
         if CoachService.activeEngine != .offline {
-            let summary = HabitEngine.intakeSummary(from: answers)
-            let grounded = memory.isEmpty
-                ? "## Daily habit answers\n\(summary)"
-                : memory + "\n\n## Daily habit answers\n\(summary)"
-            if let ai = await CoachService.suggestLevers(memory: grounded, avoid: existingTitles) {
-                var seen = Set(ai.map { $0.title.lowercased() })
-                merged = ai
-                for d in deterministic where !seen.contains(d.title.lowercased()) {
-                    merged.append(d); seen.insert(d.title.lowercased())
-                }
-            }
+            ai = await CoachService.suggestLevers(memory: groundedContext(), avoid: existingTitles) ?? []
+        }
+
+        // Index AI levers by topic so we can prefer the personalized wording.
+        var aiByTopic: [String: HabitEngine.Suggestion] = [:]
+        for s in ai where aiByTopic[HabitEngine.topicKey(for: s.title)] == nil {
+            aiByTopic[HabitEngine.topicKey(for: s.title)] = s
         }
 
         let existingLower = Set(existingTitles.map { $0.lowercased() })
-        results = Array(merged.filter { !existingLower.contains($0.title.lowercased()) }.prefix(6))
+        var seenTopics = Set(existingTitles.map { HabitEngine.topicKey(for: $0) })
+        var merged: [HabitEngine.Suggestion] = []
+
+        func tryAdd(_ s: HabitEngine.Suggestion) {
+            let key = HabitEngine.topicKey(for: s.title)
+            if seenTopics.contains(key) || existingLower.contains(s.title.lowercased()) { return }
+            seenTopics.insert(key)
+            merged.append(s)
+        }
+
+        // 1) Every flagged habit is covered — preferring the AI's personalized
+        //    wording for that topic when it offered one, else the starter lever.
+        for d in deterministic {
+            tryAdd(aiByTopic[HabitEngine.topicKey(for: d.title)] ?? d)
+        }
+        // 2) Remaining AI suggestions (new topics) as personalized extras.
+        for s in ai { tryAdd(s) }
+
+        results = Array(merged.prefix(8))
         phase = .results
     }
 }

@@ -76,53 +76,116 @@ enum CoachService {
 
     // MARK: - AI-recommended levers
 
-    private struct LeverIdea: Decodable {
-        let title: String
-        let question: String
-        let winIsYes: Bool
-    }
-
-    /// Ask the active generative engine for personalized nutrition-lever ideas,
-    /// grounded in the athlete's memory briefing. Returns nil when no generative
-    /// engine is available or the model didn't return usable JSON (callers fall
-    /// back to the built-in starter levers).
+    /// Ask the active generative engine for personalized lever *ideas* (just short
+    /// titles), grounded in the athlete's context. The app synthesizes each lever's
+    /// Yes/No question and polarity deterministically (small models are unreliable
+    /// at both), so suggestions are always phrased so "Yes" = the good outcome.
+    /// Returns nil when no generative engine is available or the model didn't
+    /// return usable JSON (callers fall back to the built-in mapping).
     static func suggestLevers(memory: String, avoid: [String]) async -> [HabitEngine.Suggestion]? {
         guard activeEngine != .offline else { return nil }
         let avoidList = avoid.isEmpty ? "none" : avoid.joined(separator: ", ")
         let prompt = """
-        Suggest 4 personalized nutrition "lever" habits for this athlete to check in on. \
-        A lever is one simple, specific daily habit (not a whole diet). Tailor them to the \
-        athlete's goal, recent training, and any fuel weak links in the context below.
-        Return ONLY a JSON array, no prose or code fences. Each element exactly:
-        {"title": "<=3 word tag", "question": "a short yes/no check-in question", "winIsYes": true or false}
-        winIsYes is true when answering "Yes" is the good outcome (e.g. drank protein), \
-        false when "No" is good (e.g. no soda). Do not duplicate these existing levers: \(avoidList).
+        Based on the athlete context below, suggest 4–6 specific daily nutrition "lever" \
+        habits tailored to their goal, recent training, and their daily-habit answers. Each \
+        is one short, concrete habit (a few words).
+        Return ONLY a JSON array of short strings — the habit names — with no prose or code \
+        fences, e.g. ["Protein at breakfast", "No soda", "Veggies at dinner"].
+        Do not duplicate these existing levers: \(avoidList).
 
         Athlete context:
         \(memory)
         """
         guard let raw = await oneShot(prompt) else { return nil }
-        return parseLevers(raw)
+        return parseLeverTitles(raw)
     }
 
-    /// Extract a JSON array of lever ideas from a (possibly chatty) model reply.
-    private static func parseLevers(_ raw: String) -> [HabitEngine.Suggestion]? {
+    /// Ask the coach for short conversational follow-up questions about the athlete's
+    /// eating, given their intake answers. Returns nil offline or on parse failure.
+    static func followUpQuestions(context: String) async -> [String]? {
+        guard activeEngine != .offline else { return nil }
+        let prompt = """
+        You're a friendly, non-judgmental nutrition coach. Based on the athlete's daily-habit \
+        answers below, ask 2–3 short, specific follow-up questions to understand their eating \
+        better before recommending habits to work on.
+        Return ONLY a JSON array of strings — the questions — with no prose or code fences.
+
+        \(context)
+        """
+        guard let raw = await oneShot(prompt), let arr = parseStringArray(raw) else { return nil }
+        let cleaned = arr.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+        return cleaned.isEmpty ? nil : Array(cleaned.prefix(3))
+    }
+
+    /// Parse a JSON array of lever-name strings into fully-formed suggestions,
+    /// de-duplicated by topic.
+    private static func parseLeverTitles(_ raw: String) -> [HabitEngine.Suggestion]? {
+        guard let titles = parseStringArray(raw) else { return nil }
+        var seen = Set<String>()
+        var out: [HabitEngine.Suggestion] = []
+        for t in titles.prefix(8) {
+            let lever = makeLever(fromTitle: t)
+            guard !lever.title.isEmpty else { continue }
+            let key = HabitEngine.topicKey(for: lever.title)
+            if seen.contains(key) { continue }
+            seen.insert(key); out.append(lever)
+        }
+        return out.isEmpty ? nil : out
+    }
+
+    /// Extract a `[String]` JSON array from a (possibly chatty) model reply.
+    private static func parseStringArray(_ raw: String) -> [String]? {
         guard let start = raw.firstIndex(of: "["), let end = raw.lastIndex(of: "]"), start < end else {
             return nil
         }
         let json = String(raw[start...end])
         guard let data = json.data(using: .utf8),
-              let ideas = try? JSONDecoder().decode([LeverIdea].self, from: data) else {
+              let arr = try? JSONDecoder().decode([String].self, from: data) else {
             return nil
         }
-        let suggestions = ideas.prefix(6).map {
-            HabitEngine.Suggestion(
-                title: $0.title.trimmingCharacters(in: .whitespacesAndNewlines),
-                question: $0.question.trimmingCharacters(in: .whitespacesAndNewlines),
-                goodAnswerIsYes: $0.winIsYes
-            )
-        }.filter { !$0.title.isEmpty && !$0.question.isEmpty }
-        return suggestions.isEmpty ? nil : suggestions
+        return arr
+    }
+
+    // MARK: Lever synthesis (deterministic, so polarity/phrasing are always correct)
+
+    private static let avoidCues = [
+        "no ", "avoid", "skip", "quit", "cut ", "cut back", "limit", "less ",
+        "without", "reduce", "stop ", "fewer", "drop "
+    ]
+    private static let actionVerbs = [
+        "eat", "drink", "add", "track", "hit", "take", "get", "include", "have",
+        "do", "walk", "cook", "prep", "swap", "log", "stretch", "sleep", "plan", "make"
+    ]
+
+    /// Build a lever from just a title: synthesize a Yes/No check-in question where
+    /// "Yes" always means the good outcome, so `goodAnswerIsYes` is always true.
+    static func makeLever(fromTitle rawTitle: String) -> HabitEngine.Suggestion {
+        let title = rawTitle
+            .trimmingCharacters(in: CharacterSet(charactersIn: " \t\"'.•-"))
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let question = isAvoidHabit(title) ? synthAvoidQuestion(title) : synthPositiveQuestion(title)
+        return HabitEngine.Suggestion(title: title, question: question, goodAnswerIsYes: true)
+    }
+
+    private static func isAvoidHabit(_ title: String) -> Bool {
+        let t = title.lowercased()
+        return avoidCues.contains { t.hasPrefix($0) || t.contains(" \($0)") }
+    }
+
+    private static func synthAvoidQuestion(_ title: String) -> String {
+        var t = title.lowercased()
+        for cue in ["no ", "avoid ", "skip ", "quit ", "cut back on ", "cut ", "limit ", "less ", "reduce ", "stop ", "without ", "fewer ", "drop "] {
+            if t.hasPrefix(cue) { t = String(t.dropFirst(cue.count)); break }
+        }
+        return "Did you stay off \(t) today?"
+    }
+
+    private static func synthPositiveQuestion(_ title: String) -> String {
+        let t = title.lowercased()
+        if actionVerbs.contains(where: { t.hasPrefix($0 + " ") }) {
+            return "Did you \(t) today?"
+        }
+        return "Did you keep up with \(t) today?"
     }
 
     /// Warm the on-device model (if that's the active engine) for a faster first reply.
