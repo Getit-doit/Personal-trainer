@@ -19,7 +19,7 @@ enum SeedData {
         for seed in TrainingContent.exercises {
             let difficulty = TrainingContent.difficulty(for: seed.name)
             if let existing = existingByName[seed.name] {
-                existing.difficulty = difficulty   // backfill tag on prior installs
+                if existing.difficulty != difficulty { existing.difficulty = difficulty }   // backfill tag on prior installs
             } else {
                 context.insert(
                     Exercise(

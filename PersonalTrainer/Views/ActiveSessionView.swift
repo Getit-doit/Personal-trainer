@@ -5,6 +5,7 @@ import SwiftData
 /// RPE & reps-in-tank → low-impact cardio finisher → steam room / notes / finish.
 struct ActiveSessionView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var health: HealthService
     @Bindable var session: WorkoutSession
     @Query private var existingPRs: [PersonalBest]
@@ -62,6 +63,9 @@ struct ActiveSessionView: View {
         }
         .sheet(isPresented: $showCoach) {
             InWorkoutCoachView(session: session)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { rest.syncToWallClock() }
         }
         .safeAreaInset(edge: .bottom) {
             if rest.isActive {

@@ -52,7 +52,7 @@ enum SessionFactory {
 
     static func fromTemplate(_ template: WorkoutTemplate, context: ModelContext) -> WorkoutSession {
         let catalog = (try? context.fetch(FetchDescriptor<Exercise>())) ?? []
-        let byName = Dictionary(uniqueKeysWithValues: catalog.map { ($0.name, $0) })
+        let byName = Dictionary(catalog.map { ($0.name, $0) }, uniquingKeysWith: { a, _ in a })
 
         let session = WorkoutSession()
         session.notes = template.title

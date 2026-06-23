@@ -20,6 +20,9 @@ final class RestTimer: ObservableObject {
     private var exerciseName = ""
     private var activity: Activity<RestActivityAttributes>?
     private let restNotifID = "rest-timer-done"
+    /// Wall-clock end time while running, so the countdown stays correct across
+    /// backgrounding (the in-process timer is suspended in the background).
+    private var endDate: Date?
 
     /// True whenever there's time on the clock, it's counting, or it just finished.
     var isActive: Bool { remaining > 0 || isRunning || didFinish }
@@ -31,6 +34,7 @@ final class RestTimer: ObservableObject {
         remaining = seconds
         isRunning = true
         didFinish = false
+        endDate = Date().addingTimeInterval(Double(seconds))
         schedule()
         startActivity()
         ensureNotificationAuth()
@@ -44,18 +48,30 @@ final class RestTimer: ObservableObject {
         if remaining > 0 {
             didFinish = false
             if !isRunning { isRunning = true; schedule() }
+            endDate = Date().addingTimeInterval(Double(remaining))
             if activity == nil { startActivity() } else { updateActivity() }
             scheduleRestNotification(after: remaining)
         }
+    }
+
+    /// Reconcile the displayed countdown with the real clock — call when the app
+    /// returns to the foreground, since the in-process timer pauses in background.
+    func syncToWallClock() {
+        guard isRunning, let endDate else { return }
+        let secs = Int(endDate.timeIntervalSinceNow.rounded(.up))
+        remaining = max(0, secs)
+        if remaining == 0 { finish() }
     }
 
     func togglePause() {
         if isRunning {
             timer?.invalidate()
             isRunning = false
+            endDate = nil
             cancelRestNotification()
         } else if remaining > 0 {
             isRunning = true
+            endDate = Date().addingTimeInterval(Double(remaining))
             schedule()
             scheduleRestNotification(after: remaining)
         }
@@ -69,15 +85,20 @@ final class RestTimer: ObservableObject {
         didFinish = false
         remaining = 0
         total = 0
+        endDate = nil
         cancelRestNotification()
         endActivity()
     }
 
     private func schedule() {
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+        // .common so the countdown keeps ticking while the user scrolls the
+        // workout list (default-mode timers pause during scroll tracking).
+        let t = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.tick() }
         }
+        RunLoop.main.add(t, forMode: .common)
+        timer = t
     }
 
     private func tick() {
@@ -91,6 +112,7 @@ final class RestTimer: ObservableObject {
         timer = nil
         isRunning = false
         didFinish = true
+        endDate = nil
         cancelRestNotification()   // foreground: our own alarm handles it
         RestAlert.fire()           // sound + haptic per user settings
         endActivity()
