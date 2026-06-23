@@ -100,6 +100,23 @@ enum CoachService {
         return parseLeverTitles(raw)
     }
 
+    /// Condense a full athlete briefing into a short, durable summary to save
+    /// context space. Returns nil offline (caller keeps the full briefing).
+    static func summarizeMemory(_ full: String) async -> String? {
+        guard activeEngine != .offline else { return nil }
+        let prompt = """
+        Condense this athlete briefing into a compact summary (max 100 words) capturing only \
+        the durable facts a coach needs: who they are, goal, experience level, available \
+        equipment, injuries/limitations, training patterns, notable strengths/weaknesses, and \
+        key recent lifts or PRs. Omit the current date/time. Use plain prose or short bullets.
+
+        \(full)
+        """
+        guard let s = await oneShot(prompt) else { return nil }
+        let cleaned = s.trimmingCharacters(in: .whitespacesAndNewlines)
+        return cleaned.isEmpty ? nil : cleaned
+    }
+
     /// Ask the coach for short conversational follow-up questions about the athlete's
     /// eating, given their intake answers. Returns nil offline or on parse failure.
     static func followUpQuestions(context: String) async -> [String]? {

@@ -5,6 +5,71 @@ import Foundation
 /// workout, recent workout summaries, recent PRs, and the current fuel decisions.
 enum CoachMemory {
 
+    static let condenseKey = "condenseMemory"
+    static let summaryKey = "coachMemorySummary"
+    private static let summaryBaseLenKey = "coachMemorySummaryBaseLen"
+
+    /// The memory to send the coach: the condensed version (dynamic header + a
+    /// short AI summary) when condensing is on and a summary exists, otherwise the
+    /// full briefing. Pass the already-built `full` to avoid rebuilding it.
+    static func condensed(
+        full: String,
+        profile: UserProfile?,
+        sessions: [WorkoutSession],
+        nutrition: [NutritionLog]
+    ) -> String {
+        guard UserDefaults.standard.bool(forKey: condenseKey),
+              let summary = UserDefaults.standard.string(forKey: summaryKey),
+              !summary.isEmpty else { return full }
+        return compact(profile: profile, sessions: sessions, nutrition: nutrition, summary: summary)
+    }
+
+    /// Generate and store a condensed AI summary of the full briefing. Returns
+    /// whether it succeeded. No-op result when no generative engine is available.
+    @discardableResult
+    static func refreshSummary(full: String) async -> Bool {
+        guard let summary = await CoachService.summarizeMemory(full) else { return false }
+        UserDefaults.standard.set(summary, forKey: summaryKey)
+        UserDefaults.standard.set(full.count, forKey: summaryBaseLenKey)
+        return true
+    }
+
+    /// Fire-and-forget refresh when condensing is on and the summary is missing or
+    /// the briefing has grown a lot since it was last summarized.
+    static func refreshSummaryIfNeeded(full: String) async {
+        guard UserDefaults.standard.bool(forKey: condenseKey) else { return }
+        let existing = UserDefaults.standard.string(forKey: summaryKey) ?? ""
+        let baseLen = UserDefaults.standard.integer(forKey: summaryBaseLenKey)
+        let grewALot = baseLen > 0 && full.count > Int(Double(baseLen) * 1.5)
+        guard existing.isEmpty || grewALot else { return }
+        await refreshSummary(full: full)
+    }
+
+    /// A small briefing: live/time-sensitive bits kept fresh, with the bulky
+    /// profile/history/exercise list replaced by the stored AI summary.
+    static func compact(
+        profile: UserProfile?,
+        sessions: [WorkoutSession],
+        nutrition: [NutritionLog],
+        summary: String
+    ) -> String {
+        var lines: [String] = ["# Athlete memory (condensed)", "## Now"]
+        let now = Date()
+        lines.append("- \(now.formatted(date: .complete, time: .shortened)) (\(partOfDay(now)))")
+        let finished = sessions.filter(\.isFinished).sorted { $0.date > $1.date }
+        if let last = finished.first {
+            lines.append("- Last workout: \(last.notes.isEmpty ? "Workout" : last.notes), \(sinceDescription(last.date)).")
+        }
+        let weekAgo = Calendar.current.date(byAdding: .day, value: -7, to: now) ?? now
+        lines.append("- Completed this week: \(finished.filter { $0.date >= weekAgo }.count)")
+        if let fuel = nutrition.sorted(by: { $0.date > $1.date }).first, !fuel.currentLever.isEmpty {
+            lines.append("- Current fuel lever: \(fuel.currentLever)")
+        }
+        lines.append("## Profile & history (summary)")
+        lines.append(summary)
+        return lines.joined(separator: "\n")
+    }
+
     static func build(
         profile: UserProfile?,
         sessions: [WorkoutSession],

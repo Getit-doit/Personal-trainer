@@ -21,6 +21,15 @@ struct EditProfileView: View {
     @AppStorage("coachVoiceRate") private var coachVoiceRate = 0.5
     @StateObject private var previewVoice = VoiceService()
 
+    // Coach memory condensing
+    @AppStorage("condenseMemory") private var condenseMemory = false
+    @State private var summarizing = false
+    @State private var memoryStatus = ""
+    @Query private var sessions: [WorkoutSession]
+    @Query private var nutrition: [NutritionLog]
+    @Query private var prs: [PersonalBest]
+    @Query private var exercises: [Exercise]
+
     private let equipmentOptions = [
         "Full gym", "Barbell", "Dumbbells", "Kettlebell",
         "Machines / cables", "Resistance bands", "Pull-up bar", "Bodyweight only"
@@ -131,7 +140,31 @@ struct EditProfileView: View {
                 } header: {
                     Text("Coach Voice")
                 } footer: {
-                    Text("Used when you talk to the coach during a workout.")
+                    Text("Used when you talk to the coach during a workout. For more natural voices, download them in iOS Settings → Accessibility → Spoken Content → Voices, then pick one here.")
+                }
+                .listRowBackground(Color.clear)
+
+                Section {
+                    Toggle("Condense coach memory", isOn: $condenseMemory)
+                        .tint(Theme.accent)
+                    Button {
+                        Task { await summarizeMemory() }
+                    } label: {
+                        HStack {
+                            Label("Summarize memory now", systemImage: "arrow.down.right.and.arrow.up.left")
+                            Spacer()
+                            if summarizing { ProgressView() }
+                            else if !memoryStatus.isEmpty {
+                                Text(memoryStatus).font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .tint(Theme.accent)
+                    .disabled(summarizing)
+                } header: {
+                    Text("Coach Memory")
+                } footer: {
+                    Text("The coach reads a briefing about you before replying. If it gets large, condensing replaces the detailed history with a short AI summary to save space (and speed up the on-device model). Needs the AI coach to be available.")
                 }
                 .listRowBackground(Color.clear)
 
@@ -168,6 +201,24 @@ struct EditProfileView: View {
                     }
                 }
             }
+        }
+    }
+
+    private func summarizeMemory() async {
+        guard CoachService.activeEngine != .offline else {
+            memoryStatus = "AI coach unavailable"; return
+        }
+        summarizing = true
+        defer { summarizing = false }
+        let full = CoachMemory.build(
+            profile: profile, sessions: sessions,
+            nutrition: nutrition, prs: prs, exercises: exercises
+        )
+        if await CoachMemory.refreshSummary(full: full) {
+            memoryStatus = "Condensed ✓"
+            condenseMemory = true   // turn it on once a summary exists
+        } else {
+            memoryStatus = "Couldn't summarize"
         }
     }
 

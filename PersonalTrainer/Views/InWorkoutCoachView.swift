@@ -141,9 +141,12 @@ struct InWorkoutCoachView: View {
         messages.append(CoachMessage(text: trimmed, isUser: true))
         isThinking = true
 
-        let base = CoachMemory.build(
+        let full = CoachMemory.build(
             profile: profiles.first, sessions: sessions,
             nutrition: nutrition, prs: prs, exercises: exercises
+        )
+        let base = CoachMemory.condensed(
+            full: full, profile: profiles.first, sessions: sessions, nutrition: nutrition
         )
         let memory = base + "\n\n## Right now (live workout)\n" + CoachMemory.liveSession(session)
 

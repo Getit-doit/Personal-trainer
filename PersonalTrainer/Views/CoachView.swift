@@ -153,13 +153,17 @@ struct CoachView: View {
 
         // Build a fresh memory briefing so the coach knows the current time, how
         // long it's been since the last workout, recent session summaries, and
-        // the latest fuel decisions before it answers.
-        let memory = CoachMemory.build(
+        // the latest fuel decisions before it answers. Uses a condensed version
+        // when the user has enabled memory condensing.
+        let full = CoachMemory.build(
             profile: profiles.first,
             sessions: sessions,
             nutrition: nutrition,
             prs: prs,
             exercises: exercises
+        )
+        let memory = CoachMemory.condensed(
+            full: full, profile: profiles.first, sessions: sessions, nutrition: nutrition
         )
 
         Task {
@@ -168,6 +172,7 @@ struct CoachView: View {
                 isThinking = false
                 messages.append(CoachMessage(text: reply, isUser: false))
             }
+            await CoachMemory.refreshSummaryIfNeeded(full: full)
         }
     }
 }
