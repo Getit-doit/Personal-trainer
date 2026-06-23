@@ -15,6 +15,12 @@ struct EditProfileView: View {
     @AppStorage("restAccessory") private var restAccessory = 90
     @AppStorage("autoStartRest") private var autoStartRest = true
 
+    // Coach voice (spoken replies during a workout)
+    @AppStorage("coachSpeakReplies") private var coachSpeakReplies = true
+    @AppStorage("coachVoiceID") private var coachVoiceID = ""
+    @AppStorage("coachVoiceRate") private var coachVoiceRate = 0.5
+    @StateObject private var previewVoice = VoiceService()
+
     private let equipmentOptions = [
         "Full gym", "Barbell", "Dumbbells", "Kettlebell",
         "Machines / cables", "Resistance bands", "Pull-up bar", "Bodyweight only"
@@ -98,6 +104,34 @@ struct EditProfileView: View {
                     Text("Rest Timer")
                 } footer: {
                     Text("These set the auto-start rest and the preset chips during a workout.")
+                }
+                .listRowBackground(Color.clear)
+
+                Section {
+                    Toggle("Read replies aloud", isOn: $coachSpeakReplies)
+                        .tint(Theme.accent)
+                    Picker("Voice", selection: $coachVoiceID) {
+                        Text("Default").tag("")
+                        ForEach(VoiceService.voiceOptions(), id: \.id) { v in
+                            Text(v.name).tag(v.id)
+                        }
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Speed").font(.subheadline)
+                        Slider(value: $coachVoiceRate, in: 0.35...0.6)
+                            .tint(Theme.accent)
+                    }
+                    Button {
+                        previewVoice.speakReplies = true
+                        previewVoice.speak("Nice work. Two reps in the tank — add five pounds next set.")
+                    } label: {
+                        Label("Preview voice", systemImage: "speaker.wave.2.fill")
+                    }
+                    .tint(Theme.accent)
+                } header: {
+                    Text("Coach Voice")
+                } footer: {
+                    Text("Used when you talk to the coach during a workout.")
                 }
                 .listRowBackground(Color.clear)
 

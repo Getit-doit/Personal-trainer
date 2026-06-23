@@ -22,9 +22,26 @@ final class VoiceService: NSObject, ObservableObject {
     private let audioEngine = AVAudioEngine()
     private let synthesizer = AVSpeechSynthesizer()
 
+    // UserDefaults keys shared with the settings UI.
+    static let voiceIDKey = "coachVoiceID"
+    static let voiceRateKey = "coachVoiceRate"
+    static let speakRepliesKey = "coachSpeakReplies"
+
     override init() {
         super.init()
+        speakReplies = (UserDefaults.standard.object(forKey: Self.speakRepliesKey) as? Bool) ?? true
         synthesizer.delegate = self
+    }
+
+    /// Voices available for spoken replies, preferring the device language.
+    /// Returned as (identifier, display name) so callers don't need AVFoundation.
+    static func voiceOptions() -> [(id: String, name: String)] {
+        let langPrefix = String((Locale.preferredLanguages.first ?? "en").prefix(2)).lowercased()
+        let all = AVSpeechSynthesisVoice.speechVoices()
+        let matched = all.filter { $0.language.lowercased().hasPrefix(langPrefix) }
+        return (matched.isEmpty ? all : matched)
+            .sorted { $0.name < $1.name }
+            .map { (id: $0.identifier, name: "\($0.name) · \($0.language)") }
     }
 
     // MARK: Authorization
@@ -117,7 +134,16 @@ final class VoiceService: NSObject, ObservableObject {
         try? AVAudioSession.sharedInstance().setCategory(.playback, options: [.duckOthers])
         try? AVAudioSession.sharedInstance().setActive(true)
         let utterance = AVSpeechUtterance(string: text)
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        // Apply the user's chosen voice + speed (falls back to system defaults).
+        if let id = UserDefaults.standard.string(forKey: Self.voiceIDKey), !id.isEmpty,
+           let chosen = AVSpeechSynthesisVoice(identifier: id) {
+            utterance.voice = chosen
+        }
+        if let rate = UserDefaults.standard.object(forKey: Self.voiceRateKey) as? Double {
+            utterance.rate = Float(rate)
+        } else {
+            utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        }
         synthesizer.speak(utterance)
     }
 
