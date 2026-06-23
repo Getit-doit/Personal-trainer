@@ -210,7 +210,10 @@ final class NotificationCoach: NSObject, ObservableObject, UNUserNotificationCen
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
-        [.banner, .sound]
+        // The rest timer plays its own in-app chime when foregrounded — don't
+        // double up with the notification.
+        if notification.request.content.userInfo["kind"] as? String == "rest" { return [] }
+        return [.banner, .sound]
     }
 
     nonisolated func userNotificationCenter(

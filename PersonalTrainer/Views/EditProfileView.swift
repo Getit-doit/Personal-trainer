@@ -15,6 +15,12 @@ struct EditProfileView: View {
     @AppStorage("restAccessory") private var restAccessory = 90
     @AppStorage("autoStartRest") private var autoStartRest = true
 
+    // Rest alarm
+    @AppStorage("restSoundOn") private var restSoundOn = true
+    @AppStorage("restHapticOn") private var restHapticOn = true
+    @AppStorage("restInsistent") private var restInsistent = false
+    @AppStorage("restSoundID") private var restSoundID = 1057
+
     // Coach voice (spoken replies during a workout)
     @AppStorage("coachSpeakReplies") private var coachSpeakReplies = true
     @AppStorage("coachVoiceID") private var coachVoiceID = ""
@@ -113,6 +119,30 @@ struct EditProfileView: View {
                     Text("Rest Timer")
                 } footer: {
                     Text("These set the auto-start rest and the preset chips during a workout.")
+                }
+                .listRowBackground(Color.clear)
+
+                Section {
+                    Toggle("Sound", isOn: $restSoundOn).tint(Theme.accent)
+                    Toggle("Vibrate", isOn: $restHapticOn).tint(Theme.accent)
+                    Toggle("Insistent (repeat in a noisy gym)", isOn: $restInsistent).tint(Theme.accent)
+                    Picker("Alarm sound", selection: $restSoundID) {
+                        ForEach(RestAlert.sounds, id: \.id) { s in
+                            Text(s.name).tag(s.id)
+                        }
+                    }
+                    .disabled(!restSoundOn)
+                    Button {
+                        RestAlert.preview(soundID: restSoundID)
+                    } label: {
+                        Label("Preview alarm", systemImage: "bell.fill")
+                    }
+                    .tint(Theme.accent)
+                    .disabled(!restSoundOn)
+                } header: {
+                    Text("Rest Alarm")
+                } footer: {
+                    Text("The alarm also fires as a notification when the app is in the background or your screen is locked.")
                 }
                 .listRowBackground(Color.clear)
 

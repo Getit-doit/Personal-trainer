@@ -1,22 +1,28 @@
 import SwiftUI
 import AudioToolbox
 import ActivityKit
+import UserNotifications
 
-/// A simple countdown rest timer with pause/resume, ±time, and a finish chime.
+/// A simple countdown rest timer with pause/resume, ±time, and a finish alarm.
 /// Auto-started when a set is completed; also drives a Live Activity on the lock
-/// screen and Dynamic Island via ActivityKit.
+/// screen and Dynamic Island via ActivityKit, and schedules a local notification
+/// so the alarm fires even when the app is backgrounded or the screen is locked.
 @MainActor
 final class RestTimer: ObservableObject {
     @Published private(set) var remaining = 0
     @Published private(set) var total = 0
     @Published private(set) var isRunning = false
+    /// True briefly after the timer hits 0, so the bar can offer "+15s" if the
+    /// rest felt too short.
+    @Published private(set) var didFinish = false
 
     private var timer: Timer?
     private var exerciseName = ""
     private var activity: Activity<RestActivityAttributes>?
+    private let restNotifID = "rest-timer-done"
 
-    /// True whenever there's time on the clock or it's counting.
-    var isActive: Bool { remaining > 0 || isRunning }
+    /// True whenever there's time on the clock, it's counting, or it just finished.
+    var isActive: Bool { remaining > 0 || isRunning || didFinish }
 
     func start(seconds: Int, exerciseName: String = "") {
         guard seconds > 0 else { return }
@@ -24,28 +30,34 @@ final class RestTimer: ObservableObject {
         total = seconds
         remaining = seconds
         isRunning = true
+        didFinish = false
         schedule()
         startActivity()
+        ensureNotificationAuth()
+        scheduleRestNotification(after: seconds)
     }
 
-    /// Adjust the running clock (e.g. +15 / -15). Restarts ticking if needed.
+    /// Adjust the running clock (e.g. +15 / -15), or extend a just-finished rest.
     func addTime(_ delta: Int) {
         remaining = max(0, remaining + delta)
         total = max(total, remaining)
-        if remaining > 0 && !isRunning {
-            isRunning = true
-            schedule()
+        if remaining > 0 {
+            didFinish = false
+            if !isRunning { isRunning = true; schedule() }
+            if activity == nil { startActivity() } else { updateActivity() }
+            scheduleRestNotification(after: remaining)
         }
-        updateActivity()
     }
 
     func togglePause() {
         if isRunning {
             timer?.invalidate()
             isRunning = false
+            cancelRestNotification()
         } else if remaining > 0 {
             isRunning = true
             schedule()
+            scheduleRestNotification(after: remaining)
         }
         updateActivity()
     }
@@ -54,8 +66,10 @@ final class RestTimer: ObservableObject {
         timer?.invalidate()
         timer = nil
         isRunning = false
+        didFinish = false
         remaining = 0
         total = 0
+        cancelRestNotification()
         endActivity()
     }
 
@@ -76,9 +90,40 @@ final class RestTimer: ObservableObject {
         timer?.invalidate()
         timer = nil
         isRunning = false
-        AudioServicesPlaySystemSound(1057)                          // light alert tone
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        didFinish = true
+        cancelRestNotification()   // foreground: our own alarm handles it
+        RestAlert.fire()           // sound + haptic per user settings
         endActivity()
+    }
+
+    // MARK: - Background alarm (local notification)
+
+    private func ensureNotificationAuth() {
+        let center = UNUserNotificationCenter.current()
+        center.getNotificationSettings { settings in
+            if settings.authorizationStatus == .notDetermined {
+                center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
+            }
+        }
+    }
+
+    private func scheduleRestNotification(after seconds: Int) {
+        guard seconds > 0 else { return }
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: [restNotifID])
+        let content = UNMutableNotificationContent()
+        content.title = "Rest's up"
+        content.body = exerciseName.isEmpty ? "Time for your next set." : "Back to \(exerciseName)."
+        content.userInfo = ["kind": "rest"]
+        if (UserDefaults.standard.object(forKey: "restSoundOn") as? Bool) ?? true {
+            content.sound = .default
+        }
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: Double(seconds), repeats: false)
+        center.add(UNNotificationRequest(identifier: restNotifID, content: content, trigger: trigger))
+    }
+
+    private func cancelRestNotification() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [restNotifID])
     }
 
     var label: String {
@@ -127,5 +172,39 @@ final class RestTimer: ObservableObject {
             await activity.end(ActivityContent(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
         }
         self.activity = nil
+    }
+}
+
+/// The in-app rest-finish alarm: plays the chosen chime + haptic per the user's
+/// settings, optionally repeating (insistent) for a noisy gym. Used by the timer
+/// and by the settings preview.
+enum RestAlert {
+    /// Selectable chime sounds (system sound IDs). Preview lets users pick by ear.
+    static let sounds: [(id: Int, name: String)] = [
+        (1057, "Chime"),
+        (1005, "Alert"),
+        (1013, "Tock"),
+        (1322, "Bloom")
+    ]
+
+    static func fire() {
+        let d = UserDefaults.standard
+        if (d.object(forKey: "restSoundOn") as? Bool) ?? true {
+            let id = SystemSoundID(UInt32((d.object(forKey: "restSoundID") as? Int) ?? 1057))
+            let repeats = d.bool(forKey: "restInsistent") ? 3 : 1
+            for i in 0..<repeats {
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.55) {
+                    AudioServicesPlaySystemSound(id)
+                }
+            }
+        }
+        if (d.object(forKey: "restHapticOn") as? Bool) ?? true {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        }
+    }
+
+    /// Play a single sound for the settings preview.
+    static func preview(soundID: Int) {
+        AudioServicesPlaySystemSound(SystemSoundID(UInt32(soundID)))
     }
 }
