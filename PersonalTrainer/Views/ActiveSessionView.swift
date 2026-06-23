@@ -7,6 +7,7 @@ struct ActiveSessionView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var health: HealthService
+    @EnvironmentObject private var router: AppRouter
     @Bindable var session: WorkoutSession
     @Query private var existingPRs: [PersonalBest]
 
@@ -76,7 +77,8 @@ struct ActiveSessionView: View {
                 onLog: {
                     showLogConfirm = false
                     finish()
-                    dismiss()   // back to Home
+                    router.tab = .today   // always land on Today
+                    dismiss()             // pop the workout
                 }
             )
         }
