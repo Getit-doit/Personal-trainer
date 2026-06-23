@@ -117,6 +117,9 @@ struct ExercisePickerView: View {
                         Text(exercise.equipment.name.uppercased())
                         Text("· \(exercise.difficulty.rawValue.uppercased())")
                             .foregroundStyle(difficultyColor(exercise.difficulty))
+                        if exercise.isTimed {
+                            Text("· TIMED").foregroundStyle(Theme.accent)
+                        }
                         if exercise.isPriorityProgression {
                             Text("· PRIORITY").foregroundStyle(Theme.accent)
                         }

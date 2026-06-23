@@ -10,6 +10,9 @@ struct ExerciseSeed {
     var sets: Int = 3
     var reps: Int = 10
     var increment: Double = 5
+    /// Time-based move: sets track a duration. `seconds` is the default length.
+    var timed: Bool = false
+    var seconds: Int = 0
 }
 
 /// One exercise slot inside a starter template.
@@ -96,7 +99,7 @@ enum TrainingContent {
         .init(name: "Bulgarian Split Squat", type: .compound, muscleGroup: "Legs", equipment: .dumbbell, sets: 3, reps: 10),
         .init(name: "Dumbbell Step-Up", type: .compound, muscleGroup: "Legs", equipment: .dumbbell, sets: 3, reps: 10),
         .init(name: "Dumbbell Thruster", type: .compound, muscleGroup: "Legs", equipment: .dumbbell, sets: 3, reps: 10),
-        .init(name: "Farmer's Carry", type: .accessory, muscleGroup: "Core", equipment: .dumbbell, sets: 3, reps: 1),
+        .init(name: "Farmer's Carry", type: .accessory, muscleGroup: "Core", equipment: .dumbbell, sets: 3, reps: 1, timed: true, seconds: 40),
 
         // MARK: Kettlebell
         .init(name: "Kettlebell Swing", type: .compound, muscleGroup: "Hinge", equipment: .kettlebell, sets: 4, reps: 15),
@@ -106,7 +109,7 @@ enum TrainingContent {
         .init(name: "Kettlebell Front Rack Squat", type: .compound, muscleGroup: "Legs", equipment: .kettlebell, sets: 3, reps: 10),
         .init(name: "Kettlebell Reverse Lunge", type: .compound, muscleGroup: "Legs", equipment: .kettlebell, sets: 3, reps: 10),
         .init(name: "Kettlebell Clean & Press", type: .compound, muscleGroup: "Shoulders", equipment: .kettlebell, sets: 3, reps: 6),
-        .init(name: "Kettlebell Carry", type: .accessory, muscleGroup: "Core", equipment: .kettlebell, sets: 3, reps: 1),
+        .init(name: "Kettlebell Carry", type: .accessory, muscleGroup: "Core", equipment: .kettlebell, sets: 3, reps: 1, timed: true, seconds: 40),
         .init(name: "Turkish Get-Up", type: .compound, muscleGroup: "Core", equipment: .kettlebell, sets: 3, reps: 3),
 
         // MARK: Cable
@@ -156,12 +159,15 @@ enum TrainingContent {
         .init(name: "Jump Squat", type: .accessory, muscleGroup: "Legs", equipment: .bodyweight, sets: 3, reps: 12),
         .init(name: "Glute Bridge", type: .accessory, muscleGroup: "Hinge", equipment: .bodyweight, sets: 3, reps: 15),
         .init(name: "Nordic Hamstring Curl", type: .compound, muscleGroup: "Hinge", equipment: .bodyweight, sets: 3, reps: 6),
-        .init(name: "Plank", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 1),
-        .init(name: "Side Plank", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 1),
+        .init(name: "Plank", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 1, timed: true, seconds: 45),
+        .init(name: "Side Plank", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 1, timed: true, seconds: 30),
+        .init(name: "Hollow Hold", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 1, timed: true, seconds: 30),
+        .init(name: "Wall Sit", type: .accessory, muscleGroup: "Legs", equipment: .bodyweight, sets: 3, reps: 1, timed: true, seconds: 45),
+        .init(name: "Dead Hang", type: .accessory, muscleGroup: "Back", equipment: .bodyweight, sets: 3, reps: 1, timed: true, seconds: 30),
         .init(name: "Hanging Leg Raise", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 12),
         .init(name: "Russian Twist", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 20),
         .init(name: "Bicycle Crunch", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 20),
-        .init(name: "Mountain Climber", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 20),
+        .init(name: "Mountain Climber", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 20, timed: true, seconds: 30),
         .init(name: "Dead Bug", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 12),
         .init(name: "Bird Dog", type: .accessory, muscleGroup: "Core", equipment: .bodyweight, sets: 3, reps: 12),
         .init(name: "Burpee", type: .compound, muscleGroup: "Cardio", equipment: .bodyweight, sets: 3, reps: 12),
@@ -289,6 +295,14 @@ enum TrainingContent {
             exercises: [
                 .init(name: "Incline Walk", sets: 1, reps: 1)
             ]),
+        WorkoutTemplate(program: "Conditioning", level: "Beginner",
+            title: "Timed Core Circuit", subtitle: "Holds — tap ▶ on each set", minutes: 15,
+            exercises: [
+                .init(name: "Plank", sets: 3, reps: 1),
+                .init(name: "Side Plank", sets: 3, reps: 1),
+                .init(name: "Hollow Hold", sets: 3, reps: 1),
+                .init(name: "Wall Sit", sets: 3, reps: 1)
+            ]),
 
         // MARK: Express (30 min) — short, compound-focused
         WorkoutTemplate(program: "Express (30 min)", level: "Beginner",
@@ -348,7 +362,7 @@ enum TrainingContent {
         "Kettlebell Romanian Deadlift", "Kettlebell Front Rack Squat",
         "Kettlebell Reverse Lunge", "Hack Squat", "Smith Machine Squat",
         "Pull-Up", "Chin-Up", "Dip", "Inverted Row", "Pike Push-Up",
-        "Diamond Push-Up", "Hanging Leg Raise", "Jump Squat", "Burpee"
+        "Diamond Push-Up", "Hanging Leg Raise", "Jump Squat", "Burpee", "Hollow Hold"
     ]
 
     /// The difficulty tier for a catalog exercise (defaults to beginner).

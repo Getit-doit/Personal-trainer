@@ -20,6 +20,8 @@ enum SeedData {
             let difficulty = TrainingContent.difficulty(for: seed.name)
             if let existing = existingByName[seed.name] {
                 if existing.difficulty != difficulty { existing.difficulty = difficulty }   // backfill tag on prior installs
+                if existing.isTimed != seed.timed { existing.isTimed = seed.timed }
+                if existing.targetSeconds != seed.seconds { existing.targetSeconds = seed.seconds }
             } else {
                 context.insert(
                     Exercise(
@@ -28,6 +30,8 @@ enum SeedData {
                         muscleGroup: seed.muscleGroup,
                         equipment: seed.equipment,
                         difficulty: difficulty,
+                        isTimed: seed.timed,
+                        targetSeconds: seed.seconds,
                         isPriorityProgression: seed.priority,
                         targetSets: seed.sets,
                         targetReps: seed.reps,

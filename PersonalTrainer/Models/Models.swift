@@ -78,6 +78,10 @@ final class Exercise {
     var muscleGroup: String
     var equipmentRaw: String = Equipment.barbell.rawValue
     var difficultyRaw: String = Difficulty.beginner.rawValue
+    /// Time-based move (planks, carries, intervals) — sets track a duration
+    /// instead of reps. `targetSeconds` is the default hold/interval length.
+    var isTimed: Bool = false
+    var targetSeconds: Int = 0
     var isPriorityProgression: Bool
     var targetSets: Int
     var targetReps: Int
@@ -105,6 +109,8 @@ final class Exercise {
         muscleGroup: String,
         equipment: Equipment = .barbell,
         difficulty: Difficulty = .beginner,
+        isTimed: Bool = false,
+        targetSeconds: Int = 0,
         isPriorityProgression: Bool = false,
         targetSets: Int = 3,
         targetReps: Int = 8,
@@ -115,6 +121,8 @@ final class Exercise {
         self.muscleGroup = muscleGroup
         self.equipmentRaw = equipment.rawValue
         self.difficultyRaw = difficulty.rawValue
+        self.isTimed = isTimed
+        self.targetSeconds = targetSeconds
         self.isPriorityProgression = isPriorityProgression
         self.targetSets = targetSets
         self.targetReps = targetReps
@@ -177,6 +185,8 @@ final class LoggedExercise {
     var typeRaw: String
     var muscleGroup: String
     var equipmentRaw: String = Equipment.barbell.rawValue
+    /// Snapshot of whether this is a time-based move (sets track a duration).
+    var isTimed: Bool = false
     var order: Int
     /// Exercises sharing a superset id are performed back-to-back with no rest
     /// between them; rest is taken only after the last exercise in the group.
@@ -190,11 +200,12 @@ final class LoggedExercise {
     var type: ExerciseType { ExerciseType(rawValue: typeRaw) ?? .accessory }
     var equipment: Equipment { Equipment(rawValue: equipmentRaw) ?? .barbell }
 
-    init(name: String, type: ExerciseType, muscleGroup: String, equipment: Equipment = .barbell, order: Int = 0) {
+    init(name: String, type: ExerciseType, muscleGroup: String, equipment: Equipment = .barbell, isTimed: Bool = false, order: Int = 0) {
         self.name = name
         self.typeRaw = type.rawValue
         self.muscleGroup = muscleGroup
         self.equipmentRaw = equipment.rawValue
+        self.isTimed = isTimed
         self.order = order
         self.supersetID = nil
         self.sets = []
@@ -216,6 +227,8 @@ final class SetLog {
     var isCompleted: Bool
     /// Part of a drop-set sequence — no rest is taken before the next drop.
     var isDropSet: Bool = false
+    /// Duration in seconds for a timed set (plank, carry, interval); 0 = rep-based.
+    var durationSeconds: Int = 0
     var order: Int
     var exercise: LoggedExercise?
 
@@ -226,6 +239,7 @@ final class SetLog {
         repsInTank: Int = 2,
         isCompleted: Bool = false,
         isDropSet: Bool = false,
+        durationSeconds: Int = 0,
         order: Int = 0
     ) {
         self.weight = weight
@@ -234,6 +248,7 @@ final class SetLog {
         self.repsInTank = repsInTank
         self.isCompleted = isCompleted
         self.isDropSet = isDropSet
+        self.durationSeconds = durationSeconds
         self.order = order
     }
 

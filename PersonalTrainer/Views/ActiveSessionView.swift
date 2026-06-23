@@ -226,8 +226,10 @@ struct ActiveSessionView: View {
             ForEach(exercise.sortedSets) { set in
                 SetRow(
                     set: set,
+                    isTimed: exercise.isTimed,
                     onChange: { try? context.save() },
-                    onComplete: { handleSetCompleted(set, in: exercise) }
+                    onComplete: { handleSetCompleted(set, in: exercise) },
+                    onStartTimer: { rest.start(seconds: max(1, set.durationSeconds), exerciseName: exercise.name) }
                 )
             }
             .onDelete { offsets in
@@ -264,9 +266,15 @@ struct ActiveSessionView: View {
         }
     }
 
-    /// Per-exercise actions: link/unlink supersets.
+    /// Per-exercise actions: timed/reps mode + link/unlink supersets.
     private func supersetMenu(_ exercise: LoggedExercise) -> some View {
         Menu {
+            Button {
+                toggleTimed(exercise)
+            } label: {
+                Label(exercise.isTimed ? "Switch to reps" : "Switch to timed",
+                      systemImage: exercise.isTimed ? "number" : "timer")
+            }
             if exercise.supersetID == nil {
                 Button {
                     linkSupersetWithNext(exercise)
@@ -280,6 +288,16 @@ struct ActiveSessionView: View {
         } label: {
             Image(systemName: "ellipsis.circle").foregroundStyle(.secondary)
         }
+    }
+
+    /// Flip an exercise between rep-based and time-based sets (e.g. "3 min of lunges").
+    private func toggleTimed(_ exercise: LoggedExercise) {
+        exercise.isTimed.toggle()
+        if exercise.isTimed {
+            let fallback = (exercise.exercise?.targetSeconds ?? 0) > 0 ? (exercise.exercise?.targetSeconds ?? 45) : 45
+            for set in exercise.sets where set.durationSeconds == 0 { set.durationSeconds = fallback }
+        }
+        try? context.save()
     }
 
     private var addExerciseSection: some View {
@@ -412,11 +430,13 @@ struct ActiveSessionView: View {
 
     private func addSet(to exercise: LoggedExercise) {
         let last = exercise.sortedSets.last
+        let fallbackSeconds = (exercise.exercise?.targetSeconds ?? 0) > 0 ? (exercise.exercise?.targetSeconds ?? 45) : 45
         let set = SetLog(
             weight: last?.weight ?? 0,
             reps: last?.reps ?? exercise.exercise?.targetReps ?? 8,
             rpe: last?.rpe ?? 7,
             repsInTank: last?.repsInTank ?? 2,
+            durationSeconds: exercise.isTimed ? (last?.durationSeconds ?? fallbackSeconds) : 0,
             order: exercise.sets.count
         )
         set.exercise = exercise
@@ -460,45 +480,19 @@ struct WarmupRow: View {
     }
 }
 
-/// One editable set: completion, weight, reps, RPE, reps-in-tank.
+/// One editable set: completion, then either weight×reps (with RPE & reps-in-tank)
+/// or, for a timed move, a duration with a Start button to run the countdown.
 struct SetRow: View {
     @Bindable var set: SetLog
+    var isTimed: Bool = false
     var onChange: () -> Void
     var onComplete: () -> Void = {}
+    var onStartTimer: () -> Void = {}
     @State private var showPlates = false
 
     var body: some View {
         VStack(spacing: 8) {
-            HStack(spacing: 12) {
-                Button {
-                    set.isCompleted.toggle()
-                    onChange()
-                    if set.isCompleted { onComplete() }
-                } label: {
-                    Image(systemName: set.isCompleted ? "checkmark.circle.fill" : "circle")
-                        .foregroundStyle(set.isCompleted ? Theme.accent : .secondary)
-                }
-                .buttonStyle(.plain)
-
-                field(value: $set.weight, unit: "lb", width: 56, decimal: true)
-                Button { showPlates = true } label: {
-                    Image("eq_barbell").renderingMode(.template)
-                        .resizable().scaledToFit().frame(width: 26, height: 20)
-                        .foregroundStyle(Theme.accent)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Load plates")
-                Text("×").foregroundStyle(.secondary)
-                intField(value: $set.reps, unit: "reps", width: 40)
-                if set.isDropSet {
-                    Text("DROP")
-                        .font(Theme.mono(9, weight: .semibold)).tracking(0.5)
-                        .padding(.horizontal, 5).padding(.vertical, 1)
-                        .overlay(Rectangle().stroke(Theme.amber, lineWidth: 1))
-                        .foregroundStyle(Theme.amber)
-                }
-                Spacer()
-            }
+            if isTimed { timedRow } else { repsRow }
             HStack(spacing: 16) {
                 HStack(spacing: 4) {
                     Text("RPE").font(Theme.mono(9)).tracking(1).foregroundStyle(.secondary)
@@ -506,10 +500,12 @@ struct SetRow: View {
                         .font(Theme.mono(13))
                         .keyboardType(.decimalPad).frame(width: 36).multilineTextAlignment(.center)
                 }
-                HStack(spacing: 4) {
-                    Text("IN TANK").font(Theme.mono(9)).tracking(1).foregroundStyle(.secondary)
-                    Stepper("\(set.repsInTank)", value: $set.repsInTank, in: 0...6)
-                        .fixedSize()
+                if !isTimed {
+                    HStack(spacing: 4) {
+                        Text("IN TANK").font(Theme.mono(9)).tracking(1).foregroundStyle(.secondary)
+                        Stepper("\(set.repsInTank)", value: $set.repsInTank, in: 0...6)
+                            .fixedSize()
+                    }
                 }
                 Spacer()
             }
@@ -519,9 +515,69 @@ struct SetRow: View {
         .onChange(of: set.reps) { onChange() }
         .onChange(of: set.rpe) { onChange() }
         .onChange(of: set.repsInTank) { onChange() }
+        .onChange(of: set.durationSeconds) { onChange() }
         .sheet(isPresented: $showPlates) {
             PlateCalculatorView(weight: $set.weight, exerciseName: set.exercise?.name, onApply: onChange)
         }
+    }
+
+    private var completeButton: some View {
+        Button {
+            set.isCompleted.toggle()
+            onChange()
+            if set.isCompleted { onComplete() }
+        } label: {
+            Image(systemName: set.isCompleted ? "checkmark.circle.fill" : "circle")
+                .foregroundStyle(set.isCompleted ? Theme.accent : .secondary)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var repsRow: some View {
+        HStack(spacing: 12) {
+            completeButton
+            field(value: $set.weight, unit: "lb", width: 56, decimal: true)
+            Button { showPlates = true } label: {
+                Image("eq_barbell").renderingMode(.template)
+                    .resizable().scaledToFit().frame(width: 26, height: 20)
+                    .foregroundStyle(Theme.accent)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Load plates")
+            Text("×").foregroundStyle(.secondary)
+            intField(value: $set.reps, unit: "reps", width: 40)
+            if set.isDropSet {
+                Text("DROP")
+                    .font(Theme.mono(9, weight: .semibold)).tracking(0.5)
+                    .padding(.horizontal, 5).padding(.vertical, 1)
+                    .overlay(Rectangle().stroke(Theme.amber, lineWidth: 1))
+                    .foregroundStyle(Theme.amber)
+            }
+            Spacer()
+        }
+    }
+
+    private var timedRow: some View {
+        HStack(spacing: 12) {
+            completeButton
+            field(value: $set.weight, unit: "lb", width: 50, decimal: true)
+            Stepper(value: $set.durationSeconds, in: 5...3600, step: 5) {
+                Text(durationLabel(set.durationSeconds))
+                    .font(Theme.mono(15)).monospacedDigit()
+            }
+            .fixedSize()
+            Button { onStartTimer() } label: {
+                Image(systemName: "play.circle.fill")
+                    .font(.title2).foregroundStyle(Theme.accent)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Start timer")
+            Spacer()
+        }
+    }
+
+    private func durationLabel(_ seconds: Int) -> String {
+        seconds < 60 ? "\(seconds)s" : "\(seconds / 60):\(String(format: "%02d", seconds % 60))"
     }
 
     private func field(value: Binding<Double>, unit: String, width: CGFloat, decimal: Bool) -> some View {
