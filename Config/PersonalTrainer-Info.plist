@@ -24,6 +24,10 @@
 	<true/>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Used to start your workout playlist during a session.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Lets you talk to your AI coach hands-free during a workout.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Transcribes what you say so you can ask your coach questions during a workout.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Reads your sleep, body weight, and steps to inform recovery and progress.</string>
 	<key>NSHealthUpdateUsageDescription</key>

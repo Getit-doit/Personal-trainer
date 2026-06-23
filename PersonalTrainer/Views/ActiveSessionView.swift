@@ -23,6 +23,9 @@ struct ActiveSessionView: View {
     @State private var dropSetTarget: LoggedExercise?
     @State private var isSaving = false
 
+    // Talk to the coach mid-workout
+    @State private var showCoach = false
+
     // Rest timer settings (editable in Profile)
     @AppStorage("restCompound") private var restCompound = 180
     @AppStorage("restAccessory") private var restAccessory = 90
@@ -49,6 +52,17 @@ struct ActiveSessionView: View {
         .barLoadingOverlay(isSaving, label: "Saving to Health…")
         .navigationTitle(session.notes.isEmpty ? "Workout" : session.notes)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button { showCoach = true } label: {
+                    Image(systemName: "bubble.left.and.text.bubble.right.fill")
+                }
+                .tint(Theme.accent)
+            }
+        }
+        .sheet(isPresented: $showCoach) {
+            InWorkoutCoachView(session: session)
+        }
         .safeAreaInset(edge: .bottom) {
             if rest.isActive {
                 RestTimerBar(rest: rest)

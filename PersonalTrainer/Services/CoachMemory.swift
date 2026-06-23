@@ -119,6 +119,35 @@ enum CoachMemory {
 
     // MARK: - Helpers
 
+    /// A snapshot of the workout in progress, so the coach can answer in context
+    /// ("should I add weight?", "what's next?") during a live session.
+    static func liveSession(_ session: WorkoutSession) -> String {
+        var lines: [String] = []
+        lines.append(session.warmupDone
+            ? "- Warm-up: done"
+            : "- Warm-up: not done yet (set logging is gated until it is)")
+        let exs = session.sortedExercises
+        if exs.isEmpty {
+            lines.append("- No exercises added to this session yet.")
+        } else {
+            for ex in exs {
+                let done = ex.sets.filter(\.isCompleted)
+                var line = "- \(ex.name): \(done.count)/\(ex.sets.count) sets done"
+                if let last = done.max(by: { $0.order < $1.order }), last.weight > 0 {
+                    line += ", last \(last.weight.clean)×\(last.reps) @RPE\(last.rpe.clean)"
+                }
+                lines.append(line)
+            }
+            if let next = exs.first(where: { $0.sets.isEmpty || $0.sets.contains(where: { !$0.isCompleted }) }) {
+                lines.append("- Up next: \(next.name)")
+            }
+        }
+        if let cardio = session.cardio {
+            lines.append("- Cardio finisher planned: \(cardio.modality)")
+        }
+        return lines.joined(separator: "\n")
+    }
+
     private static func summary(of s: WorkoutSession) -> String {
         let date = s.date.formatted(date: .abbreviated, time: .omitted)
         let name = s.notes.isEmpty ? "Workout" : s.notes
