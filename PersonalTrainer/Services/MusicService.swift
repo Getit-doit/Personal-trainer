@@ -22,25 +22,31 @@ final class MusicService: ObservableObject {
     @Published var isPlaying = false
 
     private let player = MPMusicPlayerController.systemMusicPlayer
+    private var observers: [NSObjectProtocol] = []
 
     init() {
         authorized = MPMediaLibrary.authorizationStatus() == .authorized
         player.beginGeneratingPlaybackNotifications()
 
         let center = NotificationCenter.default
-        center.addObserver(
+        observers.append(center.addObserver(
             forName: .MPMusicPlayerControllerPlaybackStateDidChange,
             object: player, queue: .main
         ) { [weak self] _ in
             Task { @MainActor in self?.refresh() }
-        }
-        center.addObserver(
+        })
+        observers.append(center.addObserver(
             forName: .MPMusicPlayerControllerNowPlayingItemDidChange,
             object: player, queue: .main
         ) { [weak self] _ in
             Task { @MainActor in self?.refresh() }
-        }
+        })
         refresh()
+    }
+
+    deinit {
+        observers.forEach { NotificationCenter.default.removeObserver($0) }
+        player.endGeneratingPlaybackNotifications()
     }
 
     func requestAuthorization() async {

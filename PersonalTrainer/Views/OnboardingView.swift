@@ -41,6 +41,7 @@ struct OnboardingView: View {
                 trainingCard
                 equipmentCard
                 injuriesCard
+                permissionsCard
                 startButton
             }
             .padding()
@@ -169,6 +170,19 @@ struct OnboardingView: View {
                 Text("Tap all that apply — plans are built around what you have.")
                     .font(.caption).foregroundStyle(.secondary)
                 FlowChips(options: equipmentOptions, selection: $equipment)
+            }
+        }
+    }
+
+    // MARK: Permissions
+
+    private var permissionsCard: some View {
+        Card {
+            VStack(alignment: .leading, spacing: 12) {
+                SectionRule(title: "Permissions")
+                Text("Enable what you'd like to use — you can change these any time in Settings.")
+                    .font(.caption).foregroundStyle(.secondary)
+                PermissionsView()
             }
         }
     }

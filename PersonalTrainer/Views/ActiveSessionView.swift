@@ -27,6 +27,11 @@ struct ActiveSessionView: View {
     // Talk to the coach mid-workout
     @State private var showCoach = false
 
+    // Warm-up checklist (drives the gate) + finish/log confirmation
+    @State private var warmupChecked: Set<Int> = []
+    @State private var showLogConfirm = false
+    @Environment(\.dismiss) private var dismiss
+
     // Rest timer settings (editable in Profile)
     @AppStorage("restCompound") private var restCompound = 180
     @AppStorage("restAccessory") private var restAccessory = 90
@@ -63,6 +68,17 @@ struct ActiveSessionView: View {
         }
         .sheet(isPresented: $showCoach) {
             InWorkoutCoachView(session: session)
+        }
+        .sheet(isPresented: $showLogConfirm) {
+            LogWorkoutSheet(
+                session: session,
+                onEdit: { showLogConfirm = false },
+                onLog: {
+                    showLogConfirm = false
+                    finish()
+                    dismiss()   // back to Home
+                }
+            )
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { rest.syncToWallClock() }
@@ -198,23 +214,30 @@ struct ActiveSessionView: View {
                 Label("Warm-up complete", systemImage: "checkmark.seal.fill")
                     .foregroundStyle(Theme.accent)
             } else {
-                ForEach(TrainingContent.generalWarmup, id: \.self) { item in
-                    WarmupRow(text: item)
+                ForEach(Array(TrainingContent.generalWarmup.enumerated()), id: \.offset) { index, item in
+                    WarmupRow(text: item, isChecked: warmupChecked.contains(index)) {
+                        toggleWarmup(index)
+                    }
                 }
-                Button {
-                    session.warmupDone = true
-                    try? context.save()
-                } label: {
-                    Text("MARK WARM-UP DONE").blueprintPrimary()
-                }
-                .buttonStyle(.plain)
+                Text("Check off each item to unlock logging.")
+                    .font(.caption2).foregroundStyle(.secondary)
             }
         } header: {
             Label("Required Warm-up", systemImage: "figure.walk")
         } footer: {
             if !session.warmupDone {
-                Text("Logging is locked until the warm-up is done — it primes your joints and lifts. Don't skip it.")
+                Text("The warm-up primes your joints and lifts — don't skip it.")
             }
+        }
+    }
+
+    /// Check off a warm-up item; completing the whole list unlocks set logging.
+    private func toggleWarmup(_ index: Int) {
+        if warmupChecked.contains(index) { warmupChecked.remove(index) }
+        else { warmupChecked.insert(index) }
+        if warmupChecked.count == TrainingContent.generalWarmup.count {
+            session.warmupDone = true
+            try? context.save()
         }
     }
 
@@ -353,7 +376,7 @@ struct ActiveSessionView: View {
                 Text("\(session.totalVolume.clean) lb").font(Theme.mono(18))
             }
             Button {
-                finish()
+                showLogConfirm = true
             } label: {
                 Text(session.isFinished ? "FINISHED ✓" : "FINISH WORKOUT").blueprintPrimary()
             }
@@ -445,10 +468,12 @@ struct ActiveSessionView: View {
     }
 
     private func finish() {
+        rest.stop()                       // don't leave a rest timer / Live Activity running
         session.isFinished = true
         let prs = PRService.detectPRs(in: session, existing: existingPRs) { context.insert($0) }
         try? context.save()
         if !prs.isEmpty { newPRBanner = prs }
+        NotificationCoach.shared.evaluateRewards()   // grant achievements now
 
         // Mirror the session to Apple Health as a strength workout.
         let end = Date()
@@ -463,16 +488,89 @@ struct ActiveSessionView: View {
     }
 }
 
-/// A tappable warm-up checklist item.
-struct WarmupRow: View {
-    let text: String
-    @State private var done = false
+/// "Log workout?" confirmation with a summary of what was done, and Log / Edit.
+struct LogWorkoutSheet: View {
+    let session: WorkoutSession
+    var onEdit: () -> Void
+    var onLog: () -> Void
 
     var body: some View {
-        Button { done.toggle() } label: {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    TitleBlock(eyebrow: "Nice work", title: "Log workout?",
+                               caption: session.date.formatted(date: .abbreviated, time: .shortened))
+
+                    Card {
+                        VStack(alignment: .leading, spacing: 10) {
+                            SectionRule(title: session.notes.isEmpty ? "Summary" : session.notes,
+                                        trailing: "\(session.completedSetCount) SETS")
+                            ForEach(session.sortedExercises) { ex in
+                                let done = ex.sets.filter(\.isCompleted)
+                                if !done.isEmpty {
+                                    HStack(alignment: .firstTextBaseline) {
+                                        Text(ex.name).font(.subheadline)
+                                        Spacer()
+                                        Text(summary(for: ex, done: done))
+                                            .font(Theme.mono(11)).foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                            if session.completedSetCount == 0 {
+                                Text("No sets completed yet.").font(.caption).foregroundStyle(.secondary)
+                            }
+                            Divider().overlay(Theme.hairline)
+                            HStack {
+                                Text("TOTAL VOLUME").font(Theme.mono(10)).tracking(1.2).foregroundStyle(.secondary)
+                                Spacer()
+                                Text("\(session.totalVolume.clean) lb").font(Theme.mono(16))
+                            }
+                            if let cardio = session.cardio {
+                                HStack {
+                                    Text("CARDIO").font(Theme.mono(10)).tracking(1.2).foregroundStyle(.secondary)
+                                    Spacer()
+                                    Text("\(cardio.modality) · \(cardio.durationMinutes.clean) min").font(Theme.mono(11))
+                                }
+                            }
+                        }
+                    }
+
+                    Button { onLog() } label: { Text("LOG WORKOUT").blueprintPrimary() }
+                        .buttonStyle(.plain)
+                    Button { onEdit() } label: { Text("KEEP EDITING").blueprintSecondary() }
+                        .buttonStyle(.plain)
+                }
+                .padding()
+            }
+            .blueprintBackground()
+            .navigationTitle("").navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    private func summary(for ex: LoggedExercise, done: [SetLog]) -> String {
+        if ex.isTimed {
+            let secs = done.map(\.durationSeconds).max() ?? 0
+            let label = secs < 60 ? "\(secs)s" : "\(secs / 60):\(String(format: "%02d", secs % 60))"
+            return "\(done.count) × \(label)"
+        }
+        let topWeight = done.map(\.weight).max() ?? 0
+        let reps = done.first?.reps ?? 0
+        return topWeight > 0 ? "\(done.count) × \(reps) @ \(topWeight.clean)" : "\(done.count) × \(reps)"
+    }
+}
+
+/// A tappable warm-up checklist item; its checked state is owned by the session
+/// so completing the list drives the warm-up gate.
+struct WarmupRow: View {
+    let text: String
+    var isChecked: Bool
+    var toggle: () -> Void
+
+    var body: some View {
+        Button(action: toggle) {
             HStack {
-                Image(systemName: done ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(done ? Theme.accent : .secondary)
+                Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(isChecked ? Theme.accent : .secondary)
                 Text(text).foregroundStyle(.primary)
             }
         }

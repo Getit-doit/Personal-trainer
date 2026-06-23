@@ -5,22 +5,24 @@ import Foundation
 /// workout, recent workout summaries, recent PRs, and the current fuel decisions.
 enum CoachMemory {
 
-    static let condenseKey = "condenseMemory"
     static let summaryKey = "coachMemorySummary"
     private static let summaryBaseLenKey = "coachMemorySummaryBaseLen"
+    /// Only compress the briefing once it grows past this many characters
+    /// (~a few hundred tokens). Below it, the coach always gets the full memory.
+    private static let condenseThreshold = 2000
 
-    /// The memory to send the coach: the condensed version (dynamic header + a
-    /// short AI summary) when condensing is on and a summary exists, otherwise the
-    /// full briefing. Pass the already-built `full` to avoid rebuilding it.
+    /// The memory to send the coach: full fidelity until it gets large, then a
+    /// condensed version (dynamic header + a short AI summary) once a summary
+    /// exists. Pass the already-built `full` to avoid rebuilding it.
     static func condensed(
         full: String,
         profile: UserProfile?,
         sessions: [WorkoutSession],
         nutrition: [NutritionLog]
     ) -> String {
-        guard UserDefaults.standard.bool(forKey: condenseKey),
+        guard full.count > condenseThreshold,
               let summary = UserDefaults.standard.string(forKey: summaryKey),
-              !summary.isEmpty else { return full }
+              !summary.isEmpty else { return full }   // small enough → no compression
         return compact(profile: profile, sessions: sessions, nutrition: nutrition, summary: summary)
     }
 
@@ -34,13 +36,13 @@ enum CoachMemory {
         return true
     }
 
-    /// Fire-and-forget refresh when condensing is on and the summary is missing or
-    /// the briefing has grown a lot since it was last summarized.
+    /// Fire-and-forget: build/refresh the summary only once the briefing is large
+    /// enough to warrant compression (and the summary is missing or has gone stale).
     static func refreshSummaryIfNeeded(full: String) async {
-        guard UserDefaults.standard.bool(forKey: condenseKey) else { return }
+        guard full.count > condenseThreshold else { return }   // not needed yet
         let existing = UserDefaults.standard.string(forKey: summaryKey) ?? ""
         let baseLen = UserDefaults.standard.integer(forKey: summaryBaseLenKey)
-        let grewALot = baseLen > 0 && full.count > Int(Double(baseLen) * 1.5)
+        let grewALot = baseLen > 0 && full.count > Int(Double(baseLen) * 1.3)
         guard existing.isEmpty || grewALot else { return }
         await refreshSummary(full: full)
     }
