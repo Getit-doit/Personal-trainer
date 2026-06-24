@@ -1,91 +1,1698 @@
 [
-  { "id": "fat_loss", "title": "Losing fat", "keywords": ["lose", "fat", "weight", "cut", "cutting", "lean", "deficit", "diet", "slim", "shred"], "content": "Fat loss comes from a small, sustainable calorie deficit (~300-500 kcal/day) held over weeks. Keep protein high (~0.7-1 g per lb of bodyweight) and keep lifting heavy - that is what holds muscle while you lose fat. Add daily walking and 1-2 short conditioning sessions. Aim for ~0.5-1% of bodyweight per week; faster usually costs muscle." },
-  { "id": "muscle_gain", "title": "Building muscle", "keywords": ["muscle", "build", "bulk", "gain", "grow", "mass", "get bigger"], "content": "Build muscle by training each muscle ~2x/week, taking most sets within 1-3 reps of failure, and adding load or reps over time. About 10-20 hard sets per muscle per week is a productive range; 6-15 reps works well. Eat at maintenance or a slight surplus (~200-300 kcal) with ~0.7-1 g protein per lb. Sleep is when growth happens." },
-  { "id": "progressive_overload", "title": "Progressive overload", "keywords": ["progress", "overload", "heavier", "increase", "progression", "add weight"], "content": "Progressive overload means gradually doing more over time - more weight, reps, sets, or better control. Simple rule: when you clear all target reps on every set with 2+ reps in reserve, add the smallest jump next session. Miss reps twice and you hold or back off ~10%. It is the core driver of every result." },
-  { "id": "rpe_autoregulation", "title": "RPE, RIR and effort", "keywords": ["rpe", "rir", "reps in reserve", "reps in tank", "autoregulation", "effort", "proximity to failure"], "content": "RIR (reps in reserve) or RPE rates how close a set is to failure - RPE 8 is about 2 reps in reserve. Most productive lifting lives at RPE 7-9 / 0-3 RIR. Autoregulate: push harder on good days, keep effort moderate and cut a set when tired - you still progress without grinding every set to failure." },
-  { "id": "training_to_failure", "title": "Training to failure", "keywords": ["failure", "to failure", "grind", "all out", "muscular failure"], "content": "Training near failure drives growth, but going to absolute failure on every set adds a lot of fatigue for little extra benefit and slows recovery. Leave 0-3 reps in reserve on most sets and save true failure for the last set of an isolation move. Avoid failure on heavy barbell compounds for safety." },
-  { "id": "volume_frequency", "title": "Volume and frequency", "keywords": ["volume", "frequency", "sets per week", "how many sets", "how often", "twice a week"], "content": "Weekly hard sets per muscle drive growth - roughly 10-20 is productive, built up gradually. Spreading them across 2+ sessions per week beats cramming into one. More is not always better; recoverable volume you can keep progressing on wins." },
-  { "id": "tempo_form", "title": "Tempo and control", "keywords": ["tempo", "eccentric", "control", "slow reps", "range of motion", "negatives"], "content": "Control the eccentric (lowering) for ~2-3 seconds, pause briefly, then lift with intent through a full range of motion. Controlled reps build more muscle and protect joints versus bouncing weight. Full range generally beats partials for both strength and size." },
-  { "id": "periodization", "title": "Periodization and progression", "keywords": ["periodization", "block", "phase", "progress over time", "program design"], "content": "Progress in waves: push volume and load for a few weeks, then take an easier deload week (~60-70%) to recover and rebound stronger. Most lifters benefit from a deload every 4-8 weeks, or whenever performance and sleep dip for several sessions in a row." },
-  { "id": "strength_training", "title": "Strength training", "keywords": ["strength", "strong", "heavy", "powerlifting", "low reps", "max strength", "get stronger"], "content": "To get strong, train heavy compounds in low reps (about 3-6) with long rests (2-4 min) and gradually add weight. Strength is a skill - practice the big lifts (squat, hinge, press, row) often with crisp technique at RPE 7-9. Powerlifting (squat/bench/deadlift) is the classic strength approach. Eat enough protein and sleep well." },
-  { "id": "hypertrophy_style", "title": "Hypertrophy (size) training", "keywords": ["hypertrophy", "size", "bodybuilding", "pump", "muscle growth", "reps for size"], "content": "For size, use moderate loads in the 6-15 rep range, take sets close to failure, and accumulate ~10-20 hard sets per muscle weekly across 2+ sessions. Combine compounds for overload with isolations for detail, control the eccentric, and progress over time. Total hard volume near failure is the main lever." },
-  { "id": "hiit", "title": "HIIT and intervals", "keywords": ["hiit", "interval", "intervals", "sprints", "tabata", "conditioning", "metcon"], "content": "HIIT alternates short hard efforts with recovery - time-efficient for conditioning and calorie burn. 1-2 sessions a week is plenty; it is taxing, so do not let it crowd out strength work or recovery. Good options: bike sprints, rower intervals, hill sprints. Build an aerobic base first if you are new." },
-  { "id": "cardio_zone2", "title": "Zone 2 and aerobic base", "keywords": ["cardio", "zone 2", "zone2", "aerobic", "steady state", "base", "heart"], "content": "Zone 2 is easy, conversational-pace cardio that builds your aerobic base, heart health, and recovery - 2-4 sessions of 20-45 min weekly. Low-impact options (incline walk, bike, row) spare the joints. Pair a Zone 2 base with occasional harder intervals for well-rounded conditioning." },
-  { "id": "vo2max", "title": "VO2 max and conditioning", "keywords": ["vo2", "vo2max", "conditioning", "fitness level", "interval session"], "content": "VO2 max (peak aerobic capacity) is one of the strongest predictors of long-term health. Build it with mostly easy Zone 2 plus a weekly hard interval session - for example 4 rounds of 4 min hard / 3 min easy. Gains take weeks of consistency." },
-  { "id": "functional_training", "title": "Functional training", "keywords": ["functional", "movement pattern", "carryover", "real world", "athletic", "multi-joint"], "content": "Functional training emphasizes multi-joint, real-world movement patterns - squat, hinge, push, pull, carry, rotate - to build strength that transfers to daily life and sport. It is less about wobbly-surface tricks and more about getting genuinely strong in the patterns you actually use." },
-  { "id": "calisthenics", "title": "Calisthenics", "keywords": ["calisthenics", "bodyweight skill", "pull-up", "push-up", "dips", "muscle up", "progressions"], "content": "Calisthenics builds strength with bodyweight via progressions - incline to standard to decline push-ups, or negatives to assisted to full pull-ups. Overload by adding reps, slowing the tempo, or moving to harder variations. Excellent for relative strength, body control, and joint health, and it travels anywhere." },
-  { "id": "bodyweight_home", "title": "Home and minimal-equipment training", "keywords": ["home", "dumbbell", "dumbbells", "bands", "bodyweight", "no gym", "minimal", "kettlebell", "garage", "equipment"], "content": "You can build real strength with little equipment. Dumbbells: goblet squats, RDLs, lunges, presses, rows, curls cover everything. Bodyweight: push-ups, split squats, rows under a bar, planks. To progress without heavier weight, add reps, slow the tempo, shorten rest, or move to single-limb variations. Set your equipment in your profile so plans fit it." },
-  { "id": "resistance_bands", "title": "Resistance bands", "keywords": ["band", "bands", "resistance band", "tubing", "portable"], "content": "Bands are portable and give variable resistance (hardest where you are strongest). Great for travel, warm-ups, pull-aparts, and accessory work, and they build muscle if you take sets near failure. Anchor them safely and progress with thicker bands or more reps." },
-  { "id": "hit_brief", "title": "High-intensity, brief training", "keywords": ["high intensity", "body by science", "one set", "brief", "infrequent", "super slow", "minimal time"], "content": "Some approaches (e.g. Body by Science) use very brief, infrequent sessions - often one hard set per exercise taken to momentary failure with slow, controlled reps. It can build strength efficiently and suits busy schedules. Most evidence favors a bit more volume for maximum size, but minimal-time high-intensity training is a valid, sustainable option." },
-  { "id": "yoga_mobility_style", "title": "Yoga, Pilates and mobility work", "keywords": ["yoga", "pilates", "balance", "breathing", "stretch class", "flexibility class"], "content": "Yoga and Pilates build mobility, core control, balance, and stress relief, and pair well with lifting on easy days. They are great for movement quality but light on heavy loading - keep resistance training as your strength driver." },
-  { "id": "circuit_training", "title": "Circuits and supersets", "keywords": ["circuit", "circuits", "superset", "density", "full body circuit", "crossfit"], "content": "Circuits and supersets pair exercises back-to-back to save time and add a conditioning effect. Pair non-competing moves (a push with a pull, or upper with lower). Great when short on time; for maximum strength, rest fully between heavy sets instead. CrossFit-style training blends this with intensity - scale loads and keep technique clean." },
-  { "id": "goal_endurance", "title": "Building endurance", "keywords": ["endurance", "stamina", "run further", "cardio fitness", "aerobic goal", "marathon"], "content": "Build endurance with mostly easy Zone 2 volume plus one harder interval session weekly, raising total time by ~10% per week. Strength-train 2x/week to support joints and running economy. Fuel with enough carbs and recover - endurance is built by consistent, gradually rising volume, not by going hard every day." },
-  { "id": "goal_power_athletic", "title": "Power and athleticism", "keywords": ["power", "explosive", "athletic", "jump", "sprint", "plyometrics", "speed"], "content": "For power, train explosively when fresh: jumps, throws, short sprints, and fast-intent lifts (3-5 reps moved quickly) before your heavy work. Keep volume low and quality high with full rest. Build a strength base first - power is force applied fast." },
-  { "id": "goal_general_health", "title": "Training for general health", "keywords": ["general health", "guidelines", "minimum", "how much exercise", "overall fitness", "healthy"], "content": "A solid health baseline (WHO/ACSM-style): 150+ min/week of moderate cardio (or 75 vigorous), 2+ strength sessions hitting all major muscles, plus daily movement and some mobility. That mix covers heart health, strength, and longevity for most people." },
-  { "id": "toning_myth", "title": "Toning and getting lean", "keywords": ["tone", "toned", "toning", "lean look", "definition", "sculpt", "long lean muscle"], "content": "There is no separate toning - the toned look is just having some muscle and low enough body fat to see it. So lift to build and keep muscle, and eat in a modest deficit to drop fat. Light weights for endless reps will not do it; train with real resistance." },
-  { "id": "women_training", "title": "Training for women", "keywords": ["women", "woman", "female", "girl", "ladies", "bulky"], "content": "Training principles are the same for women and men - progressive overload, compounds, protein. Women often recover a bit faster between sets and tolerate higher reps and volume, and tend to be relatively stronger in the lower body. Lifting will not make you bulky (far lower testosterone); it builds strength, shape, and bone density." },
-  { "id": "men_training", "title": "Training for men", "keywords": ["men", "man", "male", "guys", "dudes"], "content": "Men generally have more muscle mass and a higher strength ceiling, but the training is the same: progressive overload, compounds, ~0.7-1 g/lb protein, and recovery. Common pitfall is ego-lifting - leaving reps in reserve with clean technique builds more than grinding sloppy maxes. Do not skip mobility and cardio." },
-  { "id": "menstrual_cycle", "title": "Training and the menstrual cycle", "keywords": ["menstrual", "cycle", "period", "pms", "luteal", "follicular", "hormones"], "content": "You can train through your whole cycle; how you feel varies individually. Many feel strongest in the follicular phase (after the period starts) and more fatigued premenstrually - autoregulate by RPE, keep moving lightly if cramping, and prioritize iron-rich foods, protein, and sleep. Track how you feel and adjust rather than following rigid rules." },
-  { "id": "pregnancy_training", "title": "Exercise during pregnancy", "keywords": ["pregnant", "pregnancy", "prenatal", "postpartum", "expecting"], "content": "If your doctor clears you, staying active in pregnancy is beneficial - keep strength and easy cardio at a comfortable effort, and stay cool and hydrated. Generally avoid heavy straining and breath-holding, fall or contact risks, and prolonged flat-on-your-back work later on. Always follow your OB or midwife - this is individual." },
-  { "id": "masters_over40", "title": "Training over 40 and beyond", "keywords": ["older", "over 40", "training over 40", "masters", "aging", "senior", "50s", "60s", "sarcopenia"], "content": "After ~40, strength training is essential to fight muscle and bone loss - lift 2-4x/week, emphasize compounds and a little power, and bump protein toward 1 g/lb. Warm up thoroughly, manage joints with full-range control, and respect recovery (it takes a touch longer). Consistency over decades is the win." },
-  { "id": "teens_youth", "title": "Training for teens", "keywords": ["teen", "teenager", "youth", "kid", "young", "adolescent"], "content": "Supervised resistance training is safe and good for teens - it does not stunt growth (a myth). Focus on technique, bodyweight and lighter loads, and a variety of movement and sport. Progress conservatively and prioritize sleep and food to fuel growth." },
-  { "id": "calories_tdee", "title": "Calories and energy balance", "keywords": ["calories", "tdee", "maintenance", "energy balance", "how many calories", "macros"], "content": "Bodyweight change tracks energy balance: eat under maintenance (TDEE) to lose fat, around it to maintain, slightly over to gain muscle. Estimate maintenance, then adjust by real-world results over 2-3 weeks. Protein and training decide whether the change is muscle or fat." },
-  { "id": "protein", "title": "Protein", "keywords": ["protein", "amino", "whey", "how much protein"], "content": "Protein is the priority macro: ~0.7-1 g per lb of bodyweight daily, spread over 3-4 meals of 30-50 g. It preserves muscle in a cut, builds it in a surplus, and is the most filling macro. Whole foods first (meat, eggs, dairy, fish, legumes); a shake is a convenient backup." },
-  { "id": "carbs", "title": "Carbohydrates", "keywords": ["carb", "carbs", "carbohydrate", "sugar", "energy", "fuel"], "content": "Carbs are your main training fuel and are not fattening on their own - total calories are. Favor mostly whole, fiber-rich sources (grains, fruit, potatoes, legumes) and put more around training for performance. Active people generally do well with moderate-to-higher carbs." },
-  { "id": "fats", "title": "Dietary fat", "keywords": ["dietary fat", "healthy fats", "fat grams", "hormones"], "content": "Dietary fat supports hormones and absorbs vitamins - keep it around 0.3-0.5 g per lb of bodyweight and do not go very low for long. Favor unsaturated sources (olive oil, nuts, fish, avocado) and include some omega-3s. Fat is calorie-dense, so portion it when cutting." },
-  { "id": "fiber", "title": "Fiber", "keywords": ["fiber", "fibre", "digestion", "gut", "fullness", "regularity"], "content": "Fiber (aim ~25-38 g/day) improves fullness, blood-sugar control, gut health, and regularity, which makes a deficit easier to hold. Get it from vegetables, fruit, legumes, and whole grains; increase it gradually with plenty of water." },
-  { "id": "micronutrients", "title": "Vitamins and minerals", "keywords": ["micronutrient", "minerals", "vegetables", "greens", "nutrient dense", "fruits and vegetables"], "content": "Cover micronutrients by eating a variety of colorful vegetables and fruit plus quality proteins and whole foods. Most needs are met through food; common gaps to watch are vitamin D, omega-3, iron (especially menstruating women), and calcium. Whole foods beat relying on pills." },
-  { "id": "meal_timing", "title": "Meal timing and fasting", "keywords": ["meal timing", "how often eat", "meal frequency", "nutrient timing", "fasting", "when to eat", "intermittent"], "content": "Total daily intake matters far more than timing. Eat in a pattern you can sustain (3-5 meals is common) and spread protein through the day for muscle. Meal timing and intermittent fasting are tools for adherence, not magic - pick whatever controls your hunger best." },
-  { "id": "pre_post_workout", "title": "Pre and post-workout nutrition", "keywords": ["pre workout meal", "post workout", "after workout", "before workout", "anabolic window", "recovery meal"], "content": "Have some protein and carbs within a few hours around training - that easily covers the so-called anabolic window. A pre-session meal fuels performance; a post-session meal aids recovery. If your daily protein and calories are on point, exact timing is a minor detail." },
-  { "id": "hydration", "title": "Hydration", "keywords": ["water", "hydration", "hydrate", "thirsty", "electrolytes", "drink"], "content": "Use pale-yellow urine as a simple gauge - often ~0.5-1 oz of water per lb of bodyweight daily, more when hot or sweating heavily. Add electrolytes (especially sodium) on long, sweaty sessions. Even mild dehydration saps strength and focus, so sip through training." },
-  { "id": "alcohol", "title": "Alcohol and training", "keywords": ["alcohol", "beer", "wine", "drinking", "hangover"], "content": "Alcohol disrupts sleep, blunts muscle protein synthesis and recovery, and adds easy calories - the more you drink, the bigger the hit. If you drink, keep it moderate, hydrate, and avoid it right after hard training or before sleep. Cutting back is a high-leverage nutrition lever." },
-  { "id": "eating_out", "title": "Eating out and fast food", "keywords": ["eating out", "restaurant", "delivery", "fast food", "travel food", "ordering in"], "content": "When eating out, anchor the plate with a lean protein and vegetables, watch liquid calories and added oils, and use portions or leftovers to manage intake. You do not need to be perfect - a protein-forward choice most of the time keeps you on track without stress." },
-  { "id": "satiety", "title": "Staying full in a deficit", "keywords": ["hungry", "hunger", "full", "satiety", "cravings", "appetite", "filling foods"], "content": "Fight hunger on a cut with high-protein and high-fiber foods, water-rich whole foods (vegetables, fruit, broth-based meals), and enough sleep (poor sleep spikes appetite). Keep most calories from filling, less-processed foods and leave room for a small treat to stay consistent." },
-  { "id": "nutrition_lever", "title": "One nutrition lever at a time", "keywords": ["nutrition", "eat", "eating", "lever", "habit", "food", "meal", "change diet"], "content": "Instead of overhauling everything, change one nutrition lever at a time and make it automatic before adding the next - a protein target, a daily water goal, or no liquid calories. Small habits you keep beat a strict plan you quit. Use the Fuel tab to set your current lever and track a streak." },
-  { "id": "diet_adherence", "title": "The best diet for you", "keywords": ["best diet", "which diet", "keto", "vegan", "paleo", "carnivore", "diet plan"], "content": "No single diet is magic - they work when they create a sustainable calorie deficit with enough protein. Keto, vegan, paleo, and the rest are just different routes there. Pick the eating style you enjoy and can stick to, hit protein and mostly whole foods, and consistency does the rest." },
-  { "id": "creatine", "title": "Creatine", "keywords": ["creatine", "monohydrate"], "content": "Creatine monohydrate is the most evidence-backed supplement for strength and muscle: 3-5 g daily, any time, every day (no need to load). It pulls a little water into muscle, so expect a small early scale bump - that is normal, not fat. Safe for long-term use; pair with training and adequate protein." },
-  { "id": "caffeine", "title": "Caffeine and pre-workout", "keywords": ["caffeine", "pre workout", "pre-workout", "coffee", "energy drink", "stimulant"], "content": "Caffeine (~3-6 mg/kg, 30-60 min before a session) reliably boosts strength, focus, and endurance. Avoid it within ~8-10 hours of bed so it does not wreck the sleep you recover on. Keep it a tool, not a crutch, and cycle off occasionally to keep it effective." },
-  { "id": "protein_powder", "title": "Protein powder", "keywords": ["protein powder", "whey", "casein", "shake", "plant protein", "isolate"], "content": "Protein powder is just convenient food - whey (fast, good post-workout), casein (slow), or plant blends all work. Use it to hit your daily protein when whole foods are inconvenient, not as a requirement. One to two scoops a day is plenty for most." },
-  { "id": "omega3", "title": "Omega-3 (fish oil)", "keywords": ["omega 3", "omega-3", "fish oil", "epa", "dha"], "content": "Omega-3s (EPA/DHA from fatty fish or fish oil) support heart, joint, and brain health and may aid recovery. If you rarely eat fatty fish, ~1-2 g combined EPA+DHA daily is reasonable. Food sources like salmon and sardines are ideal." },
-  { "id": "vitamin_d", "title": "Vitamin D", "keywords": ["vitamin d", "sunlight", "deficiency"], "content": "Vitamin D supports bone health, immunity, and muscle function, and many people are low - especially with little sun. If a test shows you are low, supplementing (often ~1000-2000 IU/day, or as advised) helps. Get levels checked rather than guessing high doses." },
-  { "id": "supplement_basics", "title": "Which supplements are worth it", "keywords": ["supplements", "worth it", "pills", "stack", "fat burner", "bcaa", "which supplements"], "content": "Most supplements are hype - food, training, and sleep do ~95% of the work. The few with solid support: creatine, caffeine, protein powder (for convenience), and vitamin D / omega-3 to fill gaps. Skip fat burners and BCAAs (redundant if protein is adequate). Spend on groceries before pills." },
-  { "id": "sleep", "title": "Sleep for training", "keywords": ["sleep", "tired", "insomnia", "fatigue", "recovery sleep"], "content": "Sleep is the highest-leverage recovery tool - aim for 7-9 hours. Protect a consistent wake time, get morning light, and cut caffeine 8-10 hours before bed. Under-slept? Autoregulate (keep top sets at RPE 7, drop a set rather than skip) and do not test maxes. Poor sleep mostly costs strength output and appetite control." },
-  { "id": "stress", "title": "Training under stress", "keywords": ["stress", "stressed", "overwhelmed", "cortisol", "anxious", "burnout"], "content": "High life stress eats into recovery, so on hard weeks leave a little in the tank (RPE 7-8), cut junk volume, and use easy Zone 2 or a short walk or sauna to down-regulate. A lighter session you actually do beats a perfect one you skip. Breathing drills and a wind-down routine help more than any supplement." },
-  { "id": "soreness_recovery", "title": "Soreness and recovery", "keywords": ["sore", "soreness", "doms", "recovery", "ache", "recover faster"], "content": "Soreness (DOMS) is normal after new or harder work and is not required for progress. Speed recovery with sleep, enough protein and calories, hydration, and light movement on off days. Do not confuse soreness with sharp joint pain - soreness fades, joint pain is a signal to back off." },
-  { "id": "deload", "title": "Deloads and fatigue", "keywords": ["deload", "stalled", "stuck", "plateau", "overreaching", "fatigued", "rest week"], "content": "If progress stalls, sleep tanks, or joints and motivation feel beat up, take a deload: one easier week at ~60-70% of normal volume or load. You usually return stronger. Most lifters benefit from a deload every 4-8 weeks." },
-  { "id": "active_recovery", "title": "Active recovery and rest days", "keywords": ["active recovery", "rest day", "off day", "light day", "recovery day"], "content": "On rest days, light movement (walking, easy cycling, mobility) boosts blood flow and recovery more than total inactivity. Keep it genuinely easy - the goal is to feel better, not to add load. Take at least 1-2 lower-stress days a week." },
-  { "id": "sauna_heat", "title": "Sauna and heat", "keywords": ["sauna", "heat", "steam room", "hot tub", "heat therapy"], "content": "Regular sauna use is relaxing and linked to cardiovascular benefits, and it can aid post-workout relaxation. Hydrate well and treat it as a recovery and wellness habit rather than a fat-loss tool (the scale drop is water). Build heat exposure gradually." },
-  { "id": "cold_plunge", "title": "Cold plunge and ice baths", "keywords": ["cold plunge", "ice bath", "cold", "cold therapy", "cryotherapy"], "content": "Cold exposure can reduce soreness and feels refreshing, useful after heavy training or on hot days. One caveat: cold plunging right after lifting may blunt muscle growth, so if size is the goal, separate it from your session by several hours or use it on cardio days." },
-  { "id": "foam_rolling", "title": "Foam rolling and massage tools", "keywords": ["foam roll", "foam rolling", "smr", "massage gun", "roller"], "content": "Foam rolling and massage guns can temporarily ease tightness and improve range of motion - handy in a warm-up. They are not fixing structural problems; for lasting mobility, train through a full range and address the actual restriction. Use them as a feel-good tool, not a cure-all." },
-  { "id": "stretching", "title": "Stretching", "keywords": ["stretch", "stretching", "static stretch", "dynamic stretch"], "content": "Use dynamic stretches in your warm-up; save longer static holds for after training or their own session (static stretching right before heavy lifting can briefly reduce power). Stretch where you are actually restricted, and remember full-range lifting is itself great flexibility work." },
-  { "id": "neat_steps", "title": "Daily movement (NEAT) and steps", "keywords": ["neat", "steps", "walking", "daily movement", "activity", "step count"], "content": "Non-exercise activity (steps, standing, chores) burns more daily calories than workouts for most people and is a powerful, low-stress fat-loss lever. A daily step target (e.g. 7-10k) plus short walks after meals adds up without taxing recovery." },
-  { "id": "overtraining", "title": "Overtraining and under-recovery", "keywords": ["overtraining", "overtrained", "burnt out", "run down", "not recovering"], "content": "True overtraining is rare; under-recovery is common. Warning signs: stalled or dropping performance, poor sleep, lingering soreness, low mood, elevated resting heart rate. Fix it by deloading, sleeping more, eating enough, and cutting junk volume - not by pushing harder." },
-  { "id": "knee_pain", "title": "Knee discomfort", "keywords": ["knee", "knees", "patella", "knee pain", "hurts", "hurt"], "content": "For cranky knees, keep training but adjust: control tempo, avoid sharp pain (mild discomfort that warms up is usually okay), and favor tolerated variations - box squats, leg press in a shorter range, split squats, plus hamstring and glute work to balance the joint. Build quad strength gradually; it is protective. See a professional for sharp or swelling pain." },
-  { "id": "shoulder_pain", "title": "Shoulder discomfort", "keywords": ["shoulder", "shoulders", "rotator", "cuff", "shoulder pain", "pressing"], "content": "For touchy shoulders, swap straight-bar pressing for neutral-grip dumbbell or landmine presses, keep elbows slightly tucked, and add face pulls and band pull-aparts for the rear delts and cuff. Do not push through pinching pain at lockout. Rebuild pressing volume gradually once it is calm." },
-  { "id": "back_pain", "title": "Lower-back discomfort", "keywords": ["back", "lower back", "lumbar", "back pain", "spine"], "content": "For a grumpy lower back, brace hard, keep a neutral spine, and pull from a height (rack pulls or blocks) if floor deadlifts aggravate it. Hip hinges, core work (planks, bird-dogs, side planks), and walking usually help. Pain down the leg, numbness, or sharp pain means get it checked before loading heavy." },
-  { "id": "ankle", "title": "Ankle care and impact", "keywords": ["ankle", "ankles", "calf", "impact", "dorsiflexion"], "content": "If an ankle flares easily, warm it thoroughly (circles, knee-to-wall dorsiflexion, banded work, calf raises) and keep cardio low-impact - incline walking over running. Add impact (incline, stairs, sprints) in small steps weeks apart. On a warm or swollen day, skip impact and stick to low-load work." },
-  { "id": "mobility", "title": "Mobility and flexibility", "keywords": ["mobility", "flexibility", "stiff", "tight", "range of motion"], "content": "Train mobility where you actually feel restricted rather than stretching randomly. Use dynamic drills before lifting and longer holds after or on rest days. Hips, ankles, and thoracic spine are the usual limiters for squats and presses - spend your minutes there, and lift through a full range." },
-  { "id": "injuries_general", "title": "Training around an injury", "keywords": ["injury", "injured", "pain", "hurt", "tweak", "rehab"], "content": "Work around a painful area rather than through it: pick pain-free ranges and exercises, reduce load, and keep training everything else. Mild discomfort that warms up is usually fine; sharp, worsening, or swelling pain means stop and get it assessed. Add the limitation to your profile so the coach programs around it." },
-  { "id": "beginner", "title": "Starting out", "keywords": ["beginner", "start", "new", "novice", "first time", "getting started"], "content": "As a beginner, consistency beats complexity. Run a full-body session 3x/week, warm up, lead with the big compounds, and log every set with RPE and reps-in-tank. Add a little weight whenever you clear all target reps with 2+ in reserve - beginners progress fast. Learn clean technique before chasing heavy loads." },
-  { "id": "consistency", "title": "Staying consistent", "keywords": ["consistent", "consistency", "motivation", "discipline", "skip", "skipping", "show up", "lazy"], "content": "Adherence is the real program. Make it easy to show up: schedule sessions, keep a minimum version (just the main lift) for busy days, and never miss twice in a row. Track streaks and let small wins compound. A B-grade plan you do for a year beats an A-plan you quit in a month." },
-  { "id": "core_abs", "title": "Core and abs", "keywords": ["core", "abs", "six pack", "plank", "stomach", "midsection"], "content": "Train the core to brace and resist motion: planks, side planks, dead bugs, bird-dogs, hanging leg raises, and loaded carries. Heavy squats and deadlifts already hammer it. Visible abs are mostly a body-fat outcome - built via a modest deficit, not endless crunches." },
-  { "id": "compound_form", "title": "The main compound lifts", "keywords": ["squat", "deadlift", "bench", "press", "row", "form", "technique", "compound", "hinge", "big lifts"], "content": "Build training around the big compounds: squat (knees and hips, controlled depth), hinge or deadlift (push hips back, flat back, brace), press (overhead or bench, full lockout), and row (pull to the torso). Lead each session with one or two while fresh, then add accessories. Film a set occasionally to check positions." },
-  { "id": "frequency_split", "title": "Frequency and splits", "keywords": ["split", "full body", "ppl", "upper lower", "how many days", "days per week", "training days", "schedule"], "content": "Match your split to your days: 3 days full-body; 4 days upper/lower; 5-6 days push/pull/legs or a body-part split. Hitting each muscle ~2x/week beats once. Pick the layout you will actually attend - total weekly hard sets matter more than the template." },
-  { "id": "time_efficient", "title": "Short on time", "keywords": ["busy", "quick", "short", "travel", "no time", "20 minutes", "express", "minimal time"], "content": "Short on time? Do the main lift plus one or two supersets and skip the fluff - 20-30 focused minutes maintains and builds. On the road, a dumbbell or bodyweight full-body circuit (squat, push, hinge, row, carry) covers the bases. Brief and consistent beats an ideal session you skip." },
-  { "id": "warmup", "title": "Warming up", "keywords": ["warmup", "warm up", "warm-up", "prep", "before lifting", "mobility drill"], "content": "A good warm-up takes ~8-10 min: a few minutes of easy cardio, dynamic mobility (leg swings, hip circles, band pull-aparts), then 1-2 light ramp-up sets of your first lift. It raises temperature, primes joints, and lets you lift more with less injury risk." },
-  { "id": "rest_periods", "title": "Rest between sets", "keywords": ["rest", "rest period", "rest time", "how long rest", "between sets", "rest interval"], "content": "Rest long enough to perform: ~2-3 min on heavy compounds, ~60-90 sec on accessories. Cutting rest short on big lifts costs reps and load. Short on time? Superset unrelated moves instead of rushing your main lifts." },
-  { "id": "longevity", "title": "Training for longevity", "keywords": ["longevity", "healthspan", "age", "aging", "long term", "live longer"], "content": "For a long, capable life, train what declines with age: strength (lift 2-4x/week), aerobic base (Zone 2) plus some VO2-max work, power, balance, and muscle mass. Keep most lifting at joint-friendly intensities you can sustain for years, and protect sleep and protein. Decades of consistency beat any short intense phase." },
-  { "id": "app_overview", "title": "How the app works", "keywords": ["app", "how does", "overview", "features", "use this app", "getting started", "tabs", "what can"], "content": "This app has five tabs: Today (recovery check-in, what is recommended, progression flags, your nutrition lever), Train (start a workout from a routine or build your own), Progress (charts, PRs, and your Rewards), Fuel (your nutrition lever and habit check-ins), and Coach (me). It personalizes everything to the profile you set in onboarding - goal, experience, equipment, and any injuries." },
-  { "id": "lever_checkins", "title": "Nutrition lever check-ins and streaks", "keywords": ["lever", "check-in", "checkin", "streak", "streaks", "notification", "yes no", "milestone", "track habit"], "content": "In the Fuel tab you can track nutrition levers - one simple habit at a time (no soda, protein at breakfast). The coach checks in with Yes/No notifications every few days and keeps a streak of how long you have held it. Answering the good way extends it; a slip resets it. Hit milestones and the app celebrates." },
-  { "id": "build_levers", "title": "Getting lever suggestions", "keywords": ["suggest", "recommend", "build levers", "which habit", "what habit", "intake questions", "habit suggestions"], "content": "Tap Build your levers in Fuel and answer a few quick questions about your daily eating; the coach then asks short follow-ups and recommends levers tailored to your weak spots and goal. Tap any suggestion to start tracking it. It works offline too - the questionnaire maps your answers to sensible habits even without the AI." },
-  { "id": "rewards", "title": "Achievements, levels and rewards", "keywords": ["achievement", "achievements", "reward", "rewards", "level", "levels", "points", "badge", "badges", "recognition", "gamify", "trophy"], "content": "The app gamifies consistency: you earn achievements (bronze/silver/gold) for logging workouts, weekly streaks, PRs, doing your warm-ups, and holding nutrition streaks. Each gives points that build your level. See them on the Recognition card on Today and the full wall in Progress, with a personal note from the coach when you unlock one." },
-  { "id": "exercise_library", "title": "The exercise library and difficulty", "keywords": ["exercise library", "library", "difficulty", "beginner exercise", "intermediate", "advanced", "which exercises", "swap exercise"], "content": "The library has 100+ exercises tagged by equipment (barbell, dumbbell, kettlebell, cable, machine, bodyweight, cardio) and difficulty (Beginner, Intermediate, Advanced). When I build or suggest a plan I pull lifts at or below your experience level - basics like squats and push-ups are used at every level, while technical lifts are reserved for Advanced. Browse them grouped by muscle in the picker." },
-  { "id": "warmup_gate", "title": "The warm-up gate", "keywords": ["warm-up gate", "warmup gate", "locked", "before logging", "required warm-up", "logging locked"], "content": "Every session starts with a guided warm-up checklist, and set logging stays locked until you check off every item. It is there because warming up cuts injury risk and lets you lift better - a few minutes of easy cardio, dynamic mobility, and a light ramp-up set. It also counts toward a warm-up achievement." },
-  { "id": "progression_flags", "title": "Ready-to-progress flags", "keywords": ["ready to progress", "progression flag", "suggested weight", "when to add weight", "today tab"], "content": "Log every set with weight, RPE, and reps-in-tank, and the app tracks each priority lift. When you clear all target reps with reps still in reserve, the lift flags as ready to progress on the Today tab with a suggested next weight. That is your cue to add the smallest jump - progressive overload on autopilot." },
-  { "id": "plate_calculator", "title": "The plate calculator", "keywords": ["plate", "plates", "barbell", "load the bar", "per side", "calculator", "bar math"], "content": "When logging a barbell lift you can type a weight or use the visual plate loader: tap plates to add them per side and tap a loaded plate to remove it - the bar drawing and total update as you go. Handy for setting up the bar fast." },
-  { "id": "rest_timer", "title": "The rest timer", "keywords": ["rest timer", "timer", "auto-start", "countdown", "live activity", "rest alarm"], "content": "A rest timer auto-starts after you complete a set and shows on the lock screen and Dynamic Island, with an alarm (sound, vibrate, choose the tone) that fires even when the app is backgrounded. Adjust the default rest and presets in your profile. If a rest feels short, tap +15s." },
-  { "id": "voice_coach", "title": "Talking to the coach during a workout", "keywords": ["voice", "talk", "hands free", "microphone", "speak", "voice coach", "say"], "content": "During a workout the AI Coach bar sits at the top of the screen. Tap it and just talk - it listens hands-free, answers out loud, and keeps the conversation going. It knows your live session (current lift, last set, what is next) and ducks your music while talking. Pick the spoken voice and speed in Profile." },
-  { "id": "ai_tiers", "title": "How the AI coach works", "keywords": ["ai", "coach", "on-device", "offline", "private", "privacy", "claude", "model", "internet"], "content": "The coach runs in tiers: an on-device Apple Intelligence model on supported phones (private, works offline, no data leaves your device), an optional smarter cloud model if an API key is added, and a built-in knowledge base that always works with no network. Either way it reads your profile and recent training before answering, so advice fits you." },
-  { "id": "profile_personalization", "title": "Your profile and personalization", "keywords": ["profile", "personalize", "experience", "equipment", "injury", "injuries", "goal", "edit profile", "limitations"], "content": "Your profile drives everything - set your goal, experience level, days per week, the equipment you have, and any injuries or limitations (edit it any time from Today). The coach programs around the gear you own and works around injuries you list, and picks exercises that match your experience. Keep it current and the coaching stays relevant." },
-  { "id": "programs_templates", "title": "Programs you can start", "keywords": ["plan", "plans", "program", "programs", "routine", "routines", "template", "templates", "start a workout", "what plans", "which plan", "what can i start", "ready-made", "preset"], "content": "The Train tab has ready-made programs you can start with one tap: Full Body A/B/C (beginner, 3 days), Push / Pull / Legs (intermediate, 4-6 days), a Conditioning day with a timed core circuit, and Express 30-minute sessions. You can also build and save your own custom routine, or start an empty session. The Today tab recommends which day to do next." }
+  {
+    "id": "creatine_timing",
+    "title": "Does creatine timing matter?",
+    "keywords": [
+      "creatine timing",
+      "when to take creatine",
+      "creatine before or after workout",
+      "creatin timing",
+      "kreatine"
+    ],
+    "content": "Timing barely matters for creatine; what counts is taking it consistently every day to keep your muscles saturated. Per the ISSN, either take 3-5 g daily from day one (full saturation in about 3-4 weeks) or load with about 0.3 g/kg/day for 5-7 days then maintain at 3-5 g. Take it whenever you will reliably remember, including rest days. A slight edge for post-workout dosing shows up in some data but it is minor compared to total daily intake."
+  },
+  {
+    "id": "creatine_efficacy_dosing",
+    "title": "Creatine: does it work and how to dose",
+    "keywords": [
+      "creatine dose",
+      "creatine loading",
+      "creatine monohydrate",
+      "how much creatine",
+      "does creatine work"
+    ],
+    "content": "Creatine monohydrate is the most researched and effective legal supplement for strength, power, and lean mass, and it is well tolerated long term in healthy people. Use 3-5 g per day of plain monohydrate; an optional load of about 20 g/day split into 4 doses for 5-7 days saturates faster but lands at the same place. The early scale bump is water held inside the muscle, not fat. If you have kidney disease or are pregnant, check with your clinician first."
+  },
+  {
+    "id": "protein_daily_intake",
+    "title": "Daily protein for muscle gain",
+    "keywords": [
+      "daily protein",
+      "protein for muscle",
+      "grams of protein per day",
+      "protein intake",
+      "how much protein"
+    ],
+    "content": "For building and keeping muscle the ISSN recommends 1.4-2.0 g of protein per kg of bodyweight per day, and around 1.6 g/kg is a solid practical target for most lifters. Going higher is not harmful but offers little extra muscle benefit once you are training hard and eating enough. Spread it across the day and prioritize quality protein sources rich in essential amino acids."
+  },
+  {
+    "id": "protein_per_meal",
+    "title": "Protein per meal and the leucine threshold",
+    "keywords": [
+      "protein per meal",
+      "leucine threshold",
+      "how much protein per meal",
+      "protein distribution",
+      "mps"
+    ],
+    "content": "Aim for roughly 0.4 g/kg of protein per meal, about 20-40 g for most people, which supplies the 2-3 g of leucine that maximally switches on muscle protein synthesis. Spreading protein across 3-4 meals a few hours apart beats stacking it all into one feeding, especially for older adults. Going well above that per-meal dose does not further boost the muscle-building signal, so total daily protein matters more than chasing huge single servings."
+  },
+  {
+    "id": "protein_in_deficit",
+    "title": "Protein while cutting",
+    "keywords": [
+      "protein deficit",
+      "protein cutting",
+      "protein fat loss",
+      "preserve muscle",
+      "high protein cut"
+    ],
+    "content": "When dieting in a calorie deficit, push protein higher to protect muscle, roughly 2.3-3.1 g/kg of bodyweight (or fat-free mass) per day per the ISSN. The leaner you are and the steeper the deficit, the more protein helps you keep hard-earned muscle. Combine it with resistance training, which is the other key signal telling your body to hold onto muscle."
+  },
+  {
+    "id": "minimum_effective_volume",
+    "title": "Minimum volume for gains",
+    "keywords": [
+      "minimum volume",
+      "least sets",
+      "minimum effective dose",
+      "fewest sets for muscle",
+      "time efficient training"
+    ],
+    "content": "You can grow on surprisingly little; as few as about 4 hard sets per muscle per week can drive some growth, and roughly 6 weekly sets maintains muscle. For strength, even a couple of heavy hard sets per week can preserve and slowly build it. These are floors, not optimums, but they are genuinely useful when you are busy, deloading, or dieting and just need to hold your gains."
+  },
+  {
+    "id": "weekly_volume_hypertrophy",
+    "title": "Weekly volume for muscle growth",
+    "keywords": [
+      "weekly volume",
+      "sets per muscle per week",
+      "how many sets",
+      "training volume",
+      "optimal volume"
+    ],
+    "content": "For most people about 10-20 hard sets per muscle per week is the sweet spot for growth, with a dose-response up to a point and then diminishing returns. Beginners do well at the lower end; advanced lifters often need more volume to keep progressing. Count sets taken close to failure, and build volume gradually rather than jumping straight to the top of the range."
+  },
+  {
+    "id": "training_frequency",
+    "title": "How often to train a muscle",
+    "keywords": [
+      "training frequency",
+      "how often train muscle",
+      "frequency per week",
+      "train muscle twice a week",
+      "split frequency"
+    ],
+    "content": "When weekly volume is matched, training a muscle once or several times per week produces similar growth, so frequency is mostly a tool to fit your volume in comfortably. Hitting each muscle about twice a week is a practical default because it splits the work into more manageable sessions. Pick the frequency that lets you complete your weekly sets with good quality and recovery."
+  },
+  {
+    "id": "progressive_overload",
+    "title": "Progressive overload",
+    "keywords": [
+      "progressive overload",
+      "how to progress",
+      "add weight",
+      "keep making gains",
+      "overload"
+    ],
+    "content": "Progressive overload, gradually doing more over time, is the core driver of strength and muscle gains. Add reps, add weight, add quality sets, or improve range and control as you get stronger, rather than repeating the exact same workout forever. Track your lifts so you can see progress and know when to nudge things up."
+  },
+  {
+    "id": "training_to_failure",
+    "title": "Training to failure vs reps in reserve",
+    "keywords": [
+      "training to failure",
+      "reps in reserve",
+      "rir",
+      "how hard to train",
+      "leaving reps"
+    ],
+    "content": "You do not need to grind every set to failure; stopping about 1-3 reps shy (1-3 RIR) delivers nearly all the growth with less fatigue and lower injury risk. Training closer to failure gives a small hypertrophy edge but does not clearly help strength, which is driven more by load. Most people underestimate how close to failure they actually are, so leaving a small buffer on compound lifts is smart."
+  },
+  {
+    "id": "rep_ranges",
+    "title": "Rep ranges for strength vs size",
+    "keywords": [
+      "rep ranges",
+      "reps for muscle",
+      "reps for strength",
+      "hypertrophy reps",
+      "how many reps"
+    ],
+    "content": "For muscle size, loads from about 5 to 30+ reps build similar growth when sets are taken close to failure, so the classic hypertrophy zone is a guideline, not a rule. For maximal strength, heavier loads in lower rep ranges (roughly 1-6) win because of specificity. A practical approach is heavier work for big compound lifts and moderate-to-high reps for isolation and joint-friendly movements."
+  },
+  {
+    "id": "rest_periods",
+    "title": "Rest periods between sets",
+    "keywords": [
+      "rest between sets",
+      "rest periods",
+      "how long to rest",
+      "rest time",
+      "recovery between sets"
+    ],
+    "content": "For size and strength, resting about 2-3 minutes between hard sets generally beats very short rests because it lets you keep your reps and load up. Short rests under a minute are fine for isolation work or when time is tight, but they can cut into performance on heavy compounds. Rest long enough to perform the next set well."
+  },
+  {
+    "id": "menstrual_cycle_training",
+    "title": "Training around the menstrual cycle",
+    "keywords": [
+      "menstrual cycle training",
+      "period and training",
+      "cycle phase lifting",
+      "training on period",
+      "hormones and lifting"
+    ],
+    "content": "Current high-quality evidence shows menstrual cycle phase does not reliably change strength performance or long-term gains, so there is no need to rigidly program training around your cycle. Some women feel worse or notice more soreness in certain phases, so individual symptom-based adjustments are reasonable. Train consistently and autoregulate by how you feel; if symptoms are severe or unusual, check with your clinician."
+  },
+  {
+    "id": "fasted_cardio",
+    "title": "Does fasted cardio burn more fat?",
+    "keywords": [
+      "fasted cardio",
+      "cardio empty stomach",
+      "morning cardio fat loss",
+      "fasted fat burning",
+      "cardio before eating"
+    ],
+    "content": "Fasted cardio does not produce more actual fat loss than fed cardio when total daily calories are equal; the extra fat burned during the session is offset later. You may oxidize slightly more fat during the workout itself, but body-composition results come down to your overall calorie balance over time. Do whichever feels better and lets you train hard, fasted or fed."
+  },
+  {
+    "id": "sleep_muscle",
+    "title": "Sleep, recovery, and muscle growth",
+    "keywords": [
+      "sleep muscle",
+      "sleep recovery",
+      "sleep and gains",
+      "not enough sleep",
+      "sleep for muscle"
+    ],
+    "content": "Sleep is a major recovery lever; in a controlled crossover study, one night of total sleep deprivation cut muscle protein synthesis by 18%, raised cortisol by 21%, and lowered testosterone by 24%. Chronic short sleep impairs recovery, strength, and body composition. Aim for roughly 7-9 hours a night, especially during hard training or a cut."
+  },
+  {
+    "id": "concurrent_training",
+    "title": "Does cardio kill gains? (interference effect)",
+    "keywords": [
+      "concurrent training",
+      "cardio and lifting",
+      "interference effect",
+      "does cardio kill gains",
+      "cardio with weights"
+    ],
+    "content": "For most gym-goers, moderate cardio does not kill your gains; the interference effect mainly shows up in trained lifters doing high volumes of running, and it is smaller with cycling. Minimize it by separating cardio and lifting when you can, keeping cardio moderate, and lifting first if you must combine them. Cardio also delivers real heart-health benefits, so it is worth keeping in."
+  },
+  {
+    "id": "mind_muscle_connection",
+    "title": "Mind-muscle connection",
+    "keywords": [
+      "mind muscle connection",
+      "focus on muscle",
+      "internal focus",
+      "feel the muscle",
+      "attentional focus"
+    ],
+    "content": "Deliberately focusing on the working muscle (internal focus) can modestly increase growth, especially on isolation work; in one 8-week study, internal focus produced 12.4% biceps growth versus 6.9% with an external focus, nearly double. The effect fades at heavy loads where you are just trying to move the weight. Use it for lighter-to-moderate isolation moves; on heavy compounds, focusing on the movement and execution tends to work better."
+  },
+  {
+    "id": "stretching_injury",
+    "title": "Does stretching prevent injury?",
+    "keywords": [
+      "stretching injury",
+      "does stretching prevent injury",
+      "stretch before workout",
+      "stretching myth",
+      "prevent injury stretch"
+    ],
+    "content": "Static stretching right before training does not clearly prevent injuries, and holding stretches of 60 seconds or more can temporarily reduce strength and power. A general warm-up and building strength through full range are better injury-protection strategies. Save longer static stretching for after training or separate sessions if your goal is flexibility."
+  },
+  {
+    "id": "static_vs_dynamic_warmup",
+    "title": "Static vs dynamic warm-up",
+    "keywords": [
+      "dynamic warm up",
+      "static stretching warmup",
+      "warm up before lifting",
+      "best warm up",
+      "warmup routine"
+    ],
+    "content": "For a pre-workout warm-up, use dynamic movements and ramp-up sets rather than long static stretches, since prolonged static stretching can briefly blunt strength and power. A good warm-up raises body temperature and rehearses the movement, for example light cardio plus dynamic drills and progressively heavier warm-up sets. Short static stretches under about 60 seconds are fine if you need them for mobility."
+  },
+  {
+    "id": "warmup_sets",
+    "title": "Warm-up sets before working sets",
+    "keywords": [
+      "warm up sets",
+      "ramp up sets",
+      "how many warm up sets",
+      "warmup before lifting",
+      "prep sets"
+    ],
+    "content": "Do a few progressively heavier warm-up sets before your heavy working sets to prime the movement and reduce injury risk without causing fatigue. A common approach is 2-4 light-to-moderate sets ramping toward your working weight, with fewer needed on isolation moves. Keep warm-up reps low as you near your working load so you save energy for the real sets."
+  },
+  {
+    "id": "bfr_training",
+    "title": "Blood-flow restriction (BFR) training",
+    "keywords": [
+      "blood flow restriction",
+      "bfr training",
+      "occlusion training",
+      "kaatsu",
+      "light weight bands"
+    ],
+    "content": "BFR uses cuffs or bands with light loads (about 20-30% of your max) to build muscle comparable to heavy lifting, with strength gains that are usually a bit lower than heavy training. It is especially useful when you cannot load joints heavily, such as during rehab or with limited equipment. Use moderate pressure and stop if you feel numbness or pain; if you have cardiovascular issues, blood clots, or are pregnant, check with your clinician first."
+  },
+  {
+    "id": "tendon_training",
+    "title": "Training tendons and connective tissue",
+    "keywords": [
+      "tendon training",
+      "connective tissue",
+      "collagen for tendons",
+      "tendon health",
+      "strengthen tendons"
+    ],
+    "content": "Tendons adapt mainly to mechanical loading, and they respond well to slow, heavy, or isometric work; loading provides the large majority of tendon adaptation. Collagen or gelatin (about 15 g) with vitamin C taken 30-60 minutes before loading may modestly boost collagen synthesis, but it is a small add-on, not a substitute for training or total protein. Tendons can adapt more slowly than muscle, so progress connective-tissue loading patiently; for persistent tendon pain, see a clinician."
+  },
+  {
+    "id": "fat_loss_plateau",
+    "title": "Fat loss plateaus and metabolic adaptation",
+    "keywords": [
+      "fat loss plateau",
+      "metabolic adaptation",
+      "weight loss stall",
+      "adaptive thermogenesis",
+      "stopped losing weight"
+    ],
+    "content": "As you lose weight your metabolism drops both because you are smaller and from an adaptive slowdown, which can erase your original deficit and stall progress. This adaptation is real but not strong enough to stop fat loss entirely; it just makes it slower. Most true plateaus are fixed by tightening tracking, increasing activity or steps, or modestly lowering intake, not by so-called metabolic damage."
+  },
+  {
+    "id": "rate_of_fat_loss",
+    "title": "How fast should you lose fat?",
+    "keywords": [
+      "rate of fat loss",
+      "how fast to cut",
+      "how fast lose weight",
+      "safe weight loss rate",
+      "speed of cutting"
+    ],
+    "content": "To hold onto muscle, aim to lose about 0.5-1% of your bodyweight per week; in a controlled study, a slow loss of about 0.7% per week increased lean mass by around 2% while a fast loss of 1.4% per week did not. Leaner people should lean toward the slower end. Faster crash diets tend to cost more muscle and are harder to sustain."
+  },
+  {
+    "id": "refeeds_diet_breaks",
+    "title": "Refeeds and diet breaks",
+    "keywords": [
+      "refeed",
+      "diet break",
+      "diet refeed",
+      "calorie break",
+      "reverse diet"
+    ],
+    "content": "Planned diet breaks (eating at maintenance for 1-2 weeks) and refeeds can ease the psychological strain of dieting and help with adherence, though evidence that they meaningfully reverse metabolic adaptation is mixed. They are most useful on longer cuts to restore energy, training quality, and sanity. Keep protein high during breaks and return to your deficit afterward."
+  },
+  {
+    "id": "energy_balance",
+    "title": "Calories and fat loss",
+    "keywords": [
+      "energy balance",
+      "calorie deficit",
+      "calories for fat loss",
+      "cico",
+      "how to lose fat"
+    ],
+    "content": "Fat loss comes down to energy balance: you need to eat fewer calories than you burn over time, regardless of diet style. A moderate deficit of roughly 500 calories a day is a sustainable starting point for many people. Meal-timing tricks and meal frequency do not override total calories, so build a plan you can actually stick to."
+  },
+  {
+    "id": "hydration_electrolytes",
+    "title": "Hydration and electrolytes",
+    "keywords": [
+      "hydration",
+      "electrolytes",
+      "how much water",
+      "sodium training",
+      "dehydration"
+    ],
+    "content": "Staying well hydrated supports performance, since even mild dehydration can hurt training quality. Drink to thirst across the day and add more around long or sweaty sessions; for prolonged or very sweaty training, replacing sodium and other electrolytes helps. There is no need to force huge volumes of plain water beyond your needs."
+  },
+  {
+    "id": "doms_soreness",
+    "title": "Is soreness needed for growth?",
+    "keywords": [
+      "doms",
+      "muscle soreness",
+      "sore muscles growth",
+      "is soreness good",
+      "no soreness no gains"
+    ],
+    "content": "Soreness (DOMS) is not required for muscle growth and is not a reliable measure of a good workout; you can grow without being sore and be very sore without much growth. Soreness mostly reflects unfamiliar or novel work and fades as you adapt. Judge progress by performance and progressive overload, not by how wrecked you feel."
+  },
+  {
+    "id": "soreness_vs_injury",
+    "title": "Soreness vs injury: when to stop",
+    "keywords": [
+      "soreness vs injury",
+      "is this an injury",
+      "pain or soreness",
+      "when to stop training",
+      "sharp pain"
+    ],
+    "content": "Normal soreness is dull, fairly symmetrical, eases within a few days, and improves with light movement; injury tends to be sharp, localized, may swell, and worsens with specific movements. Stop and reassess if you have sharp pain, joint pain, swelling, or pain that lingers or worsens. Persistent or severe pain warrants a check with a clinician rather than pushing through."
+  },
+  {
+    "id": "deload_weeks",
+    "title": "Deload weeks",
+    "keywords": [
+      "deload",
+      "deload week",
+      "recovery week",
+      "reduce volume",
+      "fatigue management"
+    ],
+    "content": "A deload is a planned easier week (less volume and/or load) used to shed accumulated fatigue so you can keep progressing. Many lifters benefit from one every 4-8 weeks or when performance, sleep, or motivation start to slide. It is a tool for managing fatigue, not lost progress, and you will not lose muscle from a single lighter week."
+  },
+  {
+    "id": "alcohol_muscle",
+    "title": "Alcohol, muscle, and recovery",
+    "keywords": [
+      "alcohol muscle",
+      "drinking and gains",
+      "alcohol recovery",
+      "beer after workout",
+      "does alcohol kill gains"
+    ],
+    "content": "Heavy drinking around training blunts recovery; in one study a large dose of alcohol after exercise cut muscle protein synthesis by up to 37% even when protein was consumed. An occasional drink will not undo your progress, but regular heavy drinking impairs muscle growth, sleep, and recovery. If you drink, keep it moderate and try to separate it from your training and post-workout meal."
+  },
+  {
+    "id": "caffeine_sleep",
+    "title": "Caffeine timing and sleep",
+    "keywords": [
+      "caffeine sleep",
+      "coffee before bed",
+      "caffeine timing",
+      "late coffee",
+      "caffeine half life"
+    ],
+    "content": "Caffeine has a long half-life (roughly 5 hours, but highly individual), and in a controlled study even 400 mg taken 6 hours before bed cut measured sleep by more than an hour. To protect sleep, avoid caffeine for about 8 hours before bed, or earlier if you are sensitive or a slow metabolizer. Poor sleep then undercuts recovery and training, so late caffeine can cost you twice."
+  },
+  {
+    "id": "caffeine_performance",
+    "title": "Caffeine for performance (dose)",
+    "keywords": [
+      "caffeine performance",
+      "caffeine dose",
+      "pre workout caffeine",
+      "how much caffeine",
+      "caffeine for training"
+    ],
+    "content": "Caffeine reliably boosts performance at about 3-6 mg per kg of bodyweight taken roughly 60 minutes before training. Doses much higher than that add side effects like jitters and poor sleep without extra benefit. Start at the low end to assess tolerance, and avoid taking it too late in the day so it does not wreck your sleep."
+  },
+  {
+    "id": "beta_alanine",
+    "title": "Beta-alanine",
+    "keywords": [
+      "beta alanine",
+      "beta-alanine",
+      "tingling supplement",
+      "carnosine",
+      "endurance supplement"
+    ],
+    "content": "Beta-alanine works by raising muscle carnosine, which buffers acid and helps performance in hard efforts lasting about 1-4 minutes. Per the ISSN, take 4-6 g per day for at least 2-4 weeks to saturate; total daily intake matters more than timing. The harmless tingling (paraesthesia) some people feel can be reduced by splitting it into smaller doses."
+  },
+  {
+    "id": "steps_neat",
+    "title": "Steps and NEAT for fat loss",
+    "keywords": [
+      "steps",
+      "neat",
+      "walking for fat loss",
+      "daily steps",
+      "non exercise activity"
+    ],
+    "content": "Daily movement outside the gym (NEAT), like steps, is a powerful and underrated fat-loss lever because it adds up to far more calories than most single workouts. Increasing your daily step count is an easy, sustainable way to widen your deficit without crushing yourself with cardio. Your body tends to quietly reduce NEAT when dieting, so consciously keeping steps up helps prevent stalls."
+  },
+  {
+    "id": "cardio_heart_health",
+    "title": "Cardio and weekly activity minimums",
+    "keywords": [
+      "cardio heart health",
+      "weekly activity",
+      "how much cardio",
+      "who guidelines",
+      "aerobic exercise"
+    ],
+    "content": "For health, aim for the WHO target of 150-300 minutes of moderate or 75-150 minutes of vigorous aerobic activity per week, plus muscle-strengthening work on 2 or more days. This lowers risk of heart disease and many other conditions, with benefits leveling off above roughly 300 minutes. Lifting counts toward the strengthening goal, so pair it with some cardio for overall health."
+  },
+  {
+    "id": "spot_reduction",
+    "title": "Spot reduction (myth)",
+    "keywords": [
+      "spot reduction",
+      "target belly fat",
+      "lose fat one area",
+      "ab exercises belly fat",
+      "spot reduce"
+    ],
+    "content": "Spot reduction is a myth: training a specific area does not preferentially burn fat there. In a controlled study, six weeks of abdominal exercise did not reduce belly fat, body fat percentage, or waist measurements. Fat loss happens across your whole body through an overall calorie deficit, and where you lose it first is largely down to genetics."
+  },
+  {
+    "id": "women_bulky",
+    "title": "Will lifting make women bulky?",
+    "keywords": [
+      "women bulky",
+      "will i get bulky",
+      "women lifting weights",
+      "bulky from lifting",
+      "toning"
+    ],
+    "content": "Lifting will not make most women bulky; far lower testosterone levels mean women build muscle more slowly and tend to get stronger and more toned rather than huge. Building large amounts of muscle takes years of dedicated training and eating, and does not happen by accident. Strength training is one of the best things women can do for body composition, bone health, and metabolism."
+  },
+  {
+    "id": "newbie_gains",
+    "title": "Newbie gains and rate of muscle gain",
+    "keywords": [
+      "newbie gains",
+      "beginner gains",
+      "how fast build muscle",
+      "rate of muscle gain",
+      "beginner muscle"
+    ],
+    "content": "Beginners can build muscle and strength fast in the first 6-12 months because the body responds strongly to a new stimulus; this is the period to capitalize on. As you advance, muscle comes much more slowly, often a few pounds per year, which is completely normal. Expect gains to slow and shift your focus to consistency and progressive overload rather than chasing beginner-speed results forever."
+  },
+  {
+    "id": "muscle_memory",
+    "title": "Muscle memory, detraining and retraining",
+    "keywords": [
+      "muscle memory",
+      "detraining",
+      "regain muscle",
+      "time off gym",
+      "retraining"
+    ],
+    "content": "Muscle memory is real: after a layoff you regain lost muscle much faster than it took to build the first time, partly because muscle fibers retain extra nuclei. A short break of a week or two will not erase your gains, and even after longer time off, strength and size return quickly when you resume. Do not panic about missed sessions; just restart with slightly lighter loads and ramp back up."
+  },
+  {
+    "id": "anabolic_window",
+    "title": "The anabolic window / post-workout timing",
+    "keywords": [
+      "anabolic window",
+      "post workout protein",
+      "protein after workout",
+      "eating after gym",
+      "nutrient timing"
+    ],
+    "content": "The anabolic window is much wider than the old 30-minute myth; you have several hours around training to get protein in. What matters most is hitting your total daily protein, with a serving in the hours before or after training being more than enough. If you trained fasted, eating protein soon afterward is sensible, but you do not need to rush a shake the moment you rack the weights."
+  },
+  {
+    "id": "carbs_performance",
+    "title": "Carbs, glycogen, and performance",
+    "keywords": [
+      "carbs performance",
+      "glycogen",
+      "carbs for training",
+      "carbs before workout",
+      "do i need carbs"
+    ],
+    "content": "Carbohydrates refill muscle glycogen, the main fuel for hard and prolonged training, so adequate carbs help you train harder and recover between sessions. For intense or long workouts, eating carbs beforehand and across the day supports performance. Very low-carb training is possible but often reduces top-end output during high-intensity work."
+  },
+  {
+    "id": "lifting_tempo",
+    "title": "Lifting tempo and time under tension",
+    "keywords": [
+      "lifting tempo",
+      "time under tension",
+      "how fast to lift",
+      "rep speed",
+      "tempo training"
+    ],
+    "content": "You do not need to lift super slowly; controlling the lowering phase and moving the weight with intent works well, and very slow tempos can reduce the load and volume you handle without extra growth. Avoid using momentum or bouncing, but lifting the weight quickly with control on the way up is fine and can help. Total hard volume and proximity to failure matter more than chasing a specific tempo."
+  },
+  {
+    "id": "range_of_motion",
+    "title": "Full vs partial reps (range of motion)",
+    "keywords": [
+      "range of motion",
+      "full reps",
+      "partial reps",
+      "full rom",
+      "deep reps"
+    ],
+    "content": "Full range of motion is generally best for building muscle, particularly because training muscles at longer, stretched lengths appears especially effective for growth. Use a full range you can control on most exercises rather than cutting reps short. Targeted partial reps at long muscle lengths can be a useful add-on, but they are a supplement to, not a replacement for, full-range work."
+  },
+  {
+    "id": "stretching_flexibility",
+    "title": "Stretching for flexibility and mobility",
+    "keywords": [
+      "stretching flexibility",
+      "mobility",
+      "improve flexibility",
+      "gain flexibility",
+      "how to get flexible"
+    ],
+    "content": "Regular stretching does improve flexibility and range of motion over time, and consistency matters more than any single session. Both static and dynamic stretching work, and full-range strength training also builds usable mobility. For lasting gains, stretch regularly and hold stretches long enough; outside of a pre-lifting warm-up, longer static holds are fine."
+  },
+  {
+    "id": "genetics_response",
+    "title": "Genetics and individual variability",
+    "keywords": [
+      "genetics",
+      "individual response",
+      "why no gains",
+      "genetic potential",
+      "responders"
+    ],
+    "content": "Genetics strongly influence how fast you build muscle and strength, your muscle insertions, and how well you respond to a given program, so progress varies a lot between people. You cannot change your genes, but nearly everyone improves substantially with consistent training and nutrition. Compare yourself to your own past progress rather than to others, and adjust your program based on your individual response."
+  },
+  {
+    "id": "fat_loss",
+    "title": "Losing fat",
+    "keywords": [
+      "lose",
+      "fat",
+      "weight",
+      "cut",
+      "cutting",
+      "lean",
+      "deficit",
+      "slim",
+      "shred"
+    ],
+    "content": "Fat loss comes from a small, sustainable calorie deficit (~300-500 kcal/day) held over weeks. Keep protein high (~0.7-1 g per lb of bodyweight) and keep lifting heavy - that is what holds muscle while you lose fat. Add daily walking and 1-2 short conditioning sessions. Aim for ~0.5-1% of bodyweight per week; faster usually costs muscle."
+  },
+  {
+    "id": "muscle_gain",
+    "title": "Building muscle",
+    "keywords": [
+      "muscle",
+      "build",
+      "bulk",
+      "gain",
+      "grow",
+      "mass",
+      "get bigger"
+    ],
+    "content": "Build muscle by training each muscle ~2x/week, taking most sets within 1-3 reps of failure, and adding load or reps over time. About 10-20 hard sets per muscle per week is a productive range; 6-15 reps works well. Eat at maintenance or a slight surplus (~200-300 kcal) with ~0.7-1 g protein per lb. Sleep is when growth happens."
+  },
+  {
+    "id": "strength_training",
+    "title": "Strength training",
+    "keywords": [
+      "strength",
+      "strong",
+      "heavy",
+      "powerlifting",
+      "low reps",
+      "max strength",
+      "get stronger"
+    ],
+    "content": "To get strong, train heavy compounds in low reps (about 3-6) with long rests (2-4 min) and gradually add weight. Strength is a skill - practice the big lifts (squat, hinge, press, row) often with crisp technique at RPE 7-9. Powerlifting (squat/bench/deadlift) is the classic strength approach. Eat enough protein and sleep well."
+  },
+  {
+    "id": "hiit",
+    "title": "HIIT and intervals",
+    "keywords": [
+      "hiit",
+      "interval",
+      "intervals",
+      "sprints",
+      "tabata",
+      "conditioning",
+      "metcon"
+    ],
+    "content": "HIIT alternates short hard efforts with recovery - time-efficient for conditioning and calorie burn. 1-2 sessions a week is plenty; it is taxing, so do not let it crowd out strength work or recovery. Good options: bike sprints, rower intervals, hill sprints. Build an aerobic base first if you are new."
+  },
+  {
+    "id": "cardio_zone2",
+    "title": "Zone 2 and aerobic base",
+    "keywords": [
+      "cardio",
+      "zone 2",
+      "zone2",
+      "aerobic",
+      "steady state",
+      "base",
+      "heart"
+    ],
+    "content": "Zone 2 is easy, conversational-pace cardio that builds your aerobic base, heart health, and recovery - 2-4 sessions of 20-45 min weekly. Low-impact options (incline walk, bike, row) spare the joints. Pair a Zone 2 base with occasional harder intervals for well-rounded conditioning."
+  },
+  {
+    "id": "vo2max",
+    "title": "VO2 max and conditioning",
+    "keywords": [
+      "vo2",
+      "vo2max",
+      "conditioning",
+      "fitness level",
+      "interval session"
+    ],
+    "content": "VO2 max (peak aerobic capacity) is one of the strongest predictors of long-term health. Build it with mostly easy Zone 2 plus a weekly hard interval session - for example 4 rounds of 4 min hard / 3 min easy. Gains take weeks of consistency."
+  },
+  {
+    "id": "functional_training",
+    "title": "Functional training",
+    "keywords": [
+      "functional",
+      "movement pattern",
+      "carryover",
+      "real world",
+      "athletic",
+      "multi-joint"
+    ],
+    "content": "Functional training emphasizes multi-joint, real-world movement patterns - squat, hinge, push, pull, carry, rotate - to build strength that transfers to daily life and sport. It is less about wobbly-surface tricks and more about getting genuinely strong in the patterns you actually use."
+  },
+  {
+    "id": "calisthenics",
+    "title": "Calisthenics",
+    "keywords": [
+      "calisthenics",
+      "bodyweight skill",
+      "pull-up",
+      "push-up",
+      "dips",
+      "muscle up",
+      "progressions"
+    ],
+    "content": "Calisthenics builds strength with bodyweight via progressions - incline to standard to decline push-ups, or negatives to assisted to full pull-ups. Overload by adding reps, slowing the tempo, or moving to harder variations. Excellent for relative strength, body control, and joint health, and it travels anywhere."
+  },
+  {
+    "id": "bodyweight_home",
+    "title": "Home and minimal-equipment training",
+    "keywords": [
+      "home",
+      "dumbbell",
+      "dumbbells",
+      "bands",
+      "bodyweight",
+      "no gym",
+      "minimal",
+      "kettlebell",
+      "garage",
+      "equipment"
+    ],
+    "content": "You can build real strength with little equipment. Dumbbells: goblet squats, RDLs, lunges, presses, rows, curls cover everything. Bodyweight: push-ups, split squats, rows under a bar, planks. To progress without heavier weight, add reps, slow the tempo, shorten rest, or move to single-limb variations. Set your equipment in your profile so plans fit it."
+  },
+  {
+    "id": "resistance_bands",
+    "title": "Resistance bands",
+    "keywords": [
+      "band",
+      "bands",
+      "resistance band",
+      "tubing",
+      "portable"
+    ],
+    "content": "Bands are portable and give variable resistance (hardest where you are strongest). Great for travel, warm-ups, pull-aparts, and accessory work, and they build muscle if you take sets near failure. Anchor them safely and progress with thicker bands or more reps."
+  },
+  {
+    "id": "hit_brief",
+    "title": "High-intensity, brief training",
+    "keywords": [
+      "high intensity",
+      "body by science",
+      "one set",
+      "brief",
+      "infrequent",
+      "super slow",
+      "minimal time"
+    ],
+    "content": "Some approaches (e.g. Body by Science) use very brief, infrequent sessions - often one hard set per exercise taken to momentary failure with slow, controlled reps. It can build strength efficiently and suits busy schedules. Most evidence favors a bit more volume for maximum size, but minimal-time high-intensity training is a valid, sustainable option."
+  },
+  {
+    "id": "yoga_mobility_style",
+    "title": "Yoga, Pilates and mobility work",
+    "keywords": [
+      "yoga",
+      "pilates",
+      "balance",
+      "breathing",
+      "stretch class",
+      "flexibility class"
+    ],
+    "content": "Yoga and Pilates build mobility, core control, balance, and stress relief, and pair well with lifting on easy days. They are great for movement quality but light on heavy loading - keep resistance training as your strength driver."
+  },
+  {
+    "id": "circuit_training",
+    "title": "Circuits and supersets",
+    "keywords": [
+      "circuit",
+      "circuits",
+      "superset",
+      "density",
+      "full body circuit",
+      "crossfit"
+    ],
+    "content": "Circuits and supersets pair exercises back-to-back to save time and add a conditioning effect. Pair non-competing moves (a push with a pull, or upper with lower). Great when short on time; for maximum strength, rest fully between heavy sets instead. CrossFit-style training blends this with intensity - scale loads and keep technique clean."
+  },
+  {
+    "id": "goal_endurance",
+    "title": "Building endurance",
+    "keywords": [
+      "endurance",
+      "stamina",
+      "run further",
+      "cardio fitness",
+      "aerobic goal",
+      "marathon"
+    ],
+    "content": "Build endurance with mostly easy Zone 2 volume plus one harder interval session weekly, raising total time by ~10% per week. Strength-train 2x/week to support joints and running economy. Fuel with enough carbs and recover - endurance is built by consistent, gradually rising volume, not by going hard every day."
+  },
+  {
+    "id": "goal_power_athletic",
+    "title": "Power and athleticism",
+    "keywords": [
+      "power",
+      "explosive",
+      "athletic",
+      "jump",
+      "sprint",
+      "plyometrics",
+      "speed"
+    ],
+    "content": "For power, train explosively when fresh: jumps, throws, short sprints, and fast-intent lifts (3-5 reps moved quickly) before your heavy work. Keep volume low and quality high with full rest. Build a strength base first - power is force applied fast."
+  },
+  {
+    "id": "goal_general_health",
+    "title": "Training for general health",
+    "keywords": [
+      "general health",
+      "guidelines",
+      "minimum",
+      "how much exercise",
+      "overall fitness",
+      "healthy"
+    ],
+    "content": "A solid health baseline (WHO/ACSM-style): 150+ min/week of moderate cardio (or 75 vigorous), 2+ strength sessions hitting all major muscles, plus daily movement and some mobility. That mix covers heart health, strength, and longevity for most people."
+  },
+  {
+    "id": "toning_myth",
+    "title": "Toning and getting lean",
+    "keywords": [
+      "tone",
+      "toned",
+      "toning",
+      "lean look",
+      "definition",
+      "sculpt",
+      "long lean muscle"
+    ],
+    "content": "There is no separate toning - the toned look is just having some muscle and low enough body fat to see it. So lift to build and keep muscle, and eat in a modest deficit to drop fat. Light weights for endless reps will not do it; train with real resistance."
+  },
+  {
+    "id": "women_training",
+    "title": "Training for women",
+    "keywords": [
+      "women",
+      "woman",
+      "female",
+      "girl",
+      "ladies",
+      "bulky"
+    ],
+    "content": "Training principles are the same for women and men - progressive overload, compounds, protein. Women often recover a bit faster between sets and tolerate higher reps and volume, and tend to be relatively stronger in the lower body. Lifting will not make you bulky (far lower testosterone); it builds strength, shape, and bone density."
+  },
+  {
+    "id": "men_training",
+    "title": "Training for men",
+    "keywords": [
+      "men",
+      "man",
+      "male",
+      "guys",
+      "dudes"
+    ],
+    "content": "Men generally have more muscle mass and a higher strength ceiling, but the training is the same: progressive overload, compounds, ~0.7-1 g/lb protein, and recovery. Common pitfall is ego-lifting - leaving reps in reserve with clean technique builds more than grinding sloppy maxes. Do not skip mobility and cardio."
+  },
+  {
+    "id": "pregnancy_training",
+    "title": "Exercise during pregnancy",
+    "keywords": [
+      "pregnant",
+      "pregnancy",
+      "prenatal",
+      "postpartum",
+      "expecting"
+    ],
+    "content": "If your doctor clears you, staying active in pregnancy is beneficial - keep strength and easy cardio at a comfortable effort, and stay cool and hydrated. Generally avoid heavy straining and breath-holding, fall or contact risks, and prolonged flat-on-your-back work later on. Always follow your OB or midwife - this is individual."
+  },
+  {
+    "id": "masters_over40",
+    "title": "Training over 40 and beyond",
+    "keywords": [
+      "older",
+      "over 40",
+      "training over 40",
+      "masters",
+      "aging",
+      "senior",
+      "50s",
+      "60s",
+      "sarcopenia"
+    ],
+    "content": "After ~40, strength training is essential to fight muscle and bone loss - lift 2-4x/week, emphasize compounds and a little power, and bump protein toward 1 g/lb. Warm up thoroughly, manage joints with full-range control, and respect recovery (it takes a touch longer). Consistency over decades is the win."
+  },
+  {
+    "id": "teens_youth",
+    "title": "Training for teens",
+    "keywords": [
+      "teen",
+      "teenager",
+      "youth",
+      "kid",
+      "young",
+      "adolescent"
+    ],
+    "content": "Supervised resistance training is safe and good for teens - it does not stunt growth (a myth). Focus on technique, bodyweight and lighter loads, and a variety of movement and sport. Progress conservatively and prioritize sleep and food to fuel growth."
+  },
+  {
+    "id": "fats",
+    "title": "Dietary fat",
+    "keywords": [
+      "dietary fat",
+      "fat",
+      "healthy fats",
+      "fat grams",
+      "dietary fat intake",
+      "hormones"
+    ],
+    "content": "Dietary fat supports hormones and absorbs vitamins - keep it around 0.3-0.5 g per lb of bodyweight and do not go very low for long. Favor unsaturated sources (olive oil, nuts, fish, avocado) and include some omega-3s. Fat is calorie-dense, so portion it when cutting."
+  },
+  {
+    "id": "fiber",
+    "title": "Fiber",
+    "keywords": [
+      "fiber",
+      "fibre",
+      "digestion",
+      "gut",
+      "fullness",
+      "regularity"
+    ],
+    "content": "Fiber (aim ~25-38 g/day) improves fullness, blood-sugar control, gut health, and regularity, which makes a deficit easier to hold. Get it from vegetables, fruit, legumes, and whole grains; increase it gradually with plenty of water."
+  },
+  {
+    "id": "micronutrients",
+    "title": "Vitamins and minerals",
+    "keywords": [
+      "micronutrient",
+      "minerals",
+      "vegetables",
+      "greens",
+      "nutrient dense",
+      "fruits and vegetables"
+    ],
+    "content": "Cover micronutrients by eating a variety of colorful vegetables and fruit plus quality proteins and whole foods. Most needs are met through food; common gaps to watch are vitamin D, omega-3, iron (especially menstruating women), and calcium. Whole foods beat relying on pills."
+  },
+  {
+    "id": "meal_timing",
+    "title": "Meal timing and fasting",
+    "keywords": [
+      "meal timing",
+      "how often eat",
+      "meal frequency",
+      "nutrient timing",
+      "fasting",
+      "when to eat",
+      "intermittent"
+    ],
+    "content": "Total daily intake matters far more than timing. Eat in a pattern you can sustain (3-5 meals is common) and spread protein through the day for muscle. Meal timing and intermittent fasting are tools for adherence, not magic - pick whatever controls your hunger best."
+  },
+  {
+    "id": "eating_out",
+    "title": "Eating out and fast food",
+    "keywords": [
+      "eating out",
+      "restaurant",
+      "delivery",
+      "fast food",
+      "travel food",
+      "ordering in"
+    ],
+    "content": "When eating out, anchor the plate with a lean protein and vegetables, watch liquid calories and added oils, and use portions or leftovers to manage intake. You do not need to be perfect - a protein-forward choice most of the time keeps you on track without stress."
+  },
+  {
+    "id": "satiety",
+    "title": "Staying full in a deficit",
+    "keywords": [
+      "hungry",
+      "hunger",
+      "full",
+      "satiety",
+      "cravings",
+      "appetite",
+      "filling foods"
+    ],
+    "content": "Fight hunger on a cut with high-protein and high-fiber foods, water-rich whole foods (vegetables, fruit, broth-based meals), and enough sleep (poor sleep spikes appetite). Keep most calories from filling, less-processed foods and leave room for a small treat to stay consistent."
+  },
+  {
+    "id": "nutrition_lever",
+    "title": "One nutrition lever at a time",
+    "keywords": [
+      "nutrition",
+      "eat",
+      "eating",
+      "lever",
+      "habit",
+      "food",
+      "meal",
+      "change diet"
+    ],
+    "content": "Instead of overhauling everything, change one nutrition lever at a time and make it automatic before adding the next - a protein target, a daily water goal, or no liquid calories. Small habits you keep beat a strict plan you quit. Use the Fuel tab to set your current lever and track a streak."
+  },
+  {
+    "id": "diet_adherence",
+    "title": "The best diet for you",
+    "keywords": [
+      "best diet",
+      "which diet",
+      "keto",
+      "vegan",
+      "paleo",
+      "carnivore",
+      "diet plan"
+    ],
+    "content": "No single diet is magic - they work when they create a sustainable calorie deficit with enough protein. Keto, vegan, paleo, and the rest are just different routes there. Pick the eating style you enjoy and can stick to, hit protein and mostly whole foods, and consistency does the rest."
+  },
+  {
+    "id": "protein_powder",
+    "title": "Protein powder",
+    "keywords": [
+      "protein powder",
+      "whey",
+      "casein",
+      "shake",
+      "plant protein",
+      "isolate"
+    ],
+    "content": "Protein powder is just convenient food - whey (fast, good post-workout), casein (slow), or plant blends all work. Use it to hit your daily protein when whole foods are inconvenient, not as a requirement. One to two scoops a day is plenty for most."
+  },
+  {
+    "id": "omega3",
+    "title": "Omega-3 (fish oil)",
+    "keywords": [
+      "omega 3",
+      "omega-3",
+      "fish oil",
+      "epa",
+      "dha"
+    ],
+    "content": "Omega-3s (EPA/DHA from fatty fish or fish oil) support heart, joint, and brain health and may aid recovery. If you rarely eat fatty fish, ~1-2 g combined EPA+DHA daily is reasonable. Food sources like salmon and sardines are ideal."
+  },
+  {
+    "id": "vitamin_d",
+    "title": "Vitamin D",
+    "keywords": [
+      "vitamin d",
+      "sunlight",
+      "deficiency"
+    ],
+    "content": "Vitamin D supports bone health, immunity, and muscle function, and many people are low - especially with little sun. If a test shows you are low, supplementing (often ~1000-2000 IU/day, or as advised) helps. Get levels checked rather than guessing high doses."
+  },
+  {
+    "id": "supplement_basics",
+    "title": "Which supplements are worth it",
+    "keywords": [
+      "supplements",
+      "worth it",
+      "pills",
+      "stack",
+      "fat burner",
+      "bcaa",
+      "which supplements"
+    ],
+    "content": "Most supplements are hype - food, training, and sleep do ~95% of the work. The few with solid support: creatine, caffeine, protein powder (for convenience), and vitamin D / omega-3 to fill gaps. Skip fat burners and BCAAs (redundant if protein is adequate). Spend on groceries before pills."
+  },
+  {
+    "id": "stress",
+    "title": "Training under stress",
+    "keywords": [
+      "stress",
+      "stressed",
+      "overwhelmed",
+      "cortisol",
+      "anxious",
+      "burnout"
+    ],
+    "content": "High life stress eats into recovery, so on hard weeks leave a little in the tank (RPE 7-8), cut junk volume, and use easy Zone 2 or a short walk or sauna to down-regulate. A lighter session you actually do beats a perfect one you skip. Breathing drills and a wind-down routine help more than any supplement."
+  },
+  {
+    "id": "active_recovery",
+    "title": "Active recovery and rest days",
+    "keywords": [
+      "active recovery",
+      "rest day",
+      "off day",
+      "light day",
+      "recovery day"
+    ],
+    "content": "On rest days, light movement (walking, easy cycling, mobility) boosts blood flow and recovery more than total inactivity. Keep it genuinely easy - the goal is to feel better, not to add load. Take at least 1-2 lower-stress days a week."
+  },
+  {
+    "id": "sauna_heat",
+    "title": "Sauna and heat",
+    "keywords": [
+      "sauna",
+      "heat",
+      "steam room",
+      "hot tub",
+      "heat therapy"
+    ],
+    "content": "Regular sauna use is relaxing and linked to cardiovascular benefits, and it can aid post-workout relaxation. Hydrate well and treat it as a recovery and wellness habit rather than a fat-loss tool (the scale drop is water). Build heat exposure gradually."
+  },
+  {
+    "id": "cold_plunge",
+    "title": "Cold plunge and ice baths",
+    "keywords": [
+      "cold plunge",
+      "ice bath",
+      "cold",
+      "cold therapy",
+      "cryotherapy"
+    ],
+    "content": "Cold exposure can reduce soreness and feels refreshing, useful after heavy training or on hot days. One caveat: cold plunging right after lifting may blunt muscle growth, so if size is the goal, separate it from your session by several hours or use it on cardio days."
+  },
+  {
+    "id": "foam_rolling",
+    "title": "Foam rolling and massage tools",
+    "keywords": [
+      "foam roll",
+      "foam rolling",
+      "smr",
+      "massage gun",
+      "roller"
+    ],
+    "content": "Foam rolling and massage guns can temporarily ease tightness and improve range of motion - handy in a warm-up. They are not fixing structural problems; for lasting mobility, train through a full range and address the actual restriction. Use them as a feel-good tool, not a cure-all."
+  },
+  {
+    "id": "overtraining",
+    "title": "Overtraining and under-recovery",
+    "keywords": [
+      "overtraining",
+      "overtrained",
+      "burnt out",
+      "run down",
+      "not recovering"
+    ],
+    "content": "True overtraining is rare; under-recovery is common. Warning signs: stalled or dropping performance, poor sleep, lingering soreness, low mood, elevated resting heart rate. Fix it by deloading, sleeping more, eating enough, and cutting junk volume - not by pushing harder."
+  },
+  {
+    "id": "knee_pain",
+    "title": "Knee discomfort",
+    "keywords": [
+      "knee",
+      "knees",
+      "patella",
+      "knee pain",
+      "hurts",
+      "hurt"
+    ],
+    "content": "For cranky knees, keep training but adjust: control tempo, avoid sharp pain (mild discomfort that warms up is usually okay), and favor tolerated variations - box squats, leg press in a shorter range, split squats, plus hamstring and glute work to balance the joint. Build quad strength gradually; it is protective. See a professional for sharp or swelling pain."
+  },
+  {
+    "id": "shoulder_pain",
+    "title": "Shoulder discomfort",
+    "keywords": [
+      "shoulder",
+      "shoulders",
+      "rotator",
+      "cuff",
+      "shoulder pain",
+      "pressing"
+    ],
+    "content": "For touchy shoulders, swap straight-bar pressing for neutral-grip dumbbell or landmine presses, keep elbows slightly tucked, and add face pulls and band pull-aparts for the rear delts and cuff. Do not push through pinching pain at lockout. Rebuild pressing volume gradually once it is calm."
+  },
+  {
+    "id": "back_pain",
+    "title": "Lower-back discomfort",
+    "keywords": [
+      "back",
+      "lower back",
+      "lumbar",
+      "back pain",
+      "spine"
+    ],
+    "content": "For a grumpy lower back, brace hard, keep a neutral spine, and pull from a height (rack pulls or blocks) if floor deadlifts aggravate it. Hip hinges, core work (planks, bird-dogs, side planks), and walking usually help. Pain down the leg, numbness, or sharp pain means get it checked before loading heavy."
+  },
+  {
+    "id": "ankle",
+    "title": "Ankle care and impact",
+    "keywords": [
+      "ankle",
+      "ankles",
+      "calf",
+      "impact",
+      "dorsiflexion"
+    ],
+    "content": "If an ankle flares easily, warm it thoroughly (circles, knee-to-wall dorsiflexion, banded work, calf raises) and keep cardio low-impact - incline walking over running. Add impact (incline, stairs, sprints) in small steps weeks apart. On a warm or swollen day, skip impact and stick to low-load work."
+  },
+  {
+    "id": "mobility",
+    "title": "Mobility and flexibility",
+    "keywords": [
+      "mobility",
+      "flexibility",
+      "stiff",
+      "tight",
+      "range of motion"
+    ],
+    "content": "Train mobility where you actually feel restricted rather than stretching randomly. Use dynamic drills before lifting and longer holds after or on rest days. Hips, ankles, and thoracic spine are the usual limiters for squats and presses - spend your minutes there, and lift through a full range."
+  },
+  {
+    "id": "injuries_general",
+    "title": "Training around an injury",
+    "keywords": [
+      "injury",
+      "injured",
+      "pain",
+      "hurt",
+      "tweak",
+      "rehab"
+    ],
+    "content": "Work around a painful area rather than through it: pick pain-free ranges and exercises, reduce load, and keep training everything else. Mild discomfort that warms up is usually fine; sharp, worsening, or swelling pain means stop and get it assessed. Add the limitation to your profile so the coach programs around it."
+  },
+  {
+    "id": "beginner",
+    "title": "Starting out",
+    "keywords": [
+      "beginner",
+      "start",
+      "new",
+      "novice",
+      "first time",
+      "getting started"
+    ],
+    "content": "As a beginner, consistency beats complexity. Run a full-body session 3x/week, warm up, lead with the big compounds, and log every set with RPE and reps-in-tank. Add a little weight whenever you clear all target reps with 2+ in reserve - beginners progress fast. Learn clean technique before chasing heavy loads."
+  },
+  {
+    "id": "consistency",
+    "title": "Staying consistent",
+    "keywords": [
+      "consistent",
+      "consistency",
+      "motivation",
+      "discipline",
+      "skip",
+      "skipping",
+      "show up",
+      "lazy"
+    ],
+    "content": "Adherence is the real program. Make it easy to show up: schedule sessions, keep a minimum version (just the main lift) for busy days, and never miss twice in a row. Track streaks and let small wins compound. A B-grade plan you do for a year beats an A-plan you quit in a month."
+  },
+  {
+    "id": "core_abs",
+    "title": "Core and abs",
+    "keywords": [
+      "core",
+      "abs",
+      "six pack",
+      "plank",
+      "stomach",
+      "midsection"
+    ],
+    "content": "Train the core to brace and resist motion: planks, side planks, dead bugs, bird-dogs, hanging leg raises, and loaded carries. Heavy squats and deadlifts already hammer it. Visible abs are mostly a body-fat outcome - built via a modest deficit, not endless crunches."
+  },
+  {
+    "id": "compound_form",
+    "title": "The main compound lifts",
+    "keywords": [
+      "squat",
+      "deadlift",
+      "bench",
+      "press",
+      "row",
+      "form",
+      "technique",
+      "compound",
+      "hinge",
+      "big lifts"
+    ],
+    "content": "Build training around the big compounds: squat (knees and hips, controlled depth), hinge or deadlift (push hips back, flat back, brace), press (overhead or bench, full lockout), and row (pull to the torso). Lead each session with one or two while fresh, then add accessories. Film a set occasionally to check positions."
+  },
+  {
+    "id": "frequency_split",
+    "title": "Frequency and splits",
+    "keywords": [
+      "split",
+      "full body",
+      "ppl",
+      "upper lower",
+      "how many days",
+      "days per week",
+      "training days",
+      "schedule"
+    ],
+    "content": "Match your split to your days: 3 days full-body; 4 days upper/lower; 5-6 days push/pull/legs or a body-part split. Hitting each muscle ~2x/week beats once. Pick the layout you will actually attend - total weekly hard sets matter more than the template."
+  },
+  {
+    "id": "time_efficient",
+    "title": "Short on time",
+    "keywords": [
+      "busy",
+      "quick",
+      "short",
+      "travel",
+      "no time",
+      "20 minutes",
+      "express",
+      "minimal time"
+    ],
+    "content": "Short on time? Do the main lift plus one or two supersets and skip the fluff - 20-30 focused minutes maintains and builds. On the road, a dumbbell or bodyweight full-body circuit (squat, push, hinge, row, carry) covers the bases. Brief and consistent beats an ideal session you skip."
+  },
+  {
+    "id": "warmup",
+    "title": "Warming up",
+    "keywords": [
+      "warmup",
+      "warm up",
+      "warm-up",
+      "prep",
+      "before lifting",
+      "mobility drill"
+    ],
+    "content": "A good warm-up takes ~8-10 min: a few minutes of easy cardio, dynamic mobility (leg swings, hip circles, band pull-aparts), then 1-2 light ramp-up sets of your first lift. It raises temperature, primes joints, and lets you lift more with less injury risk."
+  },
+  {
+    "id": "longevity",
+    "title": "Training for longevity",
+    "keywords": [
+      "longevity",
+      "healthspan",
+      "age",
+      "aging",
+      "long term",
+      "live longer"
+    ],
+    "content": "For a long, capable life, train what declines with age: strength (lift 2-4x/week), aerobic base (Zone 2) plus some VO2-max work, power, balance, and muscle mass. Keep most lifting at joint-friendly intensities you can sustain for years, and protect sleep and protein. Decades of consistency beat any short intense phase."
+  },
+  {
+    "id": "app_overview",
+    "title": "How the app works",
+    "keywords": [
+      "app",
+      "how does",
+      "overview",
+      "features",
+      "use this app",
+      "getting started",
+      "tabs",
+      "what can"
+    ],
+    "content": "This app has five tabs: Today (recovery check-in, what is recommended, progression flags, your nutrition lever), Train (start a workout from a routine or build your own), Progress (charts, PRs, and your Rewards), Fuel (your nutrition lever and habit check-ins), and Coach (me). It personalizes everything to the profile you set in onboarding - goal, experience, equipment, and any injuries."
+  },
+  {
+    "id": "lever_checkins",
+    "title": "Nutrition lever check-ins and streaks",
+    "keywords": [
+      "lever",
+      "check-in",
+      "checkin",
+      "streak",
+      "streaks",
+      "notification",
+      "yes no",
+      "milestone",
+      "track habit"
+    ],
+    "content": "In the Fuel tab you can track nutrition levers - one simple habit at a time (no soda, protein at breakfast). The coach checks in with Yes/No notifications every few days and keeps a streak of how long you have held it. Answering the good way extends it; a slip resets it. Hit milestones and the app celebrates."
+  },
+  {
+    "id": "build_levers",
+    "title": "Getting lever suggestions",
+    "keywords": [
+      "suggest",
+      "recommend",
+      "build levers",
+      "which habit",
+      "what habit",
+      "intake questions",
+      "habit suggestions"
+    ],
+    "content": "Tap Build your levers in Fuel and answer a few quick questions about your daily eating; the coach then asks short follow-ups and recommends levers tailored to your weak spots and goal. Tap any suggestion to start tracking it. It works offline too - the questionnaire maps your answers to sensible habits even without the AI."
+  },
+  {
+    "id": "rewards",
+    "title": "Achievements, levels and rewards",
+    "keywords": [
+      "achievement",
+      "achievements",
+      "reward",
+      "rewards",
+      "level",
+      "levels",
+      "points",
+      "badge",
+      "badges",
+      "recognition",
+      "gamify",
+      "trophy"
+    ],
+    "content": "The app gamifies consistency: you earn achievements (bronze/silver/gold) for logging workouts, weekly streaks, PRs, doing your warm-ups, and holding nutrition streaks. Each gives points that build your level. See them on the Recognition card on Today and the full wall in Progress, with a personal note from the coach when you unlock one."
+  },
+  {
+    "id": "exercise_library",
+    "title": "The exercise library and difficulty",
+    "keywords": [
+      "exercise library",
+      "library",
+      "difficulty",
+      "beginner exercise",
+      "intermediate",
+      "advanced",
+      "which exercises",
+      "swap exercise"
+    ],
+    "content": "The library has 100+ exercises tagged by equipment (barbell, dumbbell, kettlebell, cable, machine, bodyweight, cardio) and difficulty (Beginner, Intermediate, Advanced). When I build or suggest a plan I pull lifts at or below your experience level - basics like squats and push-ups are used at every level, while technical lifts are reserved for Advanced. Browse them grouped by muscle in the picker."
+  },
+  {
+    "id": "warmup_gate",
+    "title": "The warm-up gate",
+    "keywords": [
+      "warm-up gate",
+      "warmup gate",
+      "locked",
+      "before logging",
+      "required warm-up",
+      "logging locked"
+    ],
+    "content": "Every session starts with a guided warm-up checklist, and set logging stays locked until you check off every item. It is there because warming up cuts injury risk and lets you lift better - a few minutes of easy cardio, dynamic mobility, and a light ramp-up set. It also counts toward a warm-up achievement."
+  },
+  {
+    "id": "progression_flags",
+    "title": "Ready-to-progress flags",
+    "keywords": [
+      "ready to progress",
+      "progression flag",
+      "suggested weight",
+      "when to add weight",
+      "today tab"
+    ],
+    "content": "Log every set with weight, RPE, and reps-in-tank, and the app tracks each priority lift. When you clear all target reps with reps still in reserve, the lift flags as ready to progress on the Today tab with a suggested next weight. That is your cue to add the smallest jump - progressive overload on autopilot."
+  },
+  {
+    "id": "plate_calculator",
+    "title": "The plate calculator",
+    "keywords": [
+      "plate",
+      "plates",
+      "barbell",
+      "load the bar",
+      "per side",
+      "calculator",
+      "bar math"
+    ],
+    "content": "When logging a barbell lift you can type a weight or use the visual plate loader: tap plates to add them per side and tap a loaded plate to remove it - the bar drawing and total update as you go. Handy for setting up the bar fast."
+  },
+  {
+    "id": "rest_timer",
+    "title": "The rest timer",
+    "keywords": [
+      "rest timer",
+      "timer",
+      "auto-start",
+      "countdown",
+      "live activity",
+      "rest alarm"
+    ],
+    "content": "A rest timer auto-starts after you complete a set and shows on the lock screen and Dynamic Island, with an alarm (sound, vibrate, choose the tone) that fires even when the app is backgrounded. Adjust the default rest and presets in your profile. If a rest feels short, tap +15s."
+  },
+  {
+    "id": "voice_coach",
+    "title": "Talking to the coach during a workout",
+    "keywords": [
+      "voice",
+      "talk",
+      "hands free",
+      "microphone",
+      "speak",
+      "voice coach",
+      "say"
+    ],
+    "content": "During a workout the AI Coach bar sits at the top of the screen. Tap it and just talk - it listens hands-free, answers out loud, and keeps the conversation going. It knows your live session (current lift, last set, what is next) and ducks your music while talking. Pick the spoken voice and speed in Profile."
+  },
+  {
+    "id": "ai_tiers",
+    "title": "How the AI coach works",
+    "keywords": [
+      "ai",
+      "coach",
+      "on-device",
+      "offline",
+      "private",
+      "privacy",
+      "claude",
+      "model",
+      "internet"
+    ],
+    "content": "The coach runs in tiers: an on-device Apple Intelligence model on supported phones (private, works offline, no data leaves your device), an optional smarter cloud model if an API key is added, and a built-in knowledge base that always works with no network. Either way it reads your profile and recent training before answering, so advice fits you."
+  },
+  {
+    "id": "profile_personalization",
+    "title": "Your profile and personalization",
+    "keywords": [
+      "profile",
+      "personalize",
+      "experience",
+      "equipment",
+      "injury",
+      "injuries",
+      "goal",
+      "edit profile",
+      "limitations"
+    ],
+    "content": "Your profile drives everything - set your goal, experience level, days per week, the equipment you have, and any injuries or limitations (edit it any time from Today). The coach programs around the gear you own and works around injuries you list, and picks exercises that match your experience. Keep it current and the coaching stays relevant."
+  },
+  {
+    "id": "programs_templates",
+    "title": "Programs you can start",
+    "keywords": [
+      "plan",
+      "plans",
+      "program",
+      "programs",
+      "routine",
+      "routines",
+      "template",
+      "templates",
+      "start a workout",
+      "what plans",
+      "which plan",
+      "what can i start",
+      "ready-made",
+      "preset"
+    ],
+    "content": "The Train tab has ready-made programs you can start with one tap: Full Body A/B/C (beginner, 3 days), Push / Pull / Legs (intermediate, 4-6 days), a Conditioning day with a timed core circuit, and Express 30-minute sessions. You can also build and save your own custom routine, or start an empty session. The Today tab recommends which day to do next."
+  },
+  {
+    "id": "body_fat_exercise_selection_myth",
+    "title": "Does body fat percentage change which exercises you should do?",
+    "keywords": [
+      "body fat workout",
+      "high body fat exercises",
+      "best exercises for fat people",
+      "does body fat change exercise choice",
+      "exercise selection bodyfat",
+      "obese workout plan",
+      "special fat loss exercises"
+    ],
+    "content": "There is no special high body fat workout, and your body fat percentage by itself should not dictate which specific lifts you do. Exercise selection is driven by joint impact, your current ability and mobility, injury history, and what you will actually stick to, not by a number on a body fat scale. Across the whole body fat spectrum the template is the same: resistance training, more daily activity, and an appropriate diet, with modality and intensity scaled to the individual. The main thing that changes with higher body fat is the value of lower-impact and supported options to protect joints and keep you consistent."
+  },
+  {
+    "id": "body_fat_reference_ranges",
+    "title": "Healthy body fat percentage ranges for men and women",
+    "keywords": [
+      "healthy body fat percentage",
+      "body fat ranges men women",
+      "ideal body fat",
+      "essential fat",
+      "athlete body fat",
+      "normal bodyfat percent",
+      "body fat chart"
+    ],
+    "content": "The American Council on Exercise puts essential fat at roughly 2 to 5 percent for men and 10 to 13 percent for women, athletic at 6 to 13 and 14 to 20, fitness at 14 to 17 and 21 to 24, acceptable at 18 to 24 and 25 to 31, and obese at 25 percent and above for men and 32 percent and above for women. Women carry more essential fat for hormonal and reproductive health, so a healthy woman sits higher than a healthy man. Treat these as rough categories, not precise targets, since they vary by age and ethnicity and the measurement itself carries error. If you are at the extreme low or high end, or have a medical condition, check with your clinician before setting a target."
+  },
+  {
+    "id": "measuring_body_fat_methods",
+    "title": "How to measure body fat and how accurate each method is",
+    "keywords": [
+      "how to measure body fat",
+      "dexa scan",
+      "calipers",
+      "bia scale accuracy",
+      "body fat measurement",
+      "navy tape method",
+      "inbody accuracy",
+      "skinfold"
+    ],
+    "content": "DEXA is the most accurate practical option and can detect changes of a few hundred grams, calipers and the Navy tape method are cheap and decent when done by the same skilled person each time, and BIA scales are convenient but can differ from DEXA by several percent and swing with hydration, food, and recent exercise. No consumer method is perfect, so pick one tool and track the trend over weeks rather than obsessing over a single reading. Always measure under the same conditions, ideally fasted and well hydrated, each time. The honest takeaway is that the direction of change matters far more than any single absolute number."
+  },
+  {
+    "id": "training_high_body_fat_beginner",
+    "title": "Training for a beginner with high body fat or obesity",
+    "keywords": [
+      "obese workout",
+      "obesity exercise",
+      "high body fat plan",
+      "exercising with obesity",
+      "out of shape",
+      "obese person"
+    ],
+    "content": "Start low and go slow: build the habit first with low-impact movement and a simple full-body resistance routine two to three days a week, using machines, bands, or controlled bodyweight. ACSM advises beginners with obesity start with lighter resistance and around one set of 8 to 12 reps before gradually adding volume, frequency, and intensity, which limits the excessive soreness and joint strain that cause people to quit. Combine that with daily steps and a modest calorie deficit, since even a 5 to 10 percent weight loss meaningfully lowers risk of type 2 diabetes and heart disease. If you have obesity with conditions like diabetes, heart disease, or joint problems, check with your clinician before starting."
+  },
+  {
+    "id": "cardio_higher_body_fat",
+    "title": "Best cardio for higher body fat individuals",
+    "keywords": [
+      "cardio for overweight",
+      "low impact cardio",
+      "best cardio fat people",
+      "walking cycling swimming fat loss",
+      "knee friendly cardio",
+      "cardio obese beginner",
+      "aquatic exercise"
+    ],
+    "content": "Favor low-impact cardio that protects the knees and hips: walking, cycling, the elliptical, and water-based work like aquatic walking or swimming. Water is especially joint-friendly because buoyancy cuts weight-bearing load by about 50 percent at waist depth, around 75 percent at mid-chest, and nearly 90 percent at neck depth, so you can build fitness and burn calories without the pounding of running. A Cochrane review found aquatic exercise improves pain and function in knee and hip osteoarthritis, making it a strong option if joints are an issue. Progress intensity gradually as fitness improves, and if you have joint pain or arthritis, discuss a water-based or seated program with your clinician."
+  },
+  {
+    "id": "resistance_training_higher_body_fat",
+    "title": "Why people with higher body fat should lift weights",
+    "keywords": [
+      "weight training overweight",
+      "lifting in a deficit",
+      "resistance training fat loss",
+      "machines vs free weights beginner",
+      "build muscle while losing fat obese",
+      "preserve muscle dieting",
+      "should i lift to lose weight"
+    ],
+    "content": "Lifting in a calorie deficit is what signals your body to hold onto muscle while you lose fat, so resistance training is not optional even when the main goal is fat loss. Dieting without exercise tends to give up around 24 percent of lost weight as lean tissue, but adding training cuts that to roughly 11 percent, and a 2025 systematic review rates resistance training's fat-mass loss as high-certainty and its muscle-sparing effect as moderate-certainty evidence. Machines are often the most accessible starting point because they are easy to learn and stabilize the movement, with free weights added as confidence grows. Protecting muscle also protects your resting metabolic rate, which makes keeping the fat off easier."
+  },
+  {
+    "id": "realistic_fat_loss_rate",
+    "title": "Realistic rate of fat loss: higher body fat versus lean",
+    "keywords": [
+      "how fast can i lose fat",
+      "safe rate of fat loss",
+      "weight loss per week",
+      "fat loss expectations",
+      "lose fat without losing muscle",
+      "rate of weight loss leaner",
+      "how much weight per week"
+    ],
+    "content": "The more fat you carry, the more aggressively you can run a deficit and the faster early loss tends to be, while leaner people must go slower to protect muscle. A common evidence-based guide is roughly 0.5 to 1 percent of bodyweight per week, leaning higher when you have more to lose and lower as you get lean; in Garthe's 2011 athlete study the 0.7 percent per week group gained lean mass by about 2 percent while the faster 1.4 percent per week group did not. Expect the scale to lurch and stall rather than fall in a straight line. Chasing very fast loss when already lean usually costs you muscle, not fat."
+  },
+  {
+    "id": "protein_calorie_targets_leanness",
+    "title": "Protein and calorie targets scaled to leanness",
+    "keywords": [
+      "how much protein",
+      "protein per kg",
+      "protein in a deficit",
+      "protein for fat loss",
+      "lean body mass protein",
+      "macros for cutting",
+      "protein target"
+    ],
+    "content": "The ISSN position stand says 1.4 to 2.0 grams of protein per kilogram of bodyweight covers most exercising people, and 2.3 to 3.1 grams per kilogram is useful for lean, hard-dieting lifters trying to keep muscle. The leaner you are and the harder you diet, the higher the protein need, and the bigger your deficit, the more protein helps protect muscle. For someone with high body fat, basing protein on lean body mass or a goal weight is more sensible than total bodyweight, which would overshoot. Keep the deficit moderate, since very large cuts increase muscle loss no matter how high the protein."
+  },
+  {
+    "id": "lean_getting_leaner",
+    "title": "Getting leaner when you are already lean",
+    "keywords": [
+      "last few percent body fat",
+      "getting shredded",
+      "hard to lose final fat",
+      "cutting when lean",
+      "diet break refeed",
+      "stubborn fat lean",
+      "low body fat diet"
+    ],
+    "content": "The last few percent of body fat is the hardest because hunger, fatigue, and muscle-loss risk all rise, so the strategy shifts to a smaller deficit, high protein, and keeping your lifting heavy to signal muscle retention. Planned diet breaks at maintenance every several weeks and periodic refeeds can help adherence and modestly protect metabolic rate, though the metabolic benefit is larger in people with more fat to lose and small in already-lean lifters. Progress is slow here and that is normal. If you are pushing toward very low body fat or noticing disrupted sleep, mood, libido, or menstrual cycles, that is a signal to ease off and check with a clinician."
+  },
+  {
+    "id": "very_low_body_fat_risks",
+    "title": "Risks of very low body fat and RED-S",
+    "keywords": [
+      "low body fat dangers",
+      "too lean",
+      "red-s",
+      "relative energy deficiency",
+      "lost period training",
+      "hormones low body fat",
+      "underweight risks",
+      "amenorrhea athlete"
+    ],
+    "content": "Dropping toward essential-fat levels is not a place to live indefinitely, because chronically low energy availability can disrupt hormones, bone health, immunity, mood, and in women the menstrual cycle, a cluster known as RED-S that affects men too. The driver is usually too little fuel for your training load rather than a magic body fat number, and the IOC consensus notes that body systems are substantially impaired below about 30 kcal per kg of fat-free mass per day. Lost periods, frequent illness, stress fractures, or crashing performance are red flags, not signs of discipline. This is a medical situation, so please check with your clinician or a sports physician."
+  },
+  {
+    "id": "body_recomposition",
+    "title": "Can you build muscle and lose fat at the same time?",
+    "keywords": [
+      "body recomposition",
+      "build muscle lose fat",
+      "recomp",
+      "gain muscle drop fat",
+      "can i recomp",
+      "muscle and fat at once",
+      "lose fat gain muscle"
+    ],
+    "content": "Yes, recomposition is real and works best for beginners, people returning after a layoff, and those carrying higher body fat, because they have the most room to build muscle while tapping fat stores for energy. Advanced, already-lean lifters can still recomp but progress is slow, so they often do better with separate gaining and cutting phases. The recipe is the unglamorous basics done well: progressive resistance training, high protein, a small deficit or maintenance calories, and good sleep. Track measurements, photos, and strength rather than just scale weight, since the number may barely move while your shape changes."
+  },
+  {
+    "id": "cardio_vs_lifting_higher_body_fat",
+    "title": "More cardio or more lifting for higher body fat?",
+    "keywords": [
+      "cardio vs weights fat loss",
+      "should i do more cardio",
+      "lifting or cardio to lose weight",
+      "best exercise for fat loss",
+      "weights vs cardio overweight",
+      "cardio or weights"
+    ],
+    "content": "It is not either-or: the diet creates the calorie deficit, cardio and daily steps add to it, and lifting is what preserves the muscle you would otherwise lose. Skipping resistance training to do only cardio is the classic mistake, because it can leave you smaller but still soft and lowers your metabolic rate. A practical split is resistance training two to three days a week plus cardio and steps you enjoy and will sustain. Both matter, but do not drop the weights."
+  },
+  {
+    "id": "body_fat_distribution_visceral",
+    "title": "Visceral versus subcutaneous fat and waist size",
+    "keywords": [
+      "visceral fat",
+      "belly fat health risk",
+      "subcutaneous fat",
+      "android gynoid",
+      "waist circumference",
+      "apple vs pear shape",
+      "where you lose fat",
+      "waist to height ratio"
+    ],
+    "content": "Where you store fat matters for health: visceral fat packed around the organs in an apple-shaped, android pattern carries more cardiometabolic risk than the subcutaneous, gynoid fat on hips and thighs. Waist circumference is a cheap, useful health marker, and a waist-to-height ratio under about 0.5 is a handy rule of thumb. You cannot choose where you lose fat first, since that is governed largely by genetics and hormones, but losing overall fat does reduce visceral fat. If your waist is high or you have metabolic risk factors, loop in your clinician."
+  },
+  {
+    "id": "exercise_intensity_scaling",
+    "title": "How hard to push: scaling intensity and HIIT vs steady cardio",
+    "keywords": [
+      "how hard should i train",
+      "rpe",
+      "exercise intensity beginner",
+      "work capacity",
+      "interval training overweight",
+      "how intense should cardio be",
+      "steady state vs intervals"
+    ],
+    "content": "Start at an intensity you can repeat, using a simple effort scale such as RPE, and build work capacity before chasing intensity, especially as a heavier beginner whose joints need time to adapt. For fat loss, Wewege's 2017 meta-analysis found HIIT and moderate steady-state cardio produce similar body-composition changes, with HIIT taking roughly 40 percent less time but feeling harder, so the best choice is what you will actually do consistently without joint flare-ups. Low-impact intervals on a bike or elliptical are a joint-friendly way to add intensity later. Safety data for HIIT in people with obesity is still limited, so progress gradually and clear higher-intensity work with your clinician if you have chronic conditions."
+  },
+  {
+    "id": "body_fat_vs_bmi_vs_waist",
+    "title": "Body fat percentage vs BMI vs waist circumference",
+    "keywords": [
+      "bmi vs body fat",
+      "is bmi accurate",
+      "bmi for muscular people",
+      "best health metric",
+      "waist vs bmi",
+      "bmi wrong athletes",
+      "skinny fat"
+    ],
+    "content": "BMI is a quick population screen but it cannot tell muscle from fat, so it routinely mislabels muscular people as overweight or obese while missing skinny-fat individuals who look slim but carry excess fat with little muscle. Body fat percentage is more meaningful for composition, and waist circumference adds useful information about risky abdominal fat. The smart approach is to track several markers plus performance, like strength and how clothes fit, rather than fixating on one number. No single metric tells the whole story."
+  },
+  {
+    "id": "mindset_adherence_body_fat",
+    "title": "Mindset, adherence, and avoiding extremes",
+    "keywords": [
+      "sustainable fat loss",
+      "diet too restrictive",
+      "obsessed with body fat",
+      "mindset weight loss",
+      "disordered eating signs",
+      "body image",
+      "consistency over perfection",
+      "exercise addiction"
+    ],
+    "content": "The approach that wins is the one you can sustain, so favor a moderate deficit, enough food to train hard, and habits you can keep for years over crash diets and punishing schedules. Body fat is one metric, not your whole health or worth, and chasing an ever-lower number can backfire physically and mentally. Watch for warning signs that fitness has tipped into something harmful, such as compulsive training, intense distress when you miss a workout, rigid food rules, or preoccupation with size or leanness. If that sounds familiar, please reach out to a qualified clinician or an eating-disorder professional for support."
+  }
 ]

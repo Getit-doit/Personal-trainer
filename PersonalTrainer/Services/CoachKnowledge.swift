@@ -40,7 +40,7 @@ enum CoachKnowledge {
         "good", "way", "ways", "help", "need", "want", "should", "would", "could",
         "from", "when", "does", "doing", "into", "out", "but", "not", "more", "some",
         "they", "them", "their", "than", "then", "much", "many", "lot", "very", "really",
-        "work", "works", "working", "use", "using", "make", "made"
+        "work", "works", "working", "use", "using", "make", "made", "per"
     ]
 
     /// Lowercased content tokens (≥3 chars, no stopwords) for matching.

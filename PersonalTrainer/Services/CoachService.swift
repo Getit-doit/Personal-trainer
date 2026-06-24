@@ -85,16 +85,22 @@ enum CoachService {
     static func suggestLevers(memory: String, avoid: [String]) async -> [HabitEngine.Suggestion]? {
         guard activeEngine != .offline else { return nil }
         let avoidList = avoid.isEmpty ? "none" : avoid.joined(separator: ", ")
+        // Ground lever ideas in the vetted nutrition library, not just the chat.
+        let evidence = CoachKnowledge.context(
+            for: "nutrition diet protein fiber satiety hydration sugar alcohol habits fat loss", limit: 4)
         let prompt = """
-        Based on the athlete context below, suggest 4–6 specific daily nutrition "lever" \
-        habits tailored to their goal, recent training, and their daily-habit answers. Each \
-        is one short, concrete habit (a few words).
+        Based on the athlete context and the evidence below, suggest 4–6 specific daily \
+        nutrition "lever" habits tailored to their goal, recent training, and their daily-habit \
+        answers. Each is one short, concrete habit (a few words). Keep them consistent with the \
+        evidence provided.
         Return ONLY a JSON array of short strings — the habit names — with no prose or code \
         fences, e.g. ["Protein at breakfast", "No soda", "Veggies at dinner"].
         Do not duplicate these existing levers: \(avoidList).
 
         Athlete context:
         \(memory)
+
+        \(evidence)
         """
         guard let raw = await oneShot(prompt) else { return nil }
         return parseLeverTitles(raw)
@@ -121,13 +127,17 @@ enum CoachService {
     /// eating, given their intake answers. Returns nil offline or on parse failure.
     static func followUpQuestions(context: String) async -> [String]? {
         guard activeEngine != .offline else { return nil }
+        let evidence = CoachKnowledge.context(
+            for: "nutrition diet protein fiber satiety hydration sugar alcohol habits", limit: 3)
         let prompt = """
         You're a friendly, non-judgmental nutrition coach. Based on the athlete's daily-habit \
-        answers below, ask 2–3 short, specific follow-up questions to understand their eating \
-        better before recommending habits to work on.
+        answers and the evidence below, ask 2–3 short, specific follow-up questions to \
+        understand their eating better before recommending habits to work on.
         Return ONLY a JSON array of strings — the questions — with no prose or code fences.
 
         \(context)
+
+        \(evidence)
         """
         guard let raw = await oneShot(prompt), let arr = parseStringArray(raw) else { return nil }
         let cleaned = arr.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
