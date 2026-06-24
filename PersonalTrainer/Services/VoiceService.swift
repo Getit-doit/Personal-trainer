@@ -33,6 +33,17 @@ final class VoiceService: NSObject, ObservableObject {
         synthesizer.delegate = self
     }
 
+    /// Whether a natural (enhanced/premium) voice is installed for the device
+    /// language — if not, we prompt the user to download one.
+    static var hasEnhancedVoice: Bool {
+        let langPrefix = String((Locale.preferredLanguages.first ?? "en").prefix(2)).lowercased()
+        return AVSpeechSynthesisVoice.speechVoices().contains {
+            !$0.voiceTraits.contains(.isNoveltyVoice)
+                && $0.language.lowercased().hasPrefix(langPrefix)
+                && $0.quality != .default
+        }
+    }
+
     /// Voices for spoken replies — only natural, human-ish ones (novelty voices
     /// like Zarvox/Trinoids/Bells are filtered out), preferring the device
     /// language and listing higher-quality (enhanced/premium) voices first.

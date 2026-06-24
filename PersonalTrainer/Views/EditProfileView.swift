@@ -1,11 +1,13 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 /// Edit the athlete profile after onboarding: stats, schedule, goal, and the
 /// training constraints that drive coaching and the warm-up gate.
 struct EditProfileView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @Bindable var profile: UserProfile
 
     @State private var feet = 5
@@ -140,6 +142,18 @@ struct EditProfileView: View {
                 Section {
                     Toggle("Read replies aloud", isOn: $coachSpeakReplies)
                         .tint(Theme.accent)
+                    if !VoiceService.hasEnhancedVoice {
+                        Button {
+                            if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                        } label: {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Label("Get a natural voice", systemImage: "sparkles")
+                                    .foregroundStyle(Theme.accent)
+                                Text("The built-in voice sounds robotic. Open Settings → Accessibility → Spoken Content → Voices, download an English voice, then pick it here.")
+                                    .font(.caption2).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
                     Picker("Voice", selection: $coachVoiceID) {
                         Text("Default").tag("")
                         ForEach(VoiceService.voiceOptions(), id: \.id) { v in
