@@ -1,6 +1,6 @@
 import Foundation
 import SwiftData
-import UserNotifications
+@preconcurrency import UserNotifications
 
 /// Drives the coach's notification check-ins and the recognition/reward system:
 ///   • schedules diet-lever questions as notifications with Yes / No buttons,

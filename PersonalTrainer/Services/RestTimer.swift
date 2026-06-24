@@ -1,7 +1,7 @@
 import SwiftUI
 import AudioToolbox
 import ActivityKit
-import UserNotifications
+@preconcurrency import UserNotifications
 
 /// A simple countdown rest timer with pause/resume, ±time, and a finish alarm.
 /// Auto-started when a set is completed; also drives a Live Activity on the lock
@@ -121,11 +121,9 @@ final class RestTimer: ObservableObject {
     // MARK: - Background alarm (local notification)
 
     private func ensureNotificationAuth() {
-        let center = UNUserNotificationCenter.current()
-        center.getNotificationSettings { settings in
-            if settings.authorizationStatus == .notDetermined {
-                center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
-            }
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            guard settings.authorizationStatus == .notDetermined else { return }
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
         }
     }
 
