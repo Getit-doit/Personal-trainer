@@ -33,15 +33,26 @@ final class VoiceService: NSObject, ObservableObject {
         synthesizer.delegate = self
     }
 
-    /// Voices available for spoken replies, preferring the device language.
+    /// Voices for spoken replies — only natural, human-ish ones (novelty voices
+    /// like Zarvox/Trinoids/Bells are filtered out), preferring the device
+    /// language and listing higher-quality (enhanced/premium) voices first.
     /// Returned as (identifier, display name) so callers don't need AVFoundation.
     static func voiceOptions() -> [(id: String, name: String)] {
         let langPrefix = String((Locale.preferredLanguages.first ?? "en").prefix(2)).lowercased()
-        let all = AVSpeechSynthesisVoice.speechVoices()
-        let matched = all.filter { $0.language.lowercased().hasPrefix(langPrefix) }
-        return (matched.isEmpty ? all : matched)
-            .sorted { $0.name < $1.name }
-            .map { (id: $0.identifier, name: "\($0.name) · \($0.language)") }
+        let humanish = AVSpeechSynthesisVoice.speechVoices()
+            .filter { !$0.voiceTraits.contains(.isNoveltyVoice) }
+        let matched = humanish.filter { $0.language.lowercased().hasPrefix(langPrefix) }
+        let list = matched.isEmpty ? humanish : matched
+        return list
+            .sorted {
+                $0.quality.rawValue != $1.quality.rawValue
+                    ? $0.quality.rawValue > $1.quality.rawValue   // enhanced/premium first
+                    : $0.name < $1.name
+            }
+            .map { voice -> (id: String, name: String) in
+                let q = voice.quality == .default ? "" : " (\(voice.quality == .premium ? "Premium" : "Enhanced"))"
+                return (id: voice.identifier, name: "\(voice.name)\(q) · \(voice.language)")
+            }
     }
 
     // MARK: Authorization
