@@ -1112,11 +1112,14 @@
     "id": "back_pain",
     "title": "Lower-back discomfort",
     "keywords": [
-      "back",
       "lower back",
       "lumbar",
       "back pain",
-      "spine"
+      "spine",
+      "backache",
+      "back hurts",
+      "hurts",
+      "hurt"
     ],
     "content": "For a grumpy lower back, brace hard, keep a neutral spine, and pull from a height (rack pulls or blocks) if floor deadlifts aggravate it. Hip hinges, core work (planks, bird-dogs, side planks), and walking usually help. Pain down the leg, numbness, or sharp pain means get it checked before loading heavy."
   },
@@ -1306,13 +1309,12 @@
     "id": "build_levers",
     "title": "Getting lever suggestions",
     "keywords": [
-      "suggest",
-      "recommend",
+      "suggest levers",
+      "recommend levers",
       "build levers",
-      "which habit",
-      "what habit",
-      "intake questions",
-      "habit suggestions"
+      "which lever",
+      "lever suggestions",
+      "intake questions"
     ],
     "content": "Tap Build your levers in Fuel and answer a few quick questions about your daily eating; the coach then asks short follow-ups and recommends levers tailored to your weak spots and goal. Tap any suggestion to start tracking it. It works offline too - the questionnaire maps your answers to sensible habits even without the AI."
   },
@@ -1694,5 +1696,458 @@
       "exercise addiction"
     ],
     "content": "The approach that wins is the one you can sustain, so favor a moderate deficit, enough food to train hard, and habits you can keep for years over crash diets and punishing schedules. Body fat is one metric, not your whole health or worth, and chasing an ever-lower number can backfire physically and mentally. Watch for warning signs that fitness has tipped into something harmful, such as compulsive training, intense distress when you miss a workout, rigid food rules, or preoccupation with size or leanness. If that sounds familiar, please reach out to a qualified clinician or an eating-disorder professional for support."
+  },
+  {
+    "id": "autonomy_supportive_language",
+    "title": "Use autonomy-supportive language",
+    "keywords": [
+      "autonomy support",
+      "choice",
+      "rationale",
+      "self-determination",
+      "sdt",
+      "controlling language",
+      "autonomy supportive coaching"
+    ],
+    "content": "The most reliable motivator is giving people a real say: offer choices within limits, explain the why behind a plan, and acknowledge how they feel. This is the core of Self-Determination Theory and it consistently raises autonomous motivation and adherence. Try: here are two solid options for today, which feels right? Then back it with a short reason."
+  },
+  {
+    "id": "avoid_controlling_shoulds",
+    "title": "Drop controlling shoulds and pressure",
+    "keywords": [
+      "controlling",
+      "shoulds",
+      "must",
+      "have to",
+      "pressure",
+      "guilt trip",
+      "commanding"
+    ],
+    "content": "Words like must, have to, and you should pile on pressure and quietly erode intrinsic motivation; in sport they are linked to need frustration and burnout. Swap commands for invitations and information: instead of you have to do cardio, try most people recover well when they add some easy cardio, want to try it? Keep the choice with them."
+  },
+  {
+    "id": "process_vs_person_praise",
+    "title": "Praise the process, not the person",
+    "keywords": [
+      "praise",
+      "process praise",
+      "effort praise",
+      "person praise",
+      "ability praise",
+      "natural",
+      "talent"
+    ],
+    "content": "Praise effort, strategy, and choices rather than fixed traits. Telling someone they are a natural feels nice but makes them fragile when things get hard, while praising what they actually did builds persistence. Say nice work pacing those last reps, not you are just gifted."
+  },
+  {
+    "id": "specific_sincere_praise",
+    "title": "Make praise specific and sincere",
+    "keywords": [
+      "specific praise",
+      "sincere praise",
+      "genuine",
+      "credible",
+      "empty praise",
+      "inflated praise"
+    ],
+    "content": "Vague or inflated praise rings hollow and can backfire, especially for people low in confidence. Name the concrete thing they did and why it mattered: you kept your back flat the whole set, that is exactly the fix we worked on. If you would not say it to a friend with a straight face, do not say it."
+  },
+  {
+    "id": "when_praise_backfires",
+    "title": "Know when praise backfires",
+    "keywords": [
+      "praise backfire",
+      "over praising",
+      "low self esteem",
+      "fragile",
+      "inflated praise"
+    ],
+    "content": "Praise can hurt when it is about the person rather than the work, when it is exaggerated, or when it sets a bar so high it scares people off challenges. This is contested at the edges, but the safe play is concrete, honest, process-focused praise. Celebrate the doing, not the identity."
+  },
+  {
+    "id": "growth_mindset_framing",
+    "title": "Frame ability as trainable (with honesty)",
+    "keywords": [
+      "growth mindset",
+      "fixed mindset",
+      "not yet",
+      "trainable",
+      "dweck",
+      "mindset"
+    ],
+    "content": "Talk about skill as something that grows with reps and good strategy, and use not yet instead of cannot. Be honest though: large meta-analyses put the average effect of mindset talk near d equals 0.05 and it helps some groups more than others, so it is a framing tool, not magic. Pair it with a concrete next step."
+  },
+  {
+    "id": "specific_challenging_goals",
+    "title": "Set specific and challenging goals",
+    "keywords": [
+      "goal setting",
+      "specific goals",
+      "challenging goals",
+      "locke latham",
+      "do your best",
+      "stretch goal"
+    ],
+    "content": "Specific, challenging goals beat do your best in about 90 percent of studies, as long as the person buys in and gets feedback. Make the target concrete and a real stretch but within reach: add 5kg to your squat over six weeks beats get stronger. Match the difficulty to current ability."
+  },
+  {
+    "id": "smart_goals_limits",
+    "title": "Use SMART, but mind its limits",
+    "keywords": [
+      "smart goals",
+      "achievable",
+      "measurable",
+      "time bound",
+      "smart limitations"
+    ],
+    "content": "SMART is handy for making goals clear and measurable, but its Achievable letter often gets read as easy, which kills the challenge that actually drives performance. It also ignores commitment and feedback. Keep the clarity, keep the goal genuinely hard, and build in check-ins."
+  },
+  {
+    "id": "implementation_intentions",
+    "title": "Plan with if-then (implementation intentions)",
+    "keywords": [
+      "implementation intentions",
+      "if then plan",
+      "action planning",
+      "gollwitzer",
+      "when where how",
+      "habit cue"
+    ],
+    "content": "Turn intentions into if-then plans that name when, where, and how: if it is Monday at 7am, then I train legs before work. This closes the gap between wanting to and doing, though for exercise specifically the effect is helpful but modest. Anchor the plan to an existing routine."
+  },
+  {
+    "id": "habit_formation_realism",
+    "title": "Be realistic about habit timelines",
+    "keywords": [
+      "habit formation",
+      "21 days myth",
+      "66 days",
+      "automaticity",
+      "lally",
+      "build a habit"
+    ],
+    "content": "Forget the 21-day myth. Real-world research found a median of about 66 days for a behavior to feel automatic, with a huge range from roughly 18 to 254 days. Tell people consistency matters more than streak-counting, and that missing one day does not materially reset the process."
+  },
+  {
+    "id": "motivational_interviewing_basics",
+    "title": "Ask, don't tell (motivational interviewing)",
+    "keywords": [
+      "motivational interviewing",
+      "ask dont tell",
+      "change talk",
+      "evoke",
+      "roll with resistance",
+      "ambivalence",
+      "miller rollnick"
+    ],
+    "content": "When someone is unsure or resistant, do not lecture; ask open questions and draw out their own reasons to change. Roll with resistance instead of arguing, and reflect what you hear. What would make this worth it for you? lands better than here is why you should."
+  },
+  {
+    "id": "responding_to_setbacks",
+    "title": "Respond to missed sessions without shame",
+    "keywords": [
+      "setback",
+      "missed session",
+      "relapse",
+      "fell off",
+      "skipped workout",
+      "getting back on track",
+      "lapse"
+    ],
+    "content": "Treat a missed week as data, not a verdict. Skip the guilt, normalize that everyone lapses, and shrink the next step to something easy to restart. One missed session is a comma, not a full stop, so what is the smallest thing you could do tomorrow?"
+  },
+  {
+    "id": "plateaus_response",
+    "title": "Coach through plateaus",
+    "keywords": [
+      "plateau coaching",
+      "feel stuck",
+      "no progress mindset",
+      "stalled motivation",
+      "diminishing returns"
+    ],
+    "content": "Plateaus are normal and usually a sign to change a variable, not to quit. Reframe it as a puzzle: zoom out to longer-term progress, then adjust one input like volume, intensity, sleep, or recovery. Ask what has changed lately before adding more."
+  },
+  {
+    "id": "wants_to_quit",
+    "title": "When someone wants to quit",
+    "keywords": [
+      "want to quit",
+      "giving up",
+      "drop out",
+      "demotivated",
+      "losing motivation",
+      "thinking of stopping"
+    ],
+    "content": "Do not panic or push hard; that often backfires. Get curious about what is draining the motivation, validate it, and reconnect them to why they started. Sometimes the right move is a smaller, more enjoyable goal, not more discipline. Respect that stopping is their call."
+  },
+  {
+    "id": "self_compassion_vs_self_criticism",
+    "title": "Favor self-compassion over harsh self-talk",
+    "keywords": [
+      "self compassion",
+      "self criticism",
+      "be kind to yourself",
+      "harsh self talk",
+      "beating yourself up"
+    ],
+    "content": "Harsh self-criticism feels productive but research links it to worse recovery and more avoidance after failure, while self-compassion supports bouncing back. Coach people to talk to themselves like they would to a training partner. You had an off day, that is human, what did it teach you?"
+  },
+  {
+    "id": "reframe_failure_as_information",
+    "title": "Reframe failure as information",
+    "keywords": [
+      "failure mindset",
+      "reframe",
+      "mistakes",
+      "learning opportunity",
+      "missed lift",
+      "learning from failure"
+    ],
+    "content": "A failed rep or bad session is feedback, not a character flaw. Name what it tells you and turn it into the next adjustment. That set told us the weight was too heavy today, so we will back off 10 percent and build up. Keep the focus on the task, not the self."
+  },
+  {
+    "id": "task_focused_feedback",
+    "title": "Keep feedback task-focused and actionable",
+    "keywords": [
+      "feedback",
+      "task focused",
+      "actionable",
+      "corrective feedback",
+      "specific feedback",
+      "how to improve"
+    ],
+    "content": "The feedback that improves performance describes the task and the next step, not the person. Be specific and tell them what to do differently: drive through your heels next set works; you were sloppy does not. Aim feedback at the work, never the worth."
+  },
+  {
+    "id": "feedback_can_backfire",
+    "title": "Remember feedback can backfire",
+    "keywords": [
+      "feedback backfire",
+      "negative feedback",
+      "feedback intervention",
+      "feedback hurts performance"
+    ],
+    "content": "A landmark meta-analysis found feedback raised performance on average but over a third of the time, more than 38 percent, it actually made performance worse, usually when it targeted the self rather than the task. So be deliberate: keep it concrete, kind, and pointed at the next action, and do not over-monitor."
+  },
+  {
+    "id": "corrective_feedback_sandwich_limits",
+    "title": "Deliver criticism clearly (sandwich has limits)",
+    "keywords": [
+      "sandwich method",
+      "constructive criticism",
+      "compliment sandwich",
+      "feedback delivery"
+    ],
+    "content": "The praise-criticism-praise sandwich is popular but the evidence is weak; padding can bury the message and people learn to brace for the but. Be warm and direct instead: state the one thing to fix and how to fix it. Clarity is kinder than a soft blur."
+  },
+  {
+    "id": "when_to_hype_vs_gentle",
+    "title": "Know when to push and when to soften",
+    "keywords": [
+      "hype",
+      "push hard",
+      "tough love",
+      "gentle",
+      "supportive",
+      "intensity",
+      "when to be hard"
+    ],
+    "content": "Push hard only when someone is capable, bought-in, and asking for intensity; go gentle when they are tired, anxious, hurting, or struggling. Read the moment and, when unsure, ask: do you want a push or a soft landing today? Hype without trust just feels like pressure."
+  },
+  {
+    "id": "tone_beginner_vs_advanced",
+    "title": "Adjust tone by experience level",
+    "keywords": [
+      "beginner tone",
+      "advanced coaching",
+      "novice",
+      "experienced",
+      "competence level",
+      "scaling instruction"
+    ],
+    "content": "Beginners need encouragement, simple cues, and protection from overwhelm; one or two things to focus on, lots of reassurance. Advanced people want precision, honest critique, and a say in programming. More skill means more detail and more autonomy, not more cheerleading."
+  },
+  {
+    "id": "pre_performance_pressure_reframe",
+    "title": "Reframe pressure as challenge",
+    "keywords": [
+      "pre performance",
+      "pressure",
+      "challenge vs threat",
+      "nerves",
+      "reframe arousal",
+      "choke"
+    ],
+    "content": "Before a big effort, frame it as a challenge you are resourced for rather than a threat you might fail. Remind them of their prep and reframe nerves as readiness: that buzz means your body is getting ready. Challenge framing reliably beats threat framing under pressure."
+  },
+  {
+    "id": "arousal_regulation_match_task",
+    "title": "Match arousal to the task",
+    "keywords": [
+      "arousal",
+      "psych up",
+      "calm down",
+      "relaxation",
+      "fine motor",
+      "get pumped",
+      "yerkes dodson"
+    ],
+    "content": "Psych up for heavy, explosive, or gross-motor efforts like a max lift or sprint; dial arousal down for fine-motor precision like balance, mobility, or skill work. There is no universal optimum, so learn each person's sweet spot rather than always hyping. Loud is not always better."
+  },
+  {
+    "id": "in_the_moment_cueing",
+    "title": "Cue briefly and externally mid-effort",
+    "keywords": [
+      "cueing",
+      "external focus",
+      "internal focus",
+      "coaching cue",
+      "mid set",
+      "short cues"
+    ],
+    "content": "During a set, keep cues short and aimed at the effect or target rather than body parts; external focus like push the floor away usually beats internal focus like squeeze your quad. Mid-effort is not the time for a lecture. One clean cue, then let them work."
+  },
+  {
+    "id": "post_performance_debrief",
+    "title": "Debrief after, not during",
+    "keywords": [
+      "debrief",
+      "post performance",
+      "review session",
+      "reflection",
+      "after session",
+      "what went well"
+    ],
+    "content": "Save analysis for after the effort, and structure it simply: what went well, what to adjust, what is next. Lead with one genuine win, then one concrete fix. Ask for their read first, since people own conclusions they reach themselves."
+  },
+  {
+    "id": "celebrate_wins_well",
+    "title": "Celebrate wins and PRs well",
+    "keywords": [
+      "celebrate",
+      "wins",
+      "celebrate pr",
+      "milestone",
+      "celebrate small wins"
+    ],
+    "content": "Celebrate sincerely and tie it to what they did, not to a fixed identity, so the next session does not feel like pressure to prove it again. New PR, that is the consistent week of sleep and solid warmups paying off. Link the win to repeatable process, not to being special."
+  },
+  {
+    "id": "accountability_without_shame",
+    "title": "Hold accountability without guilt-tripping",
+    "keywords": [
+      "accountability",
+      "check in",
+      "follow up",
+      "guilt",
+      "shame",
+      "nagging"
+    ],
+    "content": "Accountability works through care and clarity, not guilt. Check in on the plan they chose, stay curious not scolding, and make it easy to be honest. How did the week go, no judgment? beats you said you would go four times. Shame drives people to hide, not to show up."
+  },
+  {
+    "id": "offer_choice_and_rationale",
+    "title": "Offer choice and explain the why",
+    "keywords": [
+      "choice",
+      "rationale",
+      "explain why",
+      "options",
+      "buy in",
+      "reason"
+    ],
+    "content": "People commit to plans they helped pick and understand. Give two or three sensible options and a short reason for each, then let them choose. We do mobility first because it makes the heavy sets safer; want to start there or warm up your own way? Ownership beats compliance."
+  },
+  {
+    "id": "read_the_individual",
+    "title": "Read the individual and ask before advising",
+    "keywords": [
+      "personality",
+      "individual differences",
+      "preferences",
+      "ask first",
+      "tailoring",
+      "read the room"
+    ],
+    "content": "People differ in what motivates them, so ask rather than assume; some want data, some want encouragement, some want to be left alone to work. Check preferences early and adjust. Do you like me to call out form fixes in the moment or save them for after?"
+  },
+  {
+    "id": "honesty_with_encouragement",
+    "title": "Balance honesty with encouragement",
+    "keywords": [
+      "honesty",
+      "directness",
+      "no empty hype",
+      "credible",
+      "real talk",
+      "encouraging not fake"
+    ],
+    "content": "Credible encouragement beats empty cheerleading; people can smell fake hype and it costs you trust. Be honest about what needs work while backing them to handle it. That last set broke down, and you have the strength to fix it, here is how. Truth plus belief, not flattery."
+  },
+  {
+    "id": "cultural_individual_differences",
+    "title": "Respect cultural and individual differences",
+    "keywords": [
+      "culture",
+      "values",
+      "what motivates me",
+      "diversity",
+      "personal values"
+    ],
+    "content": "What counts as good coaching varies by person and culture; some value direct challenge, others value harmony and quiet support, and goals are personal. Do not impose one motivational style. Anchor the work in their values and the reasons that matter to them, not yours."
+  },
+  {
+    "id": "self_monitoring_tracking",
+    "title": "Encourage self-monitoring (gently)",
+    "keywords": [
+      "self monitoring",
+      "tracking",
+      "logging",
+      "progress tracking",
+      "journaling",
+      "review goals"
+    ],
+    "content": "Tracking progress is one of the most consistently effective change tools, especially paired with goals and feedback. Keep it light and useful, not obsessive: log the lifts that matter and review them together. If tracking starts breeding anxiety, scale it back."
+  },
+  {
+    "id": "wellbeing_guardrails",
+    "title": "Guard against obsession and overtraining",
+    "keywords": [
+      "obsession",
+      "compulsive exercise",
+      "disordered eating",
+      "rest guilt",
+      "sustainable",
+      "wellbeing",
+      "earning food",
+      "obsessed"
+    ],
+    "content": "Watch for red flags: training through injury or illness, guilt about rest, exercise crowding out life, or food rules tightening around workouts. Push sustainable habits and rest, never punishment or earning food. If signs of disordered eating or compulsive exercise show up, gently encourage qualified professional support; this is outside a coach's scope."
+  },
+  {
+    "id": "avoid_dependence",
+    "title": "Build independence, not dependence",
+    "keywords": [
+      "dependence",
+      "independence",
+      "self coaching",
+      "over reliance",
+      "empower"
+    ],
+    "content": "A good coach works to be needed less over time. Teach the why behind decisions so people can eventually self-coach, and hand them small choices early. Avoid making yourself the only source of motivation. The goal is their confidence, not your indispensability."
+  },
+  {
+    "id": "self_efficacy_building",
+    "title": "Build confidence through small wins",
+    "keywords": [
+      "self efficacy",
+      "confidence",
+      "mastery experience",
+      "bandura",
+      "small wins",
+      "belief in myself"
+    ],
+    "content": "Confidence grows mostly from actually succeeding, so engineer early, achievable wins and point them out. Models help too: this is what someone at your stage usually manages. Credible encouragement matters, but nothing beats a stack of small completed reps as proof they can."
   }
 ]
