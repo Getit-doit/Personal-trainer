@@ -391,7 +391,8 @@ enum TrainingContent {
         return seen.sorted { $0.sortOrder < $1.sortOrder }
     }
 
-    /// Guided warm-up — every item is checked before lifting.
+    /// Guided warm-up — every item is checked before lifting. Used as a fallback
+    /// when the session has no exercises yet.
     static let generalWarmup: [String] = [
         "5 min easy cardio (walk, bike, or row)",
         "Leg swings — 10 each leg, front & side",
@@ -400,4 +401,43 @@ enum TrainingContent {
         "Ankle circles & calf raises — 2×15",
         "1–2 light warm-up sets of your first lift"
     ]
+
+    /// A warm-up tailored to the muscle groups being trained that day, so leg days
+    /// prep hips/ankles, push days prep shoulders, pull days prep the back, etc.
+    static func warmup(forMuscles muscles: [String]) -> [String] {
+        let set = Set(muscles)
+        let lower = set.contains("Legs") || set.contains("Hinge")
+        let push = set.contains("Chest") || set.contains("Shoulders")
+        let pull = set.contains("Back")
+        let arms = set.contains("Arms")
+        let core = set.contains("Core")
+        let cardio = set.contains("Cardio")
+
+        // Nothing specific to target — use the general routine.
+        guard lower || push || pull || arms || core || cardio else { return generalWarmup }
+
+        var items = ["3–5 min easy cardio to raise your heart rate"]
+        if lower {
+            items.append("Leg swings — 10 each leg, front & side")
+            items.append("Hip circles & bodyweight squats — 2×10")
+            items.append("Ankle circles & calf raises — 2×15")
+        }
+        if push || arms {
+            items.append("Arm circles & shoulder rolls — 2×15")
+        }
+        if push || pull {
+            items.append("Band pull-aparts — 2×15")
+        }
+        if pull {
+            items.append("Scap pull-ups or dead hangs — 2×20s")
+        }
+        if core {
+            items.append("Cat-cow & dead bug — 2×8")
+        }
+        if cardio && !lower {
+            items.append("Dynamic leg swings & ankle circles — 10 each")
+        }
+        items.append("1–2 light warm-up sets of your first exercise")
+        return items
+    }
 }

@@ -237,13 +237,18 @@ struct ActiveSessionView: View {
 
     // MARK: Warm-up gate
 
+    /// Warm-up tailored to the muscles this session trains (falls back to general).
+    private var warmupItems: [String] {
+        TrainingContent.warmup(forMuscles: session.exercises.map(\.muscleGroup))
+    }
+
     private var warmupSection: some View {
         Section {
             if session.warmupDone {
                 Label("Warm-up complete", systemImage: "checkmark.seal.fill")
                     .foregroundStyle(Theme.accent)
             } else {
-                ForEach(Array(TrainingContent.generalWarmup.enumerated()), id: \.offset) { index, item in
+                ForEach(Array(warmupItems.enumerated()), id: \.offset) { index, item in
                     WarmupRow(text: item, isChecked: warmupChecked.contains(index)) {
                         toggleWarmup(index)
                     }
@@ -264,7 +269,7 @@ struct ActiveSessionView: View {
     private func toggleWarmup(_ index: Int) {
         if warmupChecked.contains(index) { warmupChecked.remove(index) }
         else { warmupChecked.insert(index) }
-        if warmupChecked.count == TrainingContent.generalWarmup.count {
+        if warmupChecked.count == warmupItems.count {
             session.warmupDone = true
             try? context.save()
         }
