@@ -136,7 +136,9 @@ final class Exercise {
 final class WorkoutSession {
     var date: Date
     var notes: String
-    var steamRoom: Bool
+    var steamRoom: Bool          // legacy; superseded by recoveryTasks
+    /// Recovery the athlete chose for this session (sauna, cold plunge, etc.).
+    var recoveryTasks: [String] = []
     /// Warm-up gate — set logging is blocked until this is true.
     var warmupDone: Bool
     var isFinished: Bool

@@ -27,14 +27,14 @@ enum RewardEngine {
         let prCount: Int
         let warmups: Int
         let longestDietStreak: Int   // best current streak across all habits, days
-        let steamRoomSessions: Int
+        let recoverySessions: Int
 
         init(sessions: [WorkoutSession], prs: [PersonalBest], habits: [DietHabit]) {
             let finished = sessions.filter(\.isFinished)
             finishedWorkouts = finished.count
             prCount = prs.count
             warmups = finished.filter(\.warmupDone).count
-            steamRoomSessions = finished.filter(\.steamRoom).count
+            recoverySessions = finished.filter { !$0.recoveryTasks.isEmpty || $0.steamRoom }.count
 
             let cal = Calendar.current
             let weekAgo = cal.date(byAdding: .day, value: -7, to: .now) ?? .now
@@ -84,8 +84,8 @@ enum RewardEngine {
 
         Def(id: "warmup_10", title: "Warm-up Warrior", detail: "Completed the warm-up 10 times.",
             icon: "figure.cooldown", tier: .silver, points: 40) { $0.warmups >= 10 },
-        Def(id: "steam_5", title: "Down-Regulator", detail: "5 steam-room recovery sessions.",
-            icon: "humidity.fill", tier: .bronze, points: 20) { $0.steamRoomSessions >= 5 },
+        Def(id: "recovery_5", title: "Down-Regulator", detail: "Logged recovery after 5 sessions.",
+            icon: "humidity.fill", tier: .bronze, points: 20) { $0.recoverySessions >= 5 },
 
         Def(id: "diet_7", title: "One Week Strong", detail: "Held a nutrition lever for a week.",
             icon: "leaf.fill", tier: .bronze, points: 20) { $0.longestDietStreak >= 7 },

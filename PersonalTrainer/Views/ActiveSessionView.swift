@@ -31,7 +31,29 @@ struct ActiveSessionView: View {
     // Warm-up checklist (drives the gate) + finish/log confirmation
     @State private var warmupChecked: Set<Int> = []
     @State private var showLogConfirm = false
+    @State private var customRecovery = ""
     @Environment(\.dismiss) private var dismiss
+
+    private let recoveryOptions = [
+        "Sauna", "Steam room", "Cold plunge", "Ice bath", "Hot tub",
+        "Stretching", "Foam rolling", "Massage gun", "Easy walk", "Nap"
+    ]
+
+    /// Bridge the stored recovery list to the Set the chip picker uses.
+    private var recoveryBinding: Binding<Set<String>> {
+        Binding(
+            get: { Set(session.recoveryTasks) },
+            set: { session.recoveryTasks = Array($0).sorted(); try? context.save() }
+        )
+    }
+
+    private func addCustomRecovery() {
+        let task = customRecovery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !task.isEmpty, !session.recoveryTasks.contains(task) else { customRecovery = ""; return }
+        session.recoveryTasks.append(task)
+        try? context.save()
+        customRecovery = ""
+    }
 
     // Rest timer settings (editable in Profile)
     @AppStorage("restCompound") private var restCompound = 180
@@ -367,8 +389,19 @@ struct ActiveSessionView: View {
 
     private var finishSection: some View {
         Section {
-            Toggle("Steam room after", isOn: $session.steamRoom)
-                .onChange(of: session.steamRoom) { try? context.save() }
+            VStack(alignment: .leading, spacing: 8) {
+                Text("RECOVERY").font(Theme.mono(10)).tracking(1.4).foregroundStyle(.secondary)
+                FlowChips(options: recoveryOptions, selection: recoveryBinding)
+                HStack {
+                    TextField("Add your own (e.g. Massage)", text: $customRecovery)
+                        .onSubmit(addCustomRecovery)
+                    Button(action: addCustomRecovery) {
+                        Image(systemName: "plus.circle.fill").foregroundStyle(Theme.accent)
+                    }
+                    .disabled(customRecovery.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+                .font(.subheadline)
+            }
             TextField("Session notes", text: $session.notes, axis: .vertical)
                 .lineLimit(1...4)
                 .onChange(of: session.notes) { try? context.save() }
@@ -532,6 +565,13 @@ struct LogWorkoutSheet: View {
                                     Text("CARDIO").font(Theme.mono(10)).tracking(1.2).foregroundStyle(.secondary)
                                     Spacer()
                                     Text("\(cardio.modality) · \(cardio.durationMinutes.clean) min").font(Theme.mono(11))
+                                }
+                            }
+                            if !session.recoveryTasks.isEmpty {
+                                HStack(alignment: .firstTextBaseline) {
+                                    Text("RECOVERY").font(Theme.mono(10)).tracking(1.2).foregroundStyle(.secondary)
+                                    Spacer()
+                                    Text(session.recoveryTasks.joined(separator: ", ")).font(Theme.mono(11))
                                 }
                             }
                         }

@@ -7,7 +7,27 @@ import SwiftData
 enum SeedData {
     static func seedIfNeeded(context: ModelContext) {
         seedExercises(context)
+        clearLegacySeedData(context)
         try? context.save()
+    }
+
+    /// One-time cleanup for installs that carried the original hard-coded profile
+    /// (the app used to seed an "ankle inflames easily" constraint set). Removes
+    /// only those exact legacy strings, leaving any user-entered constraints.
+    private static func clearLegacySeedData(_ context: ModelContext) {
+        let key = "clearedLegacySeedData"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        let legacy: Set<String> = [
+            "Sleeps 6–7 hrs", "High stress",
+            "Ankle inflames easily — mandatory ankle warm-up",
+            "Introduce incline / impact / sprints / stairs gradually"
+        ]
+        let profiles = (try? context.fetch(FetchDescriptor<UserProfile>())) ?? []
+        for profile in profiles {
+            let filtered = profile.constraints.filter { !legacy.contains($0) }
+            if filtered.count != profile.constraints.count { profile.constraints = filtered }
+        }
+        UserDefaults.standard.set(true, forKey: key)
     }
 
     /// Insert any catalog exercises that aren't already stored (matched by name),
