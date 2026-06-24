@@ -107,6 +107,11 @@ struct ActiveSessionView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { rest.syncToWallClock() }
         }
+        .safeAreaInset(edge: .top) {
+            if session.warmupDone {
+                CoachVoiceBar(session: session)
+            }
+        }
         .safeAreaInset(edge: .bottom) {
             if rest.isActive {
                 RestTimerBar(rest: rest)

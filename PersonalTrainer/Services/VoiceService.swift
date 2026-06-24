@@ -11,6 +11,8 @@ final class VoiceService: NSObject, ObservableObject {
     @Published private(set) var transcript = ""
     @Published private(set) var isListening = false
     @Published private(set) var isSpeaking = false
+    /// Live mic input level (0…1) while listening, for the voice waveform.
+    @Published private(set) var level: Float = 0
     /// User toggle: read the coach's replies aloud.
     @Published var speakReplies = true
     /// Whether dictation is usable (authorized + recognizer available).
@@ -108,8 +110,15 @@ final class VoiceService: NSObject, ObservableObject {
         input.removeTap(onBus: 0)
         // Capture the request locally so the audio-thread closure doesn't touch
         // main-actor state.
-        input.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
+        input.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
             request.append(buffer)
+            guard let channel = buffer.floatChannelData?[0] else { return }
+            let count = Int(buffer.frameLength)
+            guard count > 0 else { return }
+            var sum: Float = 0
+            for i in 0..<count { let s = channel[i]; sum += s * s }
+            let lvl = min(1, (sum / Float(count)).squareRoot() * 12)
+            DispatchQueue.main.async { self?.level = lvl }
         }
 
         audioEngine.prepare()
@@ -133,6 +142,7 @@ final class VoiceService: NSObject, ObservableObject {
         task?.cancel()
         cleanupAudio()
         isListening = false
+        level = 0
         if !isSpeaking { restoreOtherAudio() }   // bring the music back up
     }
 
